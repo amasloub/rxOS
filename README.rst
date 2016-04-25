@@ -1,11 +1,16 @@
-OuterBox 2: Outernet receiver firmware Mk2
-==========================================
+rxOS
+====
 
-This repository contains build scripts for creating OuterBox 2, the second
-generation Outernet receiver firmware. The firmware is designed to work on
-Raspberry Pi version 3, and it should work on a stock Pi 3 without (too much)
-modification.
+rxOS is the operating system and firmware image for the second generation
+Outernet receivers (Lantern and Lighthouse Mk 2).
 
-The build is based on `Buildroot <https://buildroot.org/>`_.
+rxOS is built on top of `Buildroot <http://buildroot.org/>` and constists of
+two parts:
+
+- Linux kernel image with early userspace
+- rootfs image
 
 Full documentation is available in the ``docs`` subdirectory.
+
+The code is released under GPLv3 license. See the ``COPYING`` file in the
+source tree or visit `<http://www.gnu.org/licenses/>`_.
