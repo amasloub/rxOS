@@ -6,14 +6,9 @@ DEFCONFIG=$(BOARD)_defconfig
 BUILDROOT = ./buildroot
 CONFIG = $(OUTPUT)/.config
 BOARD_DIR = ./$(BOARD)
-PLATFORM_FILE = platform
-VERSION_FILE = version
-VERSION = $(shell cat $(BOARD_DIR)/$(VERSION_FILE))
-PLATFORM = $(shell cat $(BOARD_DIR)/$(PLATFORM_FILE))
 
 # Build target
 TARGET_NAME = rxos
-RELEASE_NAME=$(TARGET_NAME)-$(VERSION)
 
 # Build output files
 OUTPUT = build/$(BOARD)
@@ -43,9 +38,6 @@ export BR2_EXTERNAL=$(EXTERNAL)
 	clean
 
 default: build
-
-version:
-	@echo v$(VERSION)
 
 build: $(BUILD_STAMP)
 
@@ -79,8 +71,7 @@ clean:
 	-rm -rf $(OUTPUT)
 
 $(BUILD_STAMP): $(CONFIG)
-	@VERSION_FILE=$(VERSION_FILE) PLATFORM_FILE=$(PLATFORM_FILE) make \
-		-C $(BUILDROOT) O=$(OUTPUT_DIR)
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR)
 	touch $@
 
 $(CONFIG):
