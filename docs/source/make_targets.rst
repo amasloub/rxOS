@@ -1,18 +1,14 @@
 Make targets
 ============
 
-The following table describes the available make targets:
+The following table describes the available make targets:[1]_
 
 =================   ===========================================================
 target              function
 =================   ===========================================================
 version             Get current version
 -----------------   -----------------------------------------------------------
-build [1]_          Build both SD card image and update package
------------------   -----------------------------------------------------------
-flash               Build the SD card image only
------------------   -----------------------------------------------------------
-update              Build the update package only
+build [2]_          Build both SD card image and update package
 -----------------   -----------------------------------------------------------
 menuconfig          Bring up Buildroot configuration menu
 -----------------   -----------------------------------------------------------
@@ -32,4 +28,6 @@ clean-build         Partial cleanup (useful when trying to apply small
 clean               Complete cleanup (also removes any unsaved modifications)
 =================   ===========================================================
 
-.. [1] Default target when invoking ``make``
+.. [1] Targets described here are custom targets for rxOS build. Full set of
+       Buildroot's own ``make`` targets are also available.
+.. [2] Default target when invoking ``make``

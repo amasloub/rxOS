@@ -1,0 +1,21 @@
+menu "Firmware configuration"
+endmenu
+
+menu "Applications"
+endmenu
+
+menu "Libraries"
+endmenu
+
+menu "Servers"
+endmenu
+
+menu "Host packages"
+endmenu
+
+menu "Hardware support"
+    source "$BR2_EXTERNAL/package/firmware-brcmfmac43430-sdio/Config.in"
+endmenu
+
+menu "Development"
+endmenu
