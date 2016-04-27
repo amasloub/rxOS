@@ -27,7 +27,17 @@ INITRAMFS=${BINARIES_DIR}/rootfs.cpio
 KERNEL_DIR=${BUILD_DIR}/linux-${LINUX_VERSION}
 GENCPIO=${KERNEL_DIR}/usr/gen_init_cpio
 
+if [ "$INITRAMFS_COMPRESSION" == "gzip" ]; then
+  COMPRESS_CMD="gzip"
+elif [ "$INITRAMFS_COMPRESSION" == "lz4" ]; then
+  COMPRESS_CMD="lz4 -9"
+elif [ "$INITRAMFS_COMPRESSION" == "xz" ]; then
+  COMPRESS_CMD="xz -zce"
+fi
+
 mkdir -p $TMPDIR
+
+msg Using $INITRAMFS_COMPRESSION compression with $COMPRESS_CMD command
 
 # Patch the input scirpts
 msg Generating cpio configuration...
@@ -44,7 +54,7 @@ cat "$INIT_SCRIPT" \
 
 # Generate the archive
 msg Generating cpio file...
-$GENCPIO "$TMPDIR/init.cpio" | lz4 -9 > "$INITRAMFS"
+$GENCPIO "$TMPDIR/init.cpio" | $COMPRESS_CMD > "$INITRAMFS"
 
 msg Cleaning up...
 rm -rf $TMPDIR
