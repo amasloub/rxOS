@@ -11,7 +11,7 @@ BOARD_DIR = ./$(BOARD)
 TARGET_NAME = rxos
 
 # Build output files
-OUTPUT = build/$(BOARD)
+OUTPUT = out
 OUTPUT_DIR = ../$(OUTPUT)
 IMAGES_DIR = $(OUTPUT)/images
 KERNEL_IMAGE = $(IMAGES_DIR)/zImage
