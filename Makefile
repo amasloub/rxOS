@@ -28,13 +28,15 @@ export BR2_EXTERNAL=$(EXTERNAL)
 	version \
 	build \
 	rebuild \
+	rebuild-with-linux \
 	flash \
 	update \
 	menuconfig \
 	linuxconfig \
 	busyboxconfig \
 	saveconfig \
-	clean-build \
+	clean-rootfs \
+	clean-linux \
 	clean
 
 default: build
@@ -57,15 +59,18 @@ saveconfig: $(CONFIG)
 
 config: $(CONFIG)
 
-rebuild: clean-build build
+rebuild: clean-rootfs build
 
-clean-build:
+rebuild-with-linux: clean-rootfs clean-linux build
+
+clean-rootfs:
+	@-rm $(BUILD_STAMP)
+	@-rm $(IMAGES_DIR)/rootfs.*
+
+clean-linux:
 	@-rm $(BUILD_STAMP)
 	@-rm $(KERNEL_IMAGE)
-	@-rm $(IMAGES_DIR)/rootfs*
-	@-rm $(IMAGES_DIR)/*.pkg
-	@-rm $(IMAGES_DIR)/*.img
-	@-rm $(IMAGES_DIR)/*.md5
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) linux-dirclean
 
 clean:
 	-rm -rf $(OUTPUT)
