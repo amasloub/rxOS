@@ -20,9 +20,9 @@ saveconfig          Save all configuration
 ------------------  -----------------------------------------------------------
 config              Load default configuration (overwrites any modifications)
 ------------------  -----------------------------------------------------------
-rebuild             Rebuild the rootfs and kernel image with initramfs
+rebuild             Rebuild the rootfs and recompile linux with initramfs
 ------------------  -----------------------------------------------------------
-rebuild-with-linux  Rebuild the linux kernel and rootfs
+rebuild-with-linux  Completely rebuild the linux kernel, DTB, and rootfs
 ------------------  -----------------------------------------------------------
 clean-rootfs        Partial cleanup (useful when trying to apply small
                     modifications)
