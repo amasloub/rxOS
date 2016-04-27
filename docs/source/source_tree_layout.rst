@@ -15,6 +15,7 @@ Source tree layout
     - ``patches/``: Custom patches
     - ``rootfs/``: Rootfs overlay
     - ``scripts/``: Build hook scripts
+    - ``support/``: Various build hooks
     - ``Config.in``: External board config
     - ``external.mk``: External boad makefile
     - ``local.mk``: Board-specific overrides

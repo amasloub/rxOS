@@ -1,4 +1,17 @@
 menu "Firmware configuration"
+
+	config RXOS_PLATFORM
+		string "Platform name"
+		default BR2_TARGET_GENERIC_HOSTNAME
+		help
+		  Name of the platform
+
+	config RXOS_VERSION
+		string "Platform version"
+		default 0.0
+		help
+		  Platform version
+
 endmenu
 
 menu "Applications"
