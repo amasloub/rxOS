@@ -1,0 +1,9 @@
+dir /dev 755 0 0
+nod /dev/console 644 0 0 c 5 1
+dir /lib 755 0 0
+file /lib/ld-%LD_VER%.so %PREFIX%/lib/ld-%LD_VER%.so 755 0 0
+slink /lib/ld-linux%LD_SFX%.so.3 ld-%LD_VER%.so 777 0 0
+file /lib/libc-%LIBC_VER%.so %PREFIX%/lib/libc-%LIBC_VER%.so 755 0 0
+slink /lib/libc.so.6 libc-%LIBC_VER%.so 777 0 0
+file /busybox %PREFIX%/bin/busybox 755 0 0
+file /init %INIT% 755 0 0
