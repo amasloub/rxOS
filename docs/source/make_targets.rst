@@ -24,10 +24,14 @@ rebuild             Rebuild the rootfs and recompile linux with initramfs
 ------------------  -----------------------------------------------------------
 rebuild-with-linux  Completely rebuild the linux kernel, DTB, and rootfs
 ------------------  -----------------------------------------------------------
+rebuild-everything  Rebuild everything except host tools/libs
+------------------  -----------------------------------------------------------
 clean-rootfs        Partial cleanup (useful when trying to apply small
                     modifications)
 ------------------  -----------------------------------------------------------
 clean-linux         Partial cleanup (useful when linux configuration changes)
+------------------  -----------------------------------------------------------
+clean-deep          Clean everything except host tools/libs
 ------------------  -----------------------------------------------------------
 clean               Complete cleanup (also removes any unsaved modifications)
 ==================  ===========================================================

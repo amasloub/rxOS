@@ -29,6 +29,7 @@ export BR2_EXTERNAL=$(EXTERNAL)
 	build \
 	rebuild \
 	rebuild-with-linux \
+	rebuild-everything \
 	flash \
 	update \
 	menuconfig \
@@ -37,7 +38,9 @@ export BR2_EXTERNAL=$(EXTERNAL)
 	saveconfig \
 	clean-rootfs \
 	clean-linux \
-	clean
+	clean-deep \
+	clean \
+	config
 
 default: build
 
@@ -63,6 +66,8 @@ rebuild: clean-rootfs build
 
 rebuild-with-linux: clean-rootfs clean-linux build
 
+rebuild-everything: clean-deep build
+
 clean-rootfs:
 	@-rm $(BUILD_STAMP)
 	@-rm $(IMAGES_DIR)/rootfs.*
@@ -72,8 +77,18 @@ clean-linux:
 	@-rm $(KERNEL_IMAGE)
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) linux-dirclean
 
+clean-deep: config
+	@-rm $(BUILD_STAMP)
+	@-rm -rf $(IMAGES_DIR)
+	@-rm -rf $(OUTPUT)/build
+	@-rm -rf $(OUTPUT)/target
+	@-rm $(OUTPUT)/staging
+
 clean:
 	-rm -rf $(OUTPUT)
+
+config:
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) $(DEFCONFIG)
 
 $(BUILD_STAMP): $(CONFIG)
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR)
