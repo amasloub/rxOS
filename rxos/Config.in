@@ -12,36 +12,6 @@ menu "Firmware configuration"
 		help
 		  Platform version
 
-	choice
-		prompt "Initramfs compression method"
-		default RXOS_INITRAMFS_LZ4
-
-	config RXOS_INITRAMFS_LZ4
-		bool "LZ4"
-		help
-		  Low compression ratio but faster decompression
-		  and faster boot.
-
-	config RXOS_INITRAMFS_GZIP
-		bool "GZIP"
-		help
-		  Decent compression ratio and reasonable
-		  decompression speed.
-
-	config RXOS_INITRAMFS_XZ
-		bool "XZ"
-		help
-		  Highest compression ratio and slowest 
-		  decompression.
-
-	endchoice
-
-	config RXOS_INITRAMFS_COMPRESSION
-		string
-		default "lz4" if RXOS_INITRAMFS_LZ4
-		default "gzip" if RXOS_INITRAMFS_GZIP
-		default "xz" if RXOS_INITRAMFS_XZ
-
 endmenu
 
 menu "Applications"

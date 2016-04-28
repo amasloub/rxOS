@@ -1,3 +1,20 @@
 #!/busybox sh
 
+# Command aliases
+MOUNT="/busybox mount"
+ECHO="/busybox echo"
+
+# Mount devtmpfs
+$MUNT -t devtmpfs /dev
+
+# Setup console
+exec 0</dev/console
+exec 1>/dev/console
+exec 2>/dev/console
+
+$ECHO "======================================================================="
+$ECHO "Starting rxOS"
+$ECHO "======================================================================="
+
+# Drop into shell
 exec /busybox sh
