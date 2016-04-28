@@ -64,7 +64,7 @@ config: $(CONFIG)
 
 rebuild: clean-rootfs build
 
-rebuild-with-linux: clean-rootfs clean-linux build
+rebuild-with-linux: clean-linux build
 
 rebuild-everything: clean-deep build
 
@@ -72,17 +72,16 @@ clean-rootfs:
 	@-rm $(BUILD_STAMP)
 	@-rm $(IMAGES_DIR)/rootfs.*
 
-clean-linux:
-	@-rm $(BUILD_STAMP)
+clean-linux: clean-rootfs
 	@-rm $(KERNEL_IMAGE)
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) linux-dirclean
 
-clean-deep: config
-	@-rm $(BUILD_STAMP)
+clean-deep: config clean-linux
 	@-rm -rf $(IMAGES_DIR)
-	@-rm -rf $(OUTPUT)/build
+	@-rm -rf `ls $(OUTPUT)/build | grep -v host-`
 	@-rm -rf $(OUTPUT)/target
 	@-rm $(OUTPUT)/staging
+	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) skeleton-rebuild
 
 clean:
 	-rm -rf $(OUTPUT)
