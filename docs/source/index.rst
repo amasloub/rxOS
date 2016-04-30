@@ -18,6 +18,8 @@ Documentation
 .. toctree::
     :maxdepth: 1
 
+    requirements
+    build
     source_tree_layout
     make_targets
     boot

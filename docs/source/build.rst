@@ -16,14 +16,50 @@ created and linked into the kernel image.
 In order to build the firmware, you should be familiar with `Buildroot
 <http://www.buildroot.org/docs.html>`_.
 
+Before you build
+----------------
+
+Before you build, you need to clone the rxOS git repository::
+
+    $ git clone --recursive https://github.com/Outernet-Project/rxOS.git
+
+The ``--recursive`` flag causes git to init and update any submodules. If you
+forgot it, you need two additional steps::
+
+    $ git submodule init
+    $ git submodule update
+
+Starting the build
+------------------
+
 The build is initated by invoking ``make`` or ``make build``.
 
 To completely clean up the build and restart it from scratch, use ``make clean
 build``. It is generally not needed to do this, though. In most cases, a more
-efficient alternative is to call ``make rebuild-everything``..
+efficient alternative is to call ``make rebuild-everything``.
+
+Customizing the build
+---------------------
 
 To customize the build use ``make menuconfig``, which brings up the Buildroot's
 configuration menu.
+
+Updating the existing build
+---------------------------
+
+To update your local repository clone::
+
+    $ cd path/to/rxOS
+    $ git pull
+    $ git submodule update
+
+Apply possibly updated build configuration::
+
+    $ make config
+
+Rebuild starting from the linux kernel::
+
+    $ make rebuild-with-linux
 
 Linux kernel compilation
 ------------------------
