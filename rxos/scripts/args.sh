@@ -11,6 +11,17 @@
 #
 # Released under GPLv3. See COPYING file in the source tree.
 
+# Global variables
+SCRIPTDIR=$(dirname $0)
+BASEDIR=$(cd $SCRIPTDIR/../../; pwd)
+BUILD=$(cd $BASEDIR; git rev-parse --short HEAD)
+
+# Parsed arguments
 TARGET_DIR=$1             # (str) Directory containing built rootfs
-LINUX_VERSION=$2          # (str) Linux version used in the build
-INITRAMFS_COMPRESSION=$3  # (str) Compression method used for initramfs
+PLATFORM=$2               # (str) Platform name
+VERSION=$3                # (str) Platform version
+LINUX_VERSION=$4          # (str) Linux version used in the build
+INITRAMFS_COMPRESSION=$5  # (str) Compression method used for initramfs
+INITRAMFS_FILE=$6         # (str) Name of the output initramfs archive
+TMPFS_SIZE=$7             # (int) Size of the overlay RAM disk (MiB)
+

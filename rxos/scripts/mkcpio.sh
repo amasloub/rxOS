@@ -22,7 +22,7 @@ INIT_LIST=${SRCDIR}/init.cpio.in
 INIT_SCRIPT=${SRCDIR}/init.in
 INIT_LIST_OUT=${TMPDIR}/init.cpio
 INIT_SCRIPT_OUT=${TMPDIR}/init
-INITRAMFS=${BINARIES_DIR}/rootfs.cpio.$INITRAMFS_COMPRESSION
+INITRAMFS=${BINARIES_DIR}/$INITRAMFS_FILE
 
 KERNEL_DIR=${BUILD_DIR}/linux-${LINUX_VERSION}
 GENCPIO=${KERNEL_DIR}/usr/gen_init_cpio
@@ -52,6 +52,7 @@ cat "$INIT_LIST" \
     > "$INIT_LIST_OUT"
 cat "$INIT_SCRIPT" \
     | sed "s|%TMPFS_SIZE%|${TMPFS_SIZE}|" \
+    | sed "s|%VERSION%|${VERSION}|" \
     > "$INIT_SCRIPT_OUT"
 
 # Generate the archive

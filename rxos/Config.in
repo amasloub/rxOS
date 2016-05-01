@@ -12,6 +12,17 @@ menu "Firmware configuration"
 		help
 		  Platform version
 
+	config RXOS_TMPFS_SIZE
+		string "Size of the rootfs RAM disk overlay in MiB"
+		default 60
+		help
+		  Because root filesystem is mounted read-only a 
+		  RAM disk overlay is used to provide a write layer
+		  at runtime. This setting determines the size of 
+		  the RAM disk. Note that this is also the portion
+		  of the RAM that becomes inaccessible to the 
+		  applications.
+
 endmenu
 
 menu "Applications"
