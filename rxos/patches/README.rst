@@ -18,6 +18,8 @@ hostapd/2.5     0001   n/a                      n/a      enable the
                                                          for Realtek driver
                                                          so that the driver
                                                          is built
+--------------  -----  -----------------------  -------  ----------------------
+linux           0000   Outernet                 GPL      modified boot-up logo
 ==============  =====  =======================  =======  ======================
 
 .. note::
