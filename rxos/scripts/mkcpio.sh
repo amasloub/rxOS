@@ -19,7 +19,7 @@ SRCDIR=${BR2_EXTERNAL}/initramfs
 TMPDIR=/tmp/initcpio-$(date +%s)
 
 INIT_LIST=${SRCDIR}/init.cpio.in
-INIT_SCRIPT=${SRCDIR}/init.in
+INIT_SCRIPT=${SRCDIR}/init.in.sh
 INIT_LIST_OUT=${TMPDIR}/init.cpio
 INIT_SCRIPT_OUT=${TMPDIR}/init
 INITRAMFS=${BINARIES_DIR}/$INITRAMFS_FILE
