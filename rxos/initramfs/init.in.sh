@@ -73,16 +73,20 @@ mount_root() {
 #
 # Create the boot partition mount point in the target root filesystem, and move
 # the SD card mount point to the new location.
+#
+# Also move the devtmpfs mount point into the root mount point.
 set_up_boot() {
-  $MKDIR -p /mnt/root/boot
-  $MOUNT --move /mnt/sdcard /mnt/root/boot
+  $MKDIR -p /root/boot /root/dev
+  $MOUNT --move /sdcard /root/boot
+  $MOUNT --move /dev /root/dev
 }
 
 # Unount the root filesystem and related mounts
 undo_root() {
-  $UMOUNT /mnt/root/boot 2>/dev/null
-  $UMOUNT /mnt/root 2>/dev/null
-  $UMOUNT /mnt/rootfs 2>/dev/null
+  $UMOUNT /root/boot 2>/dev/null
+  $UMOUNT /root/dev 2>/dev/null
+  $UMOUNT /root 2>/dev/null
+  $UMOUNT /rootfs 2>/dev/null
 }
 
 ###############################################################################
@@ -137,6 +141,7 @@ fi
 for rootfs_image in $ROOT_IMAGES; do
   if mount_root "$rootfs_image"; then
     echo "Attempt boot $rootfs_image"
+    set_up_boot
     exec $SWITCH_ROOT /root /sbin/init $@
   fi
   # If we git this far, it means switch_root failed. We undo the set-up
