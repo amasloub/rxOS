@@ -14,13 +14,13 @@ The first partition of the SD card is a 400MB FAT32 partition with the
 following contents:
 
 - Raspberry Pi stage 2 bootloader (``bootcode.bin``)
+- Raspberry Pi stage 3 bootloader (``start.elf``)
 - Raspberry Pi fixup data (``fixup.dat``)
-- ``start.elf``
-- Bootloader configuration file (``config.txt``)
 - device tree blob (``bcm2710-rpi-3-b.dtb``)
-- kernel image with early userspace (``zImage``)
-- two identical rootfs images (``root.sqfs``, ``fallback.sqfs``)
-- original factory rootfs image (``factory.sqfs``)
+- kernel image with early userspace (``kernel.img``)
+- main root filesystem image (``root.sqfs``)
+- backup root filesystem image (``backup.sqfs``)
+- original factory root filesystem image (``factory.sqfs``)
 
 Raspberry Pi boot
 -----------------
@@ -28,34 +28,74 @@ Raspberry Pi boot
 The first stage is the same for all Raspberry Pi devices, but it will be
 described here for completeness.
 
-1. When power is applied, GPU is activated
-2. Stage 1 bootloader is loaded from the ROM into the L2 cache and mounts the
-   SD card
-3. Stage 2 bootloader (``bootcode.bin``) is loaded from the SD card and
-   activates SDRAM and load ``start.elf``.
-4. ``start.elf`` loads the ``config.txt`` files, the DTBs, the kernel image
-5. ARM CPU is activated
-6. Kernel is is executed on the CPU
-7. The ``init`` script in the kernel's initramfs is executed
+The ROM on the Raspberry Pi board contains the stage 1 bootloader (S1). When
+power is applied, VideoCore GPU is activated, and S1 is executed on a small
+RISC core that is present on the board. The S1 bootloader mounts the SD card,
+and loads S2, ``bootcode.bin``, into the GPU's L2 cache and executes it on the
+GPU.
+
+S2 activates the SDRAM. It also understands ELF binaries, and loads S3,
+``start.elf``, from the SD card. S3 is also known as GPU firmware, and this is
+what causes the rainbow splash (4 pixels that are blown up to full-scren) to be
+displayed.
+
+.. note::
+    If there is a rainbow splash on the screen but no further activity, it
+    means that S3 has been loaded successfully but kernel image did not boot.
+
+S3 reads the firmware configuration file ``config.txt`` (if any), and then
+proceeds to split the RAM between GPU and ARM CPU. S3 also loads a file called
+``cmdline.txt`` if it exists, and will pass its contents as kernel command
+line. S3 finally enables the ARM CPU and loads the kernel image (``kernel.img``
+by default, configurable via ``config.txt``), which is executed on the ARM CPU.
+
+.. note::
+    ``start.elf`` is actually a complete proprietary operating system known as
+    VCOS (VideoCore OS).
+
+The kernel image contains a minimal early userspace and its ``init`` script is
+executed.
 
 The early userspace
 -------------------
 
 Early userspace initialization happens within the ``init`` script in the root
-of the kernel's initramfs.
+of the kernel's initramfs. We will refer to this script as EI for brevity
+(early init).
 
-1. Init mounts the SD card
-2. The first of two rootfs images is mounted as root filesystem
-3. A 100MB ramdisk is created and overlaid over the read-only root filesystem
-   using union mount.
-4. All mount points created in the early userspace are moved to the ``mnt``
-   directory inside the root filesystem
-5. ``switch_root`` is performed to attempt a boot from the rootfs
-6. If either step 2 or 5 fail, the process is repeated from step 2 using the
-   second (fallback) rootfs image
-7. If either step 2 or 5 fail for the fallback image, an image called
-   ``factory.sqfs`` is used as final attempt to boot the system
-8. The ``init`` binary from the rootfs is executed
+EI is generated from a template found in ``rxos/initramfs/init.in.sh`` file.
+The sources are thoroughly documented, so if you need to know more than what's
+presented here, you are welcome to peruse the sources.
+
+EI starts between 3 and 5 seconds after kernel starts booting. It mounts the SD
+card in order to access root filesystem images. There are three possible
+candidates for the final userspace, and those are ``root.sqfs``,
+``backup.sqfs``, and ``factory.sqfs``. These images are LZ4-compressed SquashFS
+images that contain the userspace executables, code, and data.
+
+A RAM disk with size configurable at build-time (default is 80 MiB) is created
+to serve as a write-enabled overlay over the read-only root filesystem. 
+
+For each candidate root filesystem, EI mounts the image, and creates a write
+overlay using Overlay FS and the previously configured RAM disk. It then
+attempts to switch to the new root filesystem using BusyBox's ``switch_root``
+command which executes the ``/sbin/init`` binary in the target root filesystem.
+
+If the switch is successful, early userspace initialization is complete and the
+userspace proper takes over.
+
+If the switch is not successful, the next candidate is tried until no root
+filesystem candidates are left. If none of the root filesystem images can be
+booted, EI starts an emergency shell where troubleshooting can be performed.
+
+.. note::
+    Even if switch is successful, it does not mean the boot will succeed.
+    Minimal checking is performed to ensure that the root filesystem contains a
+    path ``/sbin/init`` which an executable file or a symlink pointing to one,
+    but nothing beyond that is done. If the executable fails or does something
+    that terminates the init process, kernel **will** panic and boot will fail.
+    In general, however, this is not quite realistic as long as valid images
+    built for rxOS are used.
 
 The userspace
 -------------
