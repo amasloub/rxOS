@@ -67,14 +67,18 @@ EI is generated from a template found in ``rxos/initramfs/init.in.sh`` file.
 The sources are thoroughly documented, so if you need to know more than what's
 presented here, you are welcome to peruse the sources.
 
-EI starts between 3 and 5 seconds after kernel starts booting. It mounts the SD
-card in order to access root filesystem images. There are three possible
-candidates for the final userspace, and those are ``root.sqfs``,
+EI starts between 3 and 5 seconds after kernel starts booting. 
+
+It first mounts devtmpfs to ``/dev`` so that device nodes are accessible. It
+then mounts the SD card in order to access root filesystem images. There are
+three possible candidates for the final userspace, and those are ``root.sqfs``,
 ``backup.sqfs``, and ``factory.sqfs``. These images are LZ4-compressed SquashFS
 images that contain the userspace executables, code, and data.
 
 A RAM disk with size configurable at build-time (default is 80 MiB) is created
-to serve as a write-enabled overlay over the read-only root filesystem. 
+to serve as a write-enabled overlay over the read-only root filesystem. The
+mount points for the SD card and devtmpfs are moved to ``/boot`` and ``/dev``
+in the target rootfs, respectively.
 
 For each candidate root filesystem, EI mounts the image, and creates a write
 overlay using Overlay FS and the previously configured RAM disk. It then
