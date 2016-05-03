@@ -13,6 +13,7 @@ ROOT_IMAGES="root.sqfs backup.sqfs factory.sqfs"
 BB="/busybox"
 MKDIR="$BB mkdir"
 MOUNT="$BB mount"
+READLINK="$BB readlink"
 SLEEP="$BB sleep"
 SH="$BB sh"
 SWITCH_ROOT="$BB switch_root"
@@ -44,6 +45,16 @@ wait_for_sd() {
   done
 }
 
+# Check that specified path is an executable file or a link that points to one
+test_exe() {
+  path="$1"
+  if [ -L "$path" ]; then
+    test_exe "$($READLINK -f "$path")"
+    return $?
+  fi
+  [ -f "$path" ] && [ -x "$path" ]
+}
+
 # Mount the root filesystem
 #
 # The tmpfs is mounted with size specified by $TMPFS_SIZE, and overlaid over 
@@ -53,6 +64,7 @@ mount_root() {
   image_path="/sdcard/$1"
   echo "Attempt to mount $image_path"
   $MOUNT -t squashfs "$image_path" -o loop,ro /rootfs || return 1
+  test_exe /rootfs/sbin/init || return 1
   $MOUNT -t overlay overlay \
     -o lowerdir=/rootfs,upperdir=/tmpfs/upper,workdir=/tmpfs/work /root
 }
