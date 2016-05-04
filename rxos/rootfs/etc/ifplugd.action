@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# ifplugd action handler
+#
+# This script serves as an alias for `ifup` and `ifdown` for given interface.
+#
+# This file is part of rxOS.
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+#
+# (c) 2016 Outernet Inc
+# Some rights reserved.
+
+IFACE=$1
+ACTION=$2
+
+/sbin/if${ACTION} $IFACE

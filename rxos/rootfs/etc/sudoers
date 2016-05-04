@@ -1,0 +1,14 @@
+# sudoers
+#
+# Default setup gives root and members of 'sudo' group unlimited access with
+# password authentication.
+#
+# This file is part of rxOS.
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+#
+# (c) 2016 Outernet Inc
+# Some rights reserved.
+
+root    ALL=(ALL) ALL
+%sudo   ALL=(ALL) ALL

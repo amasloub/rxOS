@@ -1,0 +1,24 @@
+# For more information about this file, see:
+# 
+#    http://www.unix.com/man-page/Linux/5/interfaces/
+#
+# This file is part of rxOS
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+#
+# (c) 2016 Outernet Inc
+# Some rights reserved.
+
+auto lo eth0 wlan0
+
+iface lo inet loopback
+
+iface eth0 inet manual
+  post-up /sbin/dhcpcfg $IFACE up
+  pre-down /sbin/dhcpcfg $IFACE down
+
+allow-hotplug wlan0
+iface wlan0 inet static
+  address 10.0.0.1
+  netmask 255.255.255.0
+  dns-nameservers 10.0.0.1
