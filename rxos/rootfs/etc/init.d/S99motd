@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# Create a MOTD file from platform and version information
+#
+# This file is part of rxOS.
+# rxOS is free software licensed under the 
+# GNU GPL version 3 or any later version.
+#
+# (c) 2016 Outernet Inc
+# Some rights reserved.
+
+MOTD_RELEASE_FILE=/etc/platform-release
+MOTD_FILE=/etc/motd
+
+. "$MOTD_RELEASE_FILE"
+
+case $1 in
+  start)
+    echo "============================================" > $MOTD_FILE
+    echo "rxOS v$RXOS_VERSION ($RXOS_BUILD)" >> $MOTD_FILE
+    echo "build at $RXOS_TIMESTAMP" >> $MOTD_FILE
+    echo >> $MOTD_FILE
+    echo "rxOS is free software released under the" >> $MOTD_FILE
+    echo "GNU GPL version 3 or any later version." >> $MOTD_FILE
+    echo >> $MOTD_FILE
+    echo "Copyright 2016 Outernet Inc" >> $MOTD_FILE
+    echo "Some rights reserved." >> $MOTD_FILE
+    echo "============================================" >> $MOTD_FILE
+    ;;
+  stop)
+    ;;
+  restart)
+    $0 start
+    ;;
+  *)
+    echo "Usage: $* {start|stop|restart}"
+    ;;
+esac
