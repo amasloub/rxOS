@@ -24,4 +24,6 @@ LINUX_VERSION=$4          # (str) Linux version used in the build
 INITRAMFS_COMPRESSION=$5  # (str) Compression method used for initramfs
 INITRAMFS_FILE=$6         # (str) Name of the output initramfs archive
 TMPFS_SIZE=$7             # (int) Size of the overlay RAM disk (MiB)
-
+SDSIZE=$8                 # (int) Size of the SD card partition
+SDSOURCE=$9               # (str) Path to the SD card source
+SDNAME=${10}              # (str) Name of the output SD card image file
