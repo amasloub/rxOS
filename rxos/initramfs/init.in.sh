@@ -1,8 +1,15 @@
 #!/busybox sh
-
+#
 # This is the early userspace init script (or its template, depending on where 
 # you are looking). The primary purpose of this script is to try and boot the
 # rxOS userspace.
+#
+# This file is part of rxOS.
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+#
+# (c) 2016 Outernet Inc
+# Some rights reserved.
 
 # Script parameters
 TMPFS_SIZE="%TMPFS_SIZE%m"
