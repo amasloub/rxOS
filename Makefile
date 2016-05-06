@@ -71,6 +71,7 @@ rebuild-everything: clean-deep build
 clean-rootfs:
 	@-rm $(BUILD_STAMP)
 	@-rm $(IMAGES_DIR)/rootfs.*
+	@-rm $(IMG_FILE)
 
 clean-linux: clean-rootfs
 	@-rm $(KERNEL_IMAGE)

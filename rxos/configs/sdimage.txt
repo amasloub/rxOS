@@ -1,0 +1,8 @@
+kernel.img:kernel.img
+rootfs.squashfs:root.sqfs
+rootfs.squashfs:backup.sqfs
+rootfs.squashfs:factory.sqfs
+bcm2710-rpi-3-b.dtb:bcm2710-rpi-3-b.dtb
+rpi-firmware/bootcode.bin:bootcode.bin
+rpi-firmware/start.elf:start.elf
+rpi-firmware/fixup.dat:fixup.dat

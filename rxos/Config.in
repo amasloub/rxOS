@@ -23,6 +23,42 @@ menu "Firmware configuration"
 		  of the RAM that becomes inaccessible to the 
 		  applications.
 
+	menuconfig RXOS_BUILD_SDIMAGE
+		bool "Build SD card image"
+		select BR2_PACKAGE_HOST_DIR2FAT32
+		help
+		  Build and SD card image containing the boot files
+		  (bootloader, firmware, kernel image, rootfs images).
+
+	if RXOS_BUILD_SDIMAGE
+
+		config RXOS_SDIMAGE_FILE
+			string "Output filename"
+			default "sdcard.img"
+			help
+			  Name of the output image file. The file will
+			  be stored in the $BINARIES_DIR.
+		
+		config RXOS_SDIMAGE_SIZE
+		string "Boot partition size in MiB"
+		default 200
+		help
+		  Size of the FAT32 partition that will store the 
+		  boot files.
+
+		config RXOS_SDIMAGE_SOURCE
+		string "File containing the file list for SD card image"
+		help
+		  The file should be in the following format:
+
+		      source_path:target_path
+
+		  The source_path points to the file within the 
+		  $BINARIES_DIR, and the target_path points to the
+		  intended path within the SD card.
+
+	endif # RXOS_BUILD_SDIMAGE
+
 endmenu
 
 menu "System configuration"
@@ -38,7 +74,8 @@ endmenu
 menu "Servers"
 endmenu
 
-menu "Host packages"
+menu "Host utilities"
+	source "$BR2_EXTERNAL/package/dir2fat32/Config.in.host"
 endmenu
 
 menu "Hardware support"

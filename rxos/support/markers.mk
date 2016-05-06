@@ -1,4 +1,11 @@
 # Add platform, version, and build markers
+#
+# This file is part of rxOS.
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+#
+# (c) 2016 Outernet Inc
+# Some rights reserved.
 
 RXOS_BUILD = $(shell git rev-parse --short HEAD)
 RXOS_TIMESTAMP = $(shell date -u --rfc-3339=seconds)
