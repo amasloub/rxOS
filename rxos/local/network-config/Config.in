@@ -45,6 +45,12 @@ config BR2_NETWORK_CONFIG_NETMASK
 	help
 	  Subnet used by clients.
 
+config BR2_NETWORK_CONFIG_DHCP_LDIR
+	string "DHCP leases directory"
+	default "/var/run"
+	help
+	  Directory where dnsmasq will store the lease file.
+
 config BR2_NETWORK_CONFIG_TAG
 	string "Domain name"
 	default "lan"
