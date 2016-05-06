@@ -1,0 +1,54 @@
+config BR2_PACKAGE_NETWORK_CONFIG
+	bool "Network configuration"
+	select BR2_PACKAGE_DNSMASQ
+	select BR2_PACKAGE_HOSTAPD
+	help
+	  Configuration and init scripts necessary to start a wireless hotspot.
+	  
+	  http://outernet.is/
+
+if BR2_PACKAGE_NETWORK_CONFIG
+
+config BR2_NETWORK_CONFIG_AP_IF
+	string "Access point interface"
+	default "wlan0"
+	help
+	  Network interface name used for the access point.
+
+config BR2_NETWORK_CONFIG_AP_NAME
+	string "Access point name"
+	default "Outernet"
+	help
+	  SSID used for the access point.
+
+config BR2_NETWORK_CONFIG_AP_IP
+	string "Access point IP address"
+	default "10.0.0.1"
+	help
+	  IPv4 address of the access point.
+
+config BR2_NETWORK_CONFIG_DHCP_START
+	string "DHCP IP range start"
+	default 10.0.0.10
+	help
+	  Start of the IP range that will be assigned to clients.
+
+config BR2_NETWORK_CONFIG_DHCP_END
+	string "DHCP IP range end"
+	default 10.0.0.254
+	help
+	  End address of the IP range that will be assigned to clients.
+
+config BR2_NETWORK_CONFIG_NETMASK
+	string "DHCP subnet mask"
+	default "255.255.255.0"
+	help
+	  Subnet used by clients.
+
+config BR2_NETWORK_CONFIG_TAG
+	string "Domain name"
+	default "lan"
+	help
+	  Domain name used by the clients.
+
+endif

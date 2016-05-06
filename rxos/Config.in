@@ -25,6 +25,10 @@ menu "Firmware configuration"
 
 endmenu
 
+menu "System configuration"
+	source "$BR2_EXTERNAL/local/network-config/Config.in"
+endmenu
+
 menu "Applications"
 endmenu
 
