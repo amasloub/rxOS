@@ -62,6 +62,8 @@ menu "Firmware configuration"
 endmenu
 
 menu "System configuration"
+	source "$BR2_EXTERNAL/local/ramfsinit/Config.in"
+	source "$BR2_EXTERNAL/local/boothook-selfpartition/Config.in"
 	source "$BR2_EXTERNAL/local/network-config/Config.in"
 endmenu
 

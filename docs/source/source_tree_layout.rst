@@ -10,7 +10,6 @@ Source tree layout
           - ``rxos_defconfig``: rxOS build defaults
           - ``rxos_kernel_defconfig``: Linux kernel defaults
           - ``users``: User/group list
-    - ``initramfs/``: Files used to create the initial RAM disk
     - ``installer/``: Files used to create the update package's installer
     - ``local/``: Packages with local source code (mostly system configs)
     - ``package/``: Custom software packages submodule

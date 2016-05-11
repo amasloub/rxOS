@@ -1,0 +1,51 @@
+dir /dev 755 0 0
+dir /lib 755 0 0
+dir /bin 755 0 0
+dir /proc 755 0 0
+
+file /lib/ld-%LIBC_VER%.so %PREFIX%/lib/ld-%LIBC_VER%.so 755 0 0
+slink /lib/ld-linux-armhf.so.3 ld-%LIBC_VER%.so 777 0 0
+file /lib/libc-%LIBC_VER%.so %PREFIX%/lib/libc-%LIBC_VER%.so 755 0 0
+slink /lib/libc.so.6 libc-%LIBC_VER%.so 777 0 0
+
+nod /dev/console 644 0 0 c 5 1
+file /bin/busybox %PREFIX%/bin/busybox 755 0 0
+slink /bin/sh /bin/busybox 777 0 0
+slink /bin/mv /bin/busybox 777 0 0
+slink /bin/rm /bin/busybox 777 0 0
+slink /bin/ls /bin/busybox 777 0 0
+slink /bin/cp /bin/busybox 777 0 0
+slink /bin/ln /bin/busybox 777 0 0
+slink /bin/mkdir /bin/busybox 777 0 0
+slink /bin/cat /bin/busybox 777 0 0
+slink /bin/chmod /bin/busybox 777 0 0
+slink /bin/chgrp /bin/busybox 777 0 0
+slink /bin/chown /bin/busybox 777 0 0
+slink /bin/date /bin/busybox 777 0 0
+slink /bin/dmesg /bin/busybox 777 0 0
+slink /bin/sed /bin/busybox 777 0 0
+slink /bin/egrep /bin/busybox 777 0 0
+slink /bin/grep /bin/busybox 777 0 0
+slink /bin/dd /bin/busybox 777 0 0
+slink /bin/mount /bin/busybox 777 0 0
+slink /bin/umount /bin/busybox 777 0 0
+slink /bin/fdisk /bin/busybox 777 0 0
+slink /bin/fsck /bin/busybox 777 0 0
+slink /bin/sleep /bin/busybox 777 0 0
+slink /bin/readlink /bin/busybox 777 0 0
+slink /bin/clear /bin/busybox 777 0 0
+slink /bin/reset /bin/busybox 777 0 0
+slink /bin/vi /bin/busybox 777 0 0
+slink /bin/ip /bin/busybox 777 0 0
+slink /bin/top /bin/busybox 777 0 0
+slink /bin/modprobe /bin/busybox 777 0 0
+slink /bin/depmod /bin/busybox 777 0 0
+slink /bin/rmmod /bin/busybox 777 0 0
+slink /bin/lsmod /bin/busybox 777 0 0
+slink /bin/insmod /bin/busybox 777 0 0
+slink /bin/halt /bin/busybox 777 0 0
+slink /bin/poweroff /bin/busybox 777 0 0
+slink /bin/reboot /bin/busybox 777 0 0
+slink /bin/mknod /bin/busybox 777 0 0
+slink /bin/switch_root /bin/busybox 777 0 0
+file /init %BINDIR%/initramfs/init 755 0 0

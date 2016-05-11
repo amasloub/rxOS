@@ -1,0 +1,20 @@
+config BR2_PACKAGE_RAMFSINIT
+	bool "Create early userspace cpio archive"
+	select BR2_TARGET_ROOTFS_INITRAMFS
+	select BR2_INITRAMFS_USE_OTHER
+	help
+	  Creates the initial RAM filesystem image that can be
+	  linked into the kernel. The compression option for the 
+	  initial RAM filesystem image can be set in 
+	  
+	      Filesystem images > initial RAM... > Compression method
+
+	  This package also adds a target-finalize hook which 
+	  collects all cpio archive fragments added to 
+	  $INIT_CPIO_LISTS variable and concatenates them into
+	  a single file. If you wish to write packages that 
+	  provide one-time boot hooks, you can add additional
+	  content to the initiam RAM filesystem archvie by
+	  appending to this list in the package's makefile.
+
+	  https://outernet.is/
