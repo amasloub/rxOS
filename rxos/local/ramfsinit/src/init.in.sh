@@ -1,4 +1,4 @@
-#!/busybox sh
+#!/bin/sh
 #
 # This is the early userspace init script (or its template, depending on where 
 # you are looking). The primary purpose of this script is to try and boot the
@@ -11,20 +11,19 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
+export PATH=/bin
+
 # Script parameters
 TMPFS_SIZE="%TMPFS_SIZE%m"
 VERSION="%VERSION%"
 ROOT_IMAGES="root.sqfs backup.sqfs factory.sqfs"
+CMDLINE="$@"
 
-# Command aliases
-BB="/busybox"
-MKDIR="$BB mkdir"
-MOUNT="$BB mount"
-READLINK="$BB readlink"
-SLEEP="$BB sleep"
-SH="$BB sh"
-SWITCH_ROOT="$BB switch_root"
-UMOUNT="$BB umount"
+# Check whether command line has some argument
+hasarg() {
+  arg="$1"
+  echo "$CMDLINE" | grep "$arg" > /dev/null 2>&1
+}
 
 # Echo given error message and drop into emergency shell
 #
@@ -32,11 +31,11 @@ UMOUNT="$BB umount"
 # messages.
 bail() {
   msg=$*
-  $SLEEP 10
+  sleep 10
   echo "ERROR: $msg"
   echo "Dropping into emergency shell"
   export PS1="[rxOS emergency shell]# "
-  exec $SH
+  exec sh
 }
 
 # Wait for /dev/mmcblk0p1 to appear
@@ -48,7 +47,7 @@ bail() {
 wait_for_sd() {
   echo "Waiting for SD card to become available"
   while ! [ -e "/dev/mmcblk0p1" ]; do
-    $SLEEP 1
+    sleep 1
   done
 }
 
@@ -56,7 +55,7 @@ wait_for_sd() {
 test_exe() {
   path="$1"
   if [ -L "$path" ]; then
-    test_exe "$($READLINK -f "$path")"
+    test_exe "$(readlink -f "$path")"
     return $?
   fi
   [ -f "$path" ] && [ -x "$path" ]
@@ -70,9 +69,9 @@ test_exe() {
 mount_root() {
   image_path="/sdcard/$1"
   echo "Attempt to mount $image_path"
-  $MOUNT -t squashfs "$image_path" -o loop,ro /rootfs || return 1
+  mount -t squashfs "$image_path" -o loop,ro /rootfs || return 1
   test_exe /rootfs/sbin/init || return 1
-  $MOUNT -t overlay overlay \
+  mount -t overlay overlay \
     -o lowerdir=/rootfs,upperdir=/tmpfs/upper,workdir=/tmpfs/work /root
 }
 
@@ -83,25 +82,41 @@ mount_root() {
 #
 # Also move the devtmpfs mount point into the root mount point.
 set_up_boot() {
-  $MKDIR -p /root/boot /root/dev
-  $MOUNT --move /sdcard /root/boot
-  $MOUNT --move /dev /root/dev
+  mkdir -p /root/boot /root/dev
+  mount --move /sdcard /root/boot
+  mount --move /dev /root/dev
+  mount --move /proc /root/proc
 }
 
 # Unount the root filesystem and related mounts
 undo_root() {
-  $UMOUNT /root/boot 2>/dev/null
-  $UMOUNT /root/dev 2>/dev/null
-  $UMOUNT /root 2>/dev/null
-  $UMOUNT /rootfs 2>/dev/null
+  umount /root/boot 2>/dev/null
+  umount /root/proc 2>/dev/null
+  umount /root/dev 2>/dev/null
+  umount /root 2>/dev/null
+  umount /rootfs 2>/dev/null
+}
+
+# Boot into specified rootfs
+doboot() {
+  rootfs_image="$1"
+  if hasarg noroot; then
+    sleep 10
+    echo "Do not boot into rootfs"
+    exec $SH
+  fi
+  echo "Attempt boot $rootfs_image"
+  set_up_boot
+  exec switch_root /root /sbin/init $CMDLINE
 }
 
 ###############################################################################
 # SHOW STARTS HERE
 ###############################################################################
 
-# Populate the /dev directory
-$MOUNT -t devtmpfs devtmpfs /dev
+# Populate the /dev and /proc directories
+mount -t devtmpfs devtmpfs /dev
+mount -t proc proc /proc
 
 # Setup console
 exec 0</dev/console
@@ -114,12 +129,29 @@ echo "++++ Starting rxOS v$VERSION ++++"
 # mount the root partition on the SD card. These mount points exist strictly 
 # within the initial RAM filesystem and will be preserved after switch_root is 
 # performed.
-$MKDIR -p /sdcard /rootfs /tmpfs /root
+mkdir -p /sdcard /rootfs /tmpfs /root
+
+# If 'shell' has been passed as a kernel command line argument, drop into
+# emergency shell right away.
+if hasarg "shell"; then
+  sleep 10
+  exec sh
+fi
+
+# Run setup hooks. The hooks are shell scripts that named like hook-*.sh. They
+# are executed once (in a subshell) and they are expected to decide for
+# themselves whether they need to run more than once. Because the hooks need to
+# run as soon as possible (e.g., before any mounting has been performed), they
+# are bundled in the initramfs and therefore cannot be removed or modified.
+for hook in /hook-*.sh; do
+  echo "Executing '$hook' hook"
+  sh "$hook"
+done
 
 # Mount the tmpfs (RAM disk) to be used as a writable overlay, and set up
 # directories that will be used for the overlays.
-$MOUNT -t tmpfs tmpfs -o "size=$TMPFS_SIZE" /tmpfs || return 1
-$MKDIR -p /tmpfs/upper /tmpfs/work 
+mount -t tmpfs tmpfs -o "size=$TMPFS_SIZE" /tmpfs || return 1
+mkdir -p /tmpfs/upper /tmpfs/work 
 
 # Wait for SD card if needed
 [ -e "/dev/mmcblk0p1" ] || wait_for_sd
@@ -129,7 +161,7 @@ $MKDIR -p /tmpfs/upper /tmpfs/work
 # costs. Ideally we would have access to fsck.vfat here, but that (1) makes the 
 # initial RAM filesystem image larger, and (2) it generally doen't help a whole
 # lot in real life.
-if ! $MOUNT -t vfat -o errors=continue "/dev/mmcblk0p1" /sdcard; then
+if ! mount -t vfat -o errors=continue "/dev/mmcblk0p1" /sdcard; then
   bail "Failed to mount the SD card."
 fi
 
@@ -147,9 +179,7 @@ fi
 # and fall back on the factory.sqfs as last resort.
 for rootfs_image in $ROOT_IMAGES; do
   if mount_root "$rootfs_image"; then
-    echo "Attempt boot $rootfs_image"
-    set_up_boot
-    exec $SWITCH_ROOT /root /sbin/init $@
+    doboot "$rootfs_image"
   fi
   # If we git this far, it means switch_root failed. We undo the set-up
   # performed in the preceeding code in order to allow for the next attempt (if

@@ -1,0 +1,37 @@
+config BR2_PACKAGE_BOOTHOOK_SELFPARTITION
+	bool "Add extra data partitions"
+	select BR2_PACKAGE_RAMFSINIT
+	select BR2_PACKAGE_E2FSPROGS
+	help
+	  Create data partition for receiver state persistence.
+	  The pre-boot hook script is generated and installed in 
+	  the $BINARIES_DIR, and a matching fstab file is placed
+	  in /etc.
+
+	  https://outernet.is/
+
+if BR2_PACKAGE_BOOTHOOK_SELFPARTITION
+
+config BR2_BOOTHOOK_SELFPARTITION_CONFIG_SIZE
+	string "Configuration partition size (MiB)"
+	default 24
+	help
+	  Size of the system configuration partition. This 
+	  partition stores persistent system configuration.
+
+config BR2_BOOTHOOK_SELFPARTITION_CACHE_SIZE
+	string "Cache partition size (MiB)"
+	default 600
+	help
+	  Size of the download cache partition. This partition
+	  is used to store the partial downloads.
+
+config BR2_BOOTHOOK_SELFPARTITION_APPDATA_SIZE
+	string "Application data partition size (MiB)"
+	default 2048
+	help
+	  Size of the application data partition. This partition
+	  stores application data such as databases, settings,
+	  and similar.
+
+endif # BR2_PACKAGE_BOOTHOOK_SELFPARTITION

@@ -1,0 +1,29 @@
+dir /lib 755 0 0
+dir /bin 755 0 0
+dir /usr 755 0 0
+dir /etc 755 0 0
+dir /usr/lib 755 0 0
+
+slink /etc/mtab /proc/mounts 777 0 0
+
+file /lib/libpthread-%LIBC_VER%.so %PREFIX%/lib/libpthread-%LIBC_VER%.so 755 0 0
+slink /lib/libpthread.so.0 /lib/libpthread-%LIBC_VER%.so 777 0 0
+file /lib/libuuid.so.1.3.0 %PREFIX%/lib/libuuid.so.1.3.0 755 0 0
+slink /lib/libuuid.so.1 /lib/libuuid.so.1.3.0 777 0 0
+
+file /usr/lib/libext2fs.so.2 %PREFIX%/usr/lib/libext2fs.so.2 755 0 0
+slink /usr/lib/libext2fs.so /usr/lib/libext2fs.so.2 777 0 0
+file /usr/lib/libcom_err.so.2 %PREFIX%/usr/lib/libcom_err.so.2 755 0 0
+slink /usr/lib/liblibcom_err.so /usr/lib/libcom_err.so.2 777 0 0
+file /usr/lib/libblkid.so.1.1.0 %PREFIX%/lib/libblkid.so.1.1.0 755 0 0
+slink /usr/lib/libblkid.so.1 /usr/lib/libblkid.so.1.1.0 777 0 0
+slink /usr/lib/libblkid.so /usr/lib/libblkid.so.1.1.0 777 0 0
+slink /usr/lib/libuuid.so /lib/libuuid.so.1.3.0 777 0 0
+file /usr/lib/libe2p.so.2.3 %PREFIX%/usr/lib/libe2p.so.2.3 755 0 0
+slink /usr/lib/libe2p.so.2 /usr/lib/libe2p.so.2.3 777 0 0
+slink /usr/lib/libe2p.so /usr/lib/libe2p.so.2.3 777 0 0
+
+file /bin/mke2fs %PREFIX%/usr/sbin/mke2fs 755 0 0
+slink /bin/mkfs.ext4 /bin/mke2fs 777 0 0
+
+file /hook-partition.sh %BINDIR%/initramfs/partition-hook.sh 755 0 0
