@@ -71,6 +71,8 @@ rebuild-everything: clean-deep build
 clean-rootfs:
 	@-rm $(BUILD_STAMP)
 	@-rm $(IMAGES_DIR)/rootfs.*
+	@-rm $(IMAGES_DIR)/rxos*
+	@-rm $(IMAGES_DIR)/*.txt
 	@-rm $(IMG_FILE)
 
 clean-linux: clean-rootfs

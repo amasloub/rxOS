@@ -33,5 +33,7 @@ BR2_ROOTFS_POST_SCRIPT_ARGS = $(RXOS_PLATFORM) \
 							  $(SDSOURCE) \
 							  $(SDNAME)
 
+.PHONY: print-post-script-args
+
 print-post-script-args:
 	@echo $(BR2_ROOTFS_POST_SCRIPT_ARGS)
