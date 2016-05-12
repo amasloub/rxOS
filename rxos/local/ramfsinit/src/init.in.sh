@@ -18,6 +18,7 @@ TMPFS_SIZE="%TMPFS_SIZE%m"
 VERSION="%VERSION%"
 ROOT_IMAGES="root.sqfs backup.sqfs factory.sqfs"
 CMDLINE="$@"
+OVERLAYS=
 
 # Check whether command line has some argument
 hasarg() {
@@ -61,6 +62,30 @@ test_exe() {
   [ -f "$path" ] && [ -x "$path" ]
 }
 
+# Return the overlay name by stripping the extension and prefix
+overlay_basename() {
+  overlay_path="$1"
+  basename "${overlay_path%.*}" | cut -d- -f2
+}
+
+# Mount the root filesystem overlay
+#
+# Root filesystem overlays are SquashFS images that represent fragments of the
+# root filesystem that are overlaid over the base root filesystem image and
+# overrides parts of the base image or augment it.
+#
+# Every overlay is mounted under /overlays/<overlay_name>.
+mount_overlay() {
+  overlay_image="$1"
+  overlay_name="$(overlay_basename "$overlay_image")"
+  mount_path="/overlays/$overlay_name"
+  mkdir -p "$mount_path"
+  mount -t squashfs "$overlay_image" -o loop,ro "$mount_path" \
+    > /dev/null 2>&1 || return 1
+  OVERLAYS="$OVERLAYS $mount_path"
+  echo "Using overlay $overlay_name"
+}
+
 # Mount the root filesystem
 #
 # The tmpfs is mounted with size specified by $TMPFS_SIZE, and overlaid over 
@@ -71,8 +96,13 @@ mount_root() {
   echo "Attempt to mount $image_path"
   mount -t squashfs "$image_path" -o loop,ro /rootfs || return 1
   test_exe /rootfs/sbin/init || return 1
+  lower="lowerdir=/rootfs"
+  # Add any overlays
+  for overlay in $OVERLAYS; do
+    lower="$lower:$overlay"
+  done
   mount -t overlay overlay \
-    -o lowerdir=/rootfs,upperdir=/tmpfs/upper,workdir=/tmpfs/work /root
+    -o "$lower",upperdir=/tmpfs/upper,workdir=/tmpfs/work /root
 }
 
 # Set things up for switch_root
@@ -129,7 +159,7 @@ echo "++++ Starting rxOS v$VERSION ++++"
 # mount the root partition on the SD card. These mount points exist strictly 
 # within the initial RAM filesystem and will be preserved after switch_root is 
 # performed.
-mkdir -p /sdcard /rootfs /tmpfs /root
+mkdir -p /sdcard /rootfs /tmpfs /root /overlays
 
 # If 'shell' has been passed as a kernel command line argument, drop into
 # emergency shell right away.
@@ -164,6 +194,11 @@ mkdir -p /tmpfs/upper /tmpfs/work
 if ! mount -t vfat -o errors=continue "/dev/mmcblk0p1" /sdcard; then
   bail "Failed to mount the SD card."
 fi
+
+# Mount overlay images if any
+for overlay in /sdcard/overlay-*.sqfs; do
+  mount_overlay "$overlay"
+done
 
 # The userspace is contained in SquashFS images. There are three such images on 
 # the boot partition:

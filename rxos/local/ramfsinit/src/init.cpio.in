@@ -16,13 +16,16 @@ slink /bin/rm /bin/busybox 777 0 0
 slink /bin/ls /bin/busybox 777 0 0
 slink /bin/cp /bin/busybox 777 0 0
 slink /bin/ln /bin/busybox 777 0 0
+slink /bin/basename /bin/busybox 777 0 0
 slink /bin/mkdir /bin/busybox 777 0 0
 slink /bin/cat /bin/busybox 777 0 0
+slink /bin/cut /bin/busybox 777 0 0
 slink /bin/chmod /bin/busybox 777 0 0
 slink /bin/chgrp /bin/busybox 777 0 0
 slink /bin/chown /bin/busybox 777 0 0
 slink /bin/date /bin/busybox 777 0 0
 slink /bin/dmesg /bin/busybox 777 0 0
+slink /bin/sync /bin/busybox 777 0 0
 slink /bin/sed /bin/busybox 777 0 0
 slink /bin/egrep /bin/busybox 777 0 0
 slink /bin/grep /bin/busybox 777 0 0
