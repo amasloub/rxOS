@@ -31,6 +31,9 @@ do
 done < "$SDSOURCE"
 IFS=$orig_ifs
 
+msg "Adding additional files"
+cp "$BINARIES_DIR/sdcard-extras/"* "$TMPDIR" || true
+
 msg "Creating $SDNAME ($SDSIZE MiB)"
 dir2fat32 "$BINARIES_DIR/$SDNAME" "$SDSIZE" "$TMPDIR"
 
