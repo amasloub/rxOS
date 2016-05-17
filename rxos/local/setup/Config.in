@@ -1,0 +1,5 @@
+config BR2_PACKAGE_SETUP
+	bool "Perform initial system setup"
+	help
+	  Execute arbitrary scripts found in 
+	  /etc/setup.d during init.

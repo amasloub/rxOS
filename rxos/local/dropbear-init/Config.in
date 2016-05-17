@@ -1,0 +1,11 @@
+config BR2_PACKAGE_DROPBEAR_INIT
+	bool "Use alternative dropbear init script"
+	select BR2_PACKAGE_DROPBEAR
+	help
+	  Simple version of the dropbear init script.
+
+	  The modified script removes the symlink handling 
+	  in the upstream version so that it is compatible
+	  with how rxOS persists configuration and state.
+
+	  https://outernet.is/
