@@ -14,7 +14,7 @@ PERSISTENT_CONF_DIR = $(call qstrip,$(BR2_PERSISTENT_CONF_DIR))
 
 define PERSIST_CONF_INSTALL_TARGET_CMDS
 	sed -i 's|%CONFDIR%|$(PERSISTENT_CONF_DIR)|g' $(@D)/persist.sh
-	$(INSTALL) -Dm644 $(@D)/persist.sh $(TARGET_DIR)/etc/setup.d/persist.sh
+	$(INSTALL) -Dm755 $(@D)/persist.sh $(TARGET_DIR)/etc/setup.d/persist.sh
 	$(INSTALL) -Dm644 $(PERSISTENT_CONF_LIST) $(TARGET_DIR)/etc/persist.conf
 endef
 

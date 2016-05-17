@@ -17,8 +17,9 @@ SETUP_LOGS=/var/log/setup
 start() {
   printf "Starting setup: "
   for s in "${SETUP_D}/"*.sh; do
+    [ ! -x "$s" ] && continue
     logfile="${SETUP_LOGS}/$(basename "$s").log"
-    . "$s" > "$logfile" 2>&1
+    "$s" > "$logfile" 2>&1
     if [ $? -eq 0 ]; then
       printf "."
       rm "$logfile"  # no longer needed

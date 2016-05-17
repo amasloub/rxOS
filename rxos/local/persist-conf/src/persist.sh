@@ -54,23 +54,22 @@ persist_path() {
     mkdir -p "$target_dir" || return 1
     cp -Ra "$path" "$target_path" || return 1
   fi
-  ln -sf "$target_path" "$path" || return 1
+  rm -rf "$path" || return 1
+  ln -s "$target_path" "$path" || return 1
 }
 
-persist() {
-  errors=0
-  while read -r path; do
-    if [ -e "$path" ]; then
-      persist_path "$path" || errors=1
-    fi
-  done < "$CONFLIST"
-  # Make sure there's no shadow+ file in the persistent storage as this can 
-  # sometimes happen when power is lost right after setting a password and 
-  # subsequently disable setting passwords.
-  rm "${CONFDIR}/etc/shadow+" 2>/dev/null || true
-  return $errors
-}
+# This flag will be turned non-zero for any paths that fail to persist, and
+# then used as a return code for the entire script.
+errors=0
 
-[ -e "$CONFLIST" ] && persist
+while read -r conf_path; do
+  [ -e "$conf_path" ] || continue
+  persist_path "$conf_path" || errors=1
+done < "$CONFLIST"
 
+# Make sure there's no shadow+ file in the persistent storage as this can 
+# sometimes happen when power is lost right after setting a password and 
+# subsequently disable setting passwords.
+rm "${CONFDIR}/etc/shadow+" 2>/dev/null || true
 
+exit $errors
