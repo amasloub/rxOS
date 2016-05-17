@@ -64,6 +64,12 @@ endmenu
 menu "System configuration"
 	source "$BR2_EXTERNAL/local/ramfsinit/Config.in"
 	source "$BR2_EXTERNAL/local/boothook-selfpartition/Config.in"
+	source "$BR2_EXTERNAL/local/setup/Config.in"
+	source "$BR2_EXTERNAL/local/persist-conf/Config.in"
+endmenu
+
+menu "Network configuration"
+	source "$BR2_EXTERNAL/local/dropbear-init/Config.in"
 	source "$BR2_EXTERNAL/local/network-config/Config.in"
 endmenu
 

@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# Starts dropbear sshd.
+#
+# This file is part of rxOS.
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+#
+# This file is a modified version of the init script found in the Buildroot
+# source tree.  The copyright information for the file is not available, so we
+# use the year of the original Buildroot release. The file is probably older, 
+# though.
+#
+# The modified version removes symlink handling code which is not needed in
+# rxOS.
+#
+# (c) 2006-2016 Buildroot developers
+# (c) 2016 Outernet Inc
+# Some rights reserved.
+
+start() {
+  printf "Starting SSH: "
+  umask 077
+  start-stop-daemon -S -q -p /var/run/dropbear.pid \
+    --exec /usr/sbin/dropbear -- -wR
+  [ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+
+stop() {
+  printf "Stopping SSH: "
+  start-stop-daemon -K -q -p /var/run/dropbear.pid
+  [ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart|reload)
+    stop
+    start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+esac
+
+exit $?

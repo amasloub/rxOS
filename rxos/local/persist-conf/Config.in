@@ -1,0 +1,31 @@
+config BR2_PACKAGE_PERSIST_CONF
+	bool "Persistent configuration"
+	select BR2_PACKAGE_SETUP
+	help
+	  Add support for persistent configuration.
+
+	  System files listed in $BR2_PERISTENT_CONF_LIST 
+	  will be persisted in the writable directory
+	  specified by $BR2_PERSISTENT_CONF_DIR and 
+	  symlinked back to the original location.
+
+if BR2_PACKAGE_PERSIST_CONF
+
+config BR2_PERSISTENT_CONF_LIST
+	string "Persistent configuration file list"
+	help
+	  Path to the file listing the candidates for
+	  persistent configuration. The file must list
+	  the paths (files or directories) one per line,
+	  and the paths must be absolute.
+
+
+config BR2_PERSISTENT_CONF_DIR
+	string "Persistent configuration directory"
+	default "/mnt/conf"
+	help
+	  Directory where persistent configuration is
+	  stored. This should be a directory under
+	  a read-write mount point to be useful.
+
+endif
