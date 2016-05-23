@@ -1,5 +1,5 @@
-Make targets
-============
+Appendix: Make targets
+======================
 
 The following table describes the available make targets:[1]_
 
@@ -40,6 +40,9 @@ clean                   Complete cleanup (also removes any unsaved
 ----------------------  -------------------------------------------------------
 print-post-script-args  Print the arguments that would be passed to the 
                         post-build and post-image hooks.
+----------------------  -------------------------------------------------------
+manual                  Build the HTML manual and output it to
+                        ``docs/build/html``.
 ======================  =======================================================
 
 .. [1] Targets described here are custom targets for rxOS build. Full set of

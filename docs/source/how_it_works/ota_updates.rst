@@ -1,7 +1,7 @@
 OTA updates
 ===========
 
-Outerbox 2 supports secure automatic over-the-air updates (OTA updates). 
+rxOS supports secure automatic over-the-air updates (OTA updates). 
 
 When the OTA update package arrives, it is checked for authenticity. The update
 packages are digitally signed and checked against the public key stored on the

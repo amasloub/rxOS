@@ -1,5 +1,5 @@
-Source tree layout
-==================
+Appendix: Source tree layout
+============================
 
 - ``buildroot/``: Buildroot submodule
 - ``docs/``: Documentation
@@ -12,6 +12,7 @@ Source tree layout
           - ``users``: User/group list
     - ``installer/``: Files used to create the update package's installer
     - ``local/``: Packages with local source code (mostly system configs)
+    - ``misc/``: Miscellaneous files (d'oh!)
     - ``package/``: Custom software packages submodule
     - ``patches/``: Custom patches
     - ``rootfs/``: Rootfs overlay

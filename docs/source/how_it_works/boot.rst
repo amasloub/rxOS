@@ -119,12 +119,12 @@ initialization but not a description of what each of the scripts does.
 
 2. The logical partitions are mounted:
 
-   - partition 5 to ``/mnt/config``
+   - partition 5 to ``/mnt/conf``
    - partition 6 to ``/mnt/cache``
-   - partition 7 to ``/mnt/appdata``
+   - partition 7 to ``/mnt/data``
    - partition 8 to ``/mnt/downloads``
 
-3. Files listed in persist list are symlinked from ``/mnt/config`` to
+3. Files listed in persist list are symlinked from ``/mnt/conf`` to
    appropriate parts of the root filesystem, overriding the read-only files
    found in the rootfs image (e.g., ``/etc/shadow``, network configuration, 
    etc)

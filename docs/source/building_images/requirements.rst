@@ -8,7 +8,7 @@ recommended, as well as as much RAM as you can spare.
 
 You will need to have the following packages installed:
 
-- Build tools[1]_
+- Build tools [1]_
 - bc
 - git
 - rsync

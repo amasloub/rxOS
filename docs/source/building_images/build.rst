@@ -105,40 +105,21 @@ an existing package was updated), run ``make rebuild``. Keep in mind that
 Buildroot does not track what files belong to what package. Because of this,
 when removing packages, or when updating packages to version that no longer
 contain some of the files that they used to contain, you may end up with stray
-files from the previous builds. If this happens, ``make rebuild-everything`` or
-``make clean build`` should be used instead.
+files from the previous builds. If this happens, ``make clean build`` should be 
+used instead.
 
 Early userspace
 ---------------
 
-The early userspace is built last as it is build from pieces of the root
-filesystem. The eary userspace image is created in the form of LZ4-compressed
-cpio archive by ``rxos/scripts/mkcpio.sh`` script. 
+The early userspace is built last as it is built from pieces of the root
+filesystem. This is facilitated by the Outernet-specific patches applied to the
+version of Buildroot used by rxOS. 
 
-Several compression methods are also supported. This can be changed in the
-Filesytem images > initial RAM filesystem section of the Buildroot's
-configuration menu. 
-
-Keep in mind, though, that only the methods supported by ``mkcpio.sh`` can be
-used, which is currently gzip, XZ, and LZ4.  Also note that kernel needs to
-support the compression method used for creating the cpio archive.
-
-Once the cpio archive is genrated, the kernel image is recompiled to include
-it.
-
-The contents of the cpio archive are defined by ``rxos/initramfs/init.cpio.in``
-template. This template uses several placeholders which look like ``%NAME%``, 
-and are populated based on the actual contents of the root filesystem:
-
-==============  ===============================================================
-%PREFIX%        Absolute path to the location of the rootfs files
-%LIBC_VER%      C library version
-%LD_VER%        Linker version
-%LD_SFX%        Linker filename suffix (ld-linux-<name>.so)
-%INIT%          Path to the init script
-==============  ===============================================================
-
-The init script is generated from ``rxos/initramfs/init.in`` template.
+The initial RAM disk (initramfs) image is build as a compressed cpio archive,
+and the list of files that end up in the final initramfs image is controlled by
+several different packages, including the ``ramfsinit`` local package. The
+packages each provide a template that points the kernel's ``gen_init_cpio``
+script to appropriate files in the root filesystem.
 
 Known issues
 ------------

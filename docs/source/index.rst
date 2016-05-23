@@ -2,11 +2,13 @@
 rxOS
 ****
 
+.. image:: img/rxos_logo.png
+
 rxOS is a Linux-based operating system (and also the system image) that is used
 in Outernet's Lantern and Lighthosue Mk 2 products, both based on Raspberry Pi
 3.
 
-rxOS is built on top of `Buildroot <http://buildroot.org/>` and constists of
+rxOS is built on top of `Buildroot <http://buildroot.org/>`_ and constists of
 two parts:
 
 - Linux kernel image with early userspace
@@ -18,10 +20,6 @@ Documentation
 .. toctree::
     :maxdepth: 1
 
-    requirements
-    build
-    source_tree_layout
-    make_targets
-    boot
-    storage_layout
-    ota_updates
+    how_it_works/index
+    building_images/index
+    appendices/index

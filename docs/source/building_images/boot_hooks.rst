@@ -83,7 +83,7 @@ Before we can write the matching makefile, we need the hook script itself. In
 the ``src`` directory, we create a file called ``greeter.sh`` that looks like
 this::
 
-    #!/busybox sh
+    #!/bin/sh
     MESSAGE="%MSG%"
     echo "
     ************************************
@@ -149,14 +149,24 @@ values. ::
             $(BINARIES_DIR)/initramfs/greeter.sh
     endef
 
+Finally, we need to register the cpio list file::
+
+    INIT_CPIO_LISTS += greeter.cpio.in
+
 This concludes our makefile. Now we can test whether it all works. ::
 
-    $ make buildhook-greeter-rebuild
+    $ make boothook-greeter-rebuild
 
 When we're done, we can take a look at ``out/images/initramfs`` directory and
 inspect the results. If everything is alright, we can include the hook in
 initramfs by enabling "User-provided options > System configuration > Greet 
 the user" option and setting the message.
+
+Adding files to the initial RAM filesystem
+------------------------------------------
+
+If the hook script requires files that are not present in the stock initial RAM
+filesystem image, additional files can be added via the cpio list file.
 
 Modifying the hooks
 -------------------
@@ -164,7 +174,7 @@ Modifying the hooks
 When the hook is modified, and it's time to rebuild the image, we need to do it
 like so::
 
-    $ make buildhook-<hookname>-rebuild rebuild
+    $ make boothook-<hookname>-rebuild rebuild
 
 Simply doing ``make rebuild`` will not update the hook as the package is marked
 as already installed.
