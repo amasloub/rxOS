@@ -1,0 +1,8 @@
+config BR2_PACKAGE_NGINX_CONFIG
+	bool "nginx.conf"
+	select BR2_PACKAGE_NGINX
+	help
+	  Install nginx configuration file at
+	  /etc/nginx/nginx.conf.
+
+	  https://outernet.is/

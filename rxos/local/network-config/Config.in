@@ -1,4 +1,4 @@
-config BR2_PACKAGE_NETWORK_CONFIG
+menuconfig BR2_PACKAGE_NETWORK_CONFIG
 	bool "Network configuration"
 	select BR2_PACKAGE_DNSMASQ
 	select BR2_PACKAGE_HOSTAPD

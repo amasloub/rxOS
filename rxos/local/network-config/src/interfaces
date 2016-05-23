@@ -14,8 +14,8 @@ auto lo eth0 %IFACE%
 iface lo inet loopback
 
 iface eth0 inet manual
-  post-up /sbin/dhcpcfg $IFACE up
-  pre-down /sbin/dhcpcfg $IFACE down
+  post-up /usr/sbin/dhcpcfg $IFACE up
+  pre-down /usr/sbin/dhcpcfg $IFACE down
 
 allow-hotplug %IFACE%
 iface wlan0 inet static

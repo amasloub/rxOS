@@ -10,4 +10,8 @@
 # Some rights reserved.
 #
 # vim: set tw=0
-outernet 1000 outernet 1000 =outernet /home/outernet /bin/sh sudo
+#
+# uname     UID     gname       GID     pw          homedir             shell       groups
+outernet    1000    outernet    1000    =outernet   /home/outernet      /bin/sh     sudo
+postgres    1001    postgres    1001    *           -                   -           -
+data        1002    data        1002    *           -                   -           -

@@ -17,6 +17,8 @@ define GENERATE_MARKERS
 	echo 'RXOS_VERSION=$(RXOS_VERSION)' >> $(RELEASE_FILE)
 	echo 'RXOS_BUILD="$(RXOS_BUILD)"' >> $(RELEASE_FILE)
 	echo 'RXOS_TIMESTAMP="$(RXOS_TIMESTAMP)"' >> $(RELEASE_FILE)
+	echo '$(call qstrip,$(RXOS_VERSION))' > $(TARGET_DIR)/etc/version
+	echo '$(call qstrip,$(RXOS_PLATFORM))' > $(TARGET_DIR)/etc/platform
 endef
 
 TARGET_FINALIZE_HOOKS += GENERATE_MARKERS

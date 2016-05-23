@@ -1,4 +1,4 @@
-config BR2_PACKAGE_PERSIST_CONF
+menuconfig BR2_PACKAGE_PERSIST_CONF
 	bool "Persistent configuration"
 	select BR2_PACKAGE_SETUP
 	help

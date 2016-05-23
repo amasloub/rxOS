@@ -21,7 +21,7 @@ set -e
 SCRIPTDIR=$(dirname $0)
 . $SCRIPTDIR/helpers.sh
 
-for f in $(find "$TARGET_DIR" -name *.rxos); do
+find "$TARGET_DIR" -name *.rxos | while read f; do
   msg "Renaming '$f'"
   mv "$f" "$(echo "$f" | sed 's/\.rxos//')"
 done

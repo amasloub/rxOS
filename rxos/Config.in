@@ -73,13 +73,80 @@ menu "Network configuration"
 	source "$BR2_EXTERNAL/local/network-config/Config.in"
 endmenu
 
+menu "Data services"
+	source "$BR2_EXTERNAL/package/ondd/Config.in"
+    source "$BR2_EXTERNAL/package/python-fsal/Config.in"
+endmenu
+
 menu "Applications"
+	source "$BR2_EXTERNAL/local/librarian-config/Config.in"
+	source "$BR2_EXTERNAL/local/fsal-config/Config.in"
+	source "$BR2_EXTERNAL/package/python-librarian/Config.in"
+	source "$BR2_EXTERNAL/package/monitoring/Config.in"
+	if BR2_PACKAGE_PYTHON_LIBRARIAN
+	comment "Base framework"
+		source "$BR2_EXTERNAL/package/python-librarian-core/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-notifications/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-content/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-setup/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-auth/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-dashboard/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-menu/Config.in"
+	comment "UI skins"
+		source "$BR2_EXTERNAL/package/python-librarian-ui/Config.in"
+	comment "Settings plugins"
+		source "$BR2_EXTERNAL/package/python-librarian-logs/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-diskspace/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-netinterfaces/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-ondd/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-settings/Config.in"
+	comment "Apps"
+		source "$BR2_EXTERNAL/package/python-librarian-filemanager/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-twitter/Config.in"
+	comment "Misc"
+		source "$BR2_EXTERNAL/package/python-librarian-analytics/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-captive/Config.in"
+	endif
 endmenu
 
 menu "Libraries"
+    source "$BR2_EXTERNAL/package/python-bitarray/Config.in"
+    source "$BR2_EXTERNAL/package/python-bitpack/Config.in"
+    source "$BR2_EXTERNAL/package/python-bottle-fdsend/Config.in"
+    source "$BR2_EXTERNAL/package/python-bottle-utils/Config.in"
+    source "$BR2_EXTERNAL/package/python-chainable-validators/Config.in"
+    source "$BR2_EXTERNAL/package/python-cssmin/Config.in"
+    source "$BR2_EXTERNAL/package/python-confloader/Config.in"
+    source "$BR2_EXTERNAL/package/python-dateutil/Config.in"
+    source "$BR2_EXTERNAL/package/python-disentangler/Config.in"
+    source "$BR2_EXTERNAL/package/python-gevent/Config.in"
+    source "$BR2_EXTERNAL/package/python-greenlet/Config.in"
+    source "$BR2_EXTERNAL/package/python-greentasks/Config.in"
+    source "$BR2_EXTERNAL/package/python-hwd/Config.in"
+    source "$BR2_EXTERNAL/package/python-ondd-ipc/Config.in"
+    source "$BR2_EXTERNAL/package/python-pbkdf2/Config.in"
+    source "$BR2_EXTERNAL/package/python-pyhostapdconf/Config.in"
+    source "$BR2_EXTERNAL/package/python-pytz/Config.in"
+    source "$BR2_EXTERNAL/package/python-scandir/Config.in"
+    source "$BR2_EXTERNAL/package/python-sqlize-pg/Config.in"
+    source "$BR2_EXTERNAL/package/python-squery-pg/Config.in"
+    source "$BR2_EXTERNAL/package/python-webassets/Config.in"
+    source "$BR2_EXTERNAL/package/python-psycopg2/Config.in"
+    source "$BR2_EXTERNAL/package/python-ua-parser/Config.in"
+    source "$BR2_EXTERNAL/package/python-user-agents/Config.in"
+    source "$BR2_EXTERNAL/package/python-zippie/Config.in"
 endmenu
 
 menu "Servers"
+    source "$BR2_EXTERNAL/local/nginx-config/Config.in"
+    source "$BR2_EXTERNAL/local/lighttpd-config/Config.in"
+    source "$BR2_EXTERNAL/local/postgres-config/Config.in"
+    source "$BR2_EXTERNAL/package/lighttpd-custom/Config.in"
+    source "$BR2_EXTERNAL/package/postgresql-95/Config.in"
+endmenu
+
+menu "Utilities"
+    source "$BR2_EXTERNAL/local/rxos-utils/Config.in"
 endmenu
 
 menu "Host utilities"
@@ -88,7 +155,4 @@ endmenu
 
 menu "Hardware support"
     source "$BR2_EXTERNAL/package/firmware-brcmfmac43430-sdio/Config.in"
-endmenu
-
-menu "Development"
 endmenu
