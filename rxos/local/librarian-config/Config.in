@@ -1,0 +1,62 @@
+menuconfig BR2_PACKAGE_LIBRARIAN_CONFIG
+	bool "librarian.ini"
+	select BR2_PACKAGE_PYTHON_LIBRARIAN
+	select BR2_PACKAGE_FSAL_CONFIG
+	help
+	  Configuration for librarian.
+	  
+	  http://outernet.is/
+
+if BR2_PACKAGE_LIBRARIAN_CONFIG
+
+config BR2_LIBRARIAN_ADDR
+	string "Bind address"
+	default "127.0.0.1"
+	help
+	  Use 0.0.0.0 to make Librarian accessible
+	  from outside or 127.0.0.1 make it only 
+	  accept local connections (e.g., from the 
+	  frontend HTTP server).
+
+config BR2_LIBRARIAN_PORT
+	string "Port"
+	default "8000"
+	help
+	  Port Librarian will listen on.
+
+config BR2_LIBRARIAN_DEFROUTE
+	string "Default route"
+	default "files:list"
+	help
+	  Default route that will be used as an 
+	  alias for root URL.
+
+config BR2_LIBRARIAN_LOGPATH
+	string "Log file path"
+	default "/mnt/data/log/librarian.log"
+	help
+	  Path to application log file.
+
+config BR2_LIBRARIAN_LOGSIZE
+	string "Log file size limit"
+	default "5M"
+	help
+	  Maximum size of the log file. The 
+	  total size taken up by log files is 
+	  (number of backups + 1) * this size.
+
+config BR2_LIBRARIAN_LOGBACKUPS
+    string "Number of backup log files to keep"
+	default "2"
+	help
+	  Maximum number of backup log files 
+	  (old entires) to keep in addition to
+	  the main log file.
+
+config BR2_LIBRARIAN_SETTINGS_FILE
+	string "Setting file path"
+	default "/mnt/data/librarian/librarian.json"
+	help
+	  Path of the application settings file.
+
+endif # BR2_PACKAGE_LIBRARIAN_CONFIG

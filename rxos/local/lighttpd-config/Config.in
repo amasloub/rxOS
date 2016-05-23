@@ -1,0 +1,52 @@
+menuconfig BR2_PACKAGE_LIGHTTPD_CONFIG
+	bool "lighttpd.conf"
+	select BR2_PACKAGE_LIGHTTPD_CUSTOM
+	help
+	  Install lighttpd configuration files in
+	  /etc/lighttpd.
+
+	  https://outernet.is/
+
+if BR2_PACKAGE_LIGHTTPD_CONFIG
+
+config BR2_LIGHTTPD_SERVER_ROOT
+	string "Server root directory"
+	default "/usr/html"
+	help
+	  Base diretory for static content.
+
+config BR2_LIGHTTPD_SERVER_TAG
+	string "Server name"
+	default "rxOS/Lighttpd"
+	help
+	  Server name that appears in response
+	  headers.
+
+config BR2_LIGHTTPD_STATICDIR
+    string "Static assets directory"
+	default "/usr/lib/python2.7/site-packages/librarian/static/"
+	help
+	  Path to the directory containing the 
+	  application static assets.
+
+config BR2_LIGHTTPD_FAVICON
+	string "Favicon location"
+	default "img/favicon.ico"
+	help
+	  Path to the favicon file relative to
+	  the static assets directory.
+
+config BR2_LIGHTTPD_INTERNALDIR
+	string "Internal data storage directory"
+	default "/mnt/downloads"
+	help
+	  Path of the internal data storage driectory 
+	  where ONDD will download the files.
+
+config BR2_LIGHTTPD_EXTERNALDIR
+    string "External data storage directory"
+	default "/mnt/external"
+	help
+	  Path of the external storage mount point.
+
+endif # BR2_PACKAGE_LIGHTTPD_CUSTOM

@@ -1,0 +1,6 @@
+config BR2_PACKAGE_RXOS_UTILS
+	bool "rxos-utils"
+	select BR2_PACKAGE_LIBCURL
+	select BR2_PACKAGE_CURL
+	help
+	  Set of command line tools for working with rxOS.

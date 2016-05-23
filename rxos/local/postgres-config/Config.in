@@ -1,0 +1,21 @@
+menuconfig BR2_PACKAGE_POSTGRES_CONFIG
+	bool "Postgres configuration"
+	help 
+	  Install a postgres init script with
+	  build-specific configuration.
+
+if BR2_PACKAGE_POSTGRES_CONFIG
+
+config BR2_POSTGRES_DBDIR
+	string "Database directory"
+	default "/mnt/data/postgres"
+	help
+	  Location of the Postgres data directory
+
+config BR2_POSTGRES_USER
+	string "Postgres unprivileged user"
+	default "postgres"
+	help
+	  Username under which postgres will run
+
+endif # BR2_PACKAGE_POSTGRES_CONFIG

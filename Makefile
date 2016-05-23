@@ -46,6 +46,9 @@ default: build
 
 build: $(BUILD_STAMP)
 
+manual:
+	@make -C docs/ clean html
+
 menuconfig: $(CONFIG)
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) menuconfig
 

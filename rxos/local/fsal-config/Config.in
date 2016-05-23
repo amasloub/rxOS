@@ -1,0 +1,46 @@
+menuconfig BR2_PACKAGE_FSAL_CONFIG
+	bool "fsal.ini"
+	select BR2_PACKAGE_PYTHON_FSAL
+	help
+	  Configuration for FSAL.
+	  
+	  http://outernet.is/
+
+if BR2_PACKAGE_FSAL_CONFIG
+
+config BR2_FSAL_SOCKETPATH
+	string "FSAL socket path"
+	default "/var/run/fsal.ctrl"
+	help
+	  Path where FSAL will create its control 
+	  socket.
+
+config BR2_FSAL_BASEDIRS
+	string "Base directories"
+	default "/mnt/downloads/ /mnt/external/"
+	help
+	  Base directories for downloaded content.
+
+config BR2_FSAL_LOGPATH
+	string "Log file path"
+	default "/mnt/data/log/fsal.log"
+	help
+	  Path to FSAL log file.
+
+config BR2_FSAL_LOGSIZE
+	string "Log file size limit"
+	default "5M"
+	help
+	  Maximum size of the log file. The 
+	  total size taken up by log files is 
+	  (number of backups + 1) * this size.
+
+config BR2_FSAL_LOGBACKUPS
+    string "Number of backup log files to keep"
+	default "2"
+	help
+	  Maximum number of backup log files 
+	  (old entires) to keep in addition to
+	  the main log file.
+
+endif # BR2_PACKAGE_FSAL_CONFIG
