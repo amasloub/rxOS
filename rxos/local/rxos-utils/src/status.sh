@@ -42,7 +42,7 @@ check_process() {
 check_net() {
   iface="$1"
   hdr "Checking interface $iface: "
-  if ip link | grep "$iface" | grep "NO-CARRIER" 2>&1; then
+  if ip link | grep "$iface" | grep "NO-CARRIER" >/dev/null 2>&1; then
     fail
   else
     pass
