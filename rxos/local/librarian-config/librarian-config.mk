@@ -44,3 +44,6 @@ TARGET_FINALIZE_HOOKS += PATCH_LIBRARIAN_CONFIG
 
 print-librarian-sed-commands:
 	@echo '$(LIBRARIAN_SED_COMMANDS)'
+
+print-librarian-components:
+	@echo $(call qstrip,$(LIBRARIAN_COMPONENTS))
