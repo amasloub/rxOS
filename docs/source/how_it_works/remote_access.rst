@@ -10,7 +10,7 @@ The following addresses are assigned to on-board network interfaces:
 
 ==========  ===============
 interface   address
-----------  ---------------
+==========  ===============
 Ethernet    dynamic (DHCP)
 WiFi        10.0.0.1
 ==========  ===============
@@ -23,6 +23,16 @@ the ``outernet`` user is ``outernet``.
 
 Root login is not enabled, but ``sudo`` can be used to gain full root access::
 
-    $ sudo su
-    [sudo] password for outernet: ********
-    #
+    [rxOS][outernet@rxos ~]$ sudo su
+    Password: ********
+    [rxOS][root@rxos /home/outernet]# _
+
+Changing the user password
+--------------------------
+
+User password can be changed using the ``passwd`` command::
+
+    [rxOS][outernet@rxos ~]$ passwd
+    Current password: *******
+    Enter new password: ******
+    Retype new password: ******
