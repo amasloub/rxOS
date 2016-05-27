@@ -2,6 +2,7 @@ menuconfig BR2_PACKAGE_BOOTHOOK_SELFPARTITION
 	bool "Add extra data partitions"
 	select BR2_PACKAGE_RAMFSINIT
 	select BR2_PACKAGE_E2FSPROGS
+	select BR2_PACKAGE_E2FSPROGS_MKE2FS
 	help
 	  Create data partition for receiver state persistence.
 	  The pre-boot hook script is generated and installed in 

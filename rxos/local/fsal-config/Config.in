@@ -15,12 +15,6 @@ config BR2_FSAL_SOCKETPATH
 	  Path where FSAL will create its control 
 	  socket.
 
-config BR2_FSAL_BASEDIRS
-	string "Base directories"
-	default "/mnt/downloads/ /mnt/external/"
-	help
-	  Base directories for downloaded content.
-
 config BR2_FSAL_LOGPATH
 	string "Log file path"
 	default "/mnt/data/log/fsal.log"
