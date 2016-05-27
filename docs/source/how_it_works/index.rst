@@ -10,5 +10,6 @@ This section provides a high-level overview of how rxOS works.
     boot
     early_userspace
     remote_acess
+    external_storage
     storage_layout
     ota_updates
