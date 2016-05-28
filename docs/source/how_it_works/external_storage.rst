@@ -123,3 +123,15 @@ about the nature of failure. To get the storage hotplug logs, log in using SSH
 (see :doc:`remote_access`) and execute the following command::
 
     $ grep hotplug.sd /var/log/messages
+    Jan  1 00:21:21 rxos user.notice hotplug.sda: Handling hotplug even for /dev/sda
+    Jan  1 00:21:21 rxos user.notice hotplug.sda: Attempting to use iso9660 disk /dev/sda
+    Jan  1 00:21:21 rxos user.notice hotplug.sda: iso9660 is not a supported filesystem.
+    Jan  1 00:21:21 rxos user.notice hotplug.sda1: Handling hotplug even for /dev/sda1
+    Jan  1 00:21:21 rxos user.notice hotplug.sda1: Attempting to use vfat disk /dev/sda1
+    Jan  1 00:21:22 rxos user.notice hotplug.sda1: Checking disk integrity 
+    Jan  1 00:21:22 rxos user.notice hotplug.sda1: Mounting with options: 'utf8'
+    Jan  1 00:21:22 rxos user.notice hotplug.sda1: Doing a trial mount on /mnt/sda1
+    Jan  1 00:21:22 rxos user.notice hotplug.sda1: Final mount to /mnt/external
+    Jan  1 00:21:22 rxos user.notice hotplug.sda1: Redirecting ONDD to external storage
+    Jan  1 00:21:22 rxos user.notice hotplug.sda1: Refreshing file index
+
