@@ -9,7 +9,7 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-LED="/sys/class/leds/led%LED_NUM%"
+LED="/sys/class/leds/led0"
 LED_TRIGGER="$LED/trigger"
 LED_BRIGHTNESS="$LED/brightness"
 LED_DELAY_ON="$LED/delay_on"
@@ -32,6 +32,7 @@ led_mmc() {
 }
 
 led_on() {
+  led_off
   echo none > "$LED_TRIGGER"
   echo 1 > "$LED_BRIGHTNESS"
 }

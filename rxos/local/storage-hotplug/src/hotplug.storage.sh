@@ -122,6 +122,14 @@ fail() {
   exit 1
 }
 
+reset_led() {
+  # We need a 1s pause because if we issue LED state changes too fast, then
+  # they don't get applied.
+  led_off
+  sleep 1
+  led_on
+}
+
 # Handle the 'add' event
 add() {
   log "Attempting to use $ID_FS_TYPE disk $DEVNAME"
@@ -160,6 +168,8 @@ add() {
   set_ondd_path "$EXTERNAL_MPOINT"
   log "Refreshing file index"
   fsal_refresh
+
+  reset_led
 }
 
 # Handle the 'remove' event
@@ -169,6 +179,8 @@ remove() {
     log "$DEVNAME was not mounted, nothing to do"
     exit 0
   fi
+
+  led_slow_blink
 
   if [ "$mpoint" = "$EXTERNAL_MPOINT" ]; then
     log "Redirecting ONDD to internal storage"
@@ -182,10 +194,10 @@ remove() {
 
   log "Refreshing file index"
   fsal_refresh
+
+  reset_led
 }
 
 log "Handling hotplug even for $DEVNAME"
 
-led_slow_blink
 $ACTION  # functions match the action name
-led_on
