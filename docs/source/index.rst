@@ -22,4 +22,5 @@ Documentation
 
     how_it_works/index
     building_images/index
+    troubleshooting/index
     appendices/index
