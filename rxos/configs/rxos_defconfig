@@ -63,6 +63,7 @@ BR2_PACKAGE_HOST_DOS2UNIX=y
 RXOS_VERSION="1.0a3"
 RXOS_BUILD_SDIMAGE=y
 RXOS_SDIMAGE_SOURCE="$(BR2_EXTERNAL)/configs/sdimage.txt"
+BR2_PATH_BLACKLIST="^.platform(/.*)?$$ ^(.*/)?.thumbs(/.*)?$$ ^updates(/.*)?$$ ^legacy(/.*)?$$ ^FSCK.*.REC$$"
 BR2_PACKAGE_BOOTHOOK_SELFPARTITION=y
 BR2_PACKAGE_PERSIST_CONF=y
 BR2_PERSISTENT_CONF_LIST="$(BR2_EXTERNAL)/configs/persist.conf"
