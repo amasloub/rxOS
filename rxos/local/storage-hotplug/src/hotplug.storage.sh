@@ -40,6 +40,14 @@ ntfs:windows_names,fmask=133,dmask=022,recover
 vfat:utf8
 "
 
+case "$ID_FS_TYPE" in
+  ntfs)
+    MOUNT_CMD="ntfs-3g"
+    ;;
+  *)
+    MOUNT_CMD="mount -t $ID_FS_TYPE"
+esac
+
 ONDD_SOCKET="/var/run/ondd.ctrl"
 FSAL_SOCKET="/var/run/fsal.ctrl"
 
@@ -98,7 +106,7 @@ mount_at() {
   path="$1"
   opts="$2"
   mkdir -p "$path"
-  mount -t "$ID_FS_TYPE" -o "$opts" "$DEVNAME" "$path"
+  $MOUNT_CMD -o "$opts" "$DEVNAME" "$path"
 }
 
 # Force-unmount specified device or mount point
