@@ -10,9 +10,9 @@ NGINX_CONFIG_SITE = $(BR2_EXTERNAL)/local/nginx-config/src
 NGINX_CONFIG_SITE_METHOD = local
 
 define NGINX_CONFIG_INSTALL_TARGET_CMDS
-	sed -i 's|%LIBRARIAN_PORT%|$(call qstrip,$(BR2_LIBRARIAN_PORT))|' \
+	$(SED) 's|%LIBRARIAN_PORT%|$(call qstrip,$(BR2_LIBRARIAN_PORT))|' \
 		$(@D)/nginx.conf
-	sed -i "s|%STYLE%|$$(cat $(@D)/style.css | sed ':a;N;$$!ba;s/\n/\\n/g')|" \
+	$(SED) "s|%STYLE%|$$(cat $(@D)/style.css | sed ':a;N;$$!ba;s/\n/\\n/g')|" \
 		$(@D)/*.html
 	rm -f $(TARGET_DIR)/etc/nginx/*.default
 	rm -f $(TARGET_DIR)/etc/nginx/*_params

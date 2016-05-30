@@ -1,0 +1,21 @@
+menuconfig BR2_PACKAGE_LED_CONTROL
+    bool "led-control"
+    help
+      LED control library that allows control
+      of a single on-board LED via the sysfs 
+      interface.
+
+if BR2_PACKAGE_LED_CONTROL
+
+config BR2_LED_DEVNUM
+	string "LED device number"
+	default 0
+	help
+	  Number of the LED device.
+
+	  For number N, the following LED device 
+	  will be used:
+
+	  /sys/class/leds/ledN
+
+endif # BR2_PACKAGE_LED_CONTROL

@@ -62,10 +62,32 @@ menu "Firmware configuration"
 endmenu
 
 menu "System configuration"
+	config BR2_STORAGE_PRIMARY
+		string "Primary download storage location"
+		default "/mnt/downloads"
+		help
+		  Directory of the primary (internal) download
+		  storage.
+
+	config BR2_STORAGE_SECONDARY
+		string "External download storage location"
+		default "/mnt/external"
+		help
+		  Directory of the secondary (external) download
+		  storage.
+
+	config BR2_PATH_BLACKLIST
+		string "Path blacklist for FSAL and FTP"
+		default "^\.platform(/.*)?$$ ^(.*/)?.thumbs(/.*)?$$ ^updates(/.*)?$$ ^legacy(/.*)?$$ ^FSCK.*\.REC$$ ^lost+found$$"
+		help
+		  Python regexp patterns that black-list paths.
+		  Note that '$$' is used instead of '$'
+
 	source "$BR2_EXTERNAL/local/ramfsinit/Config.in"
 	source "$BR2_EXTERNAL/local/boothook-selfpartition/Config.in"
 	source "$BR2_EXTERNAL/local/setup/Config.in"
 	source "$BR2_EXTERNAL/local/persist-conf/Config.in"
+	source "$BR2_EXTERNAL/local/storage-hotplug/Config.in"
 endmenu
 
 menu "Network configuration"
@@ -148,6 +170,7 @@ menu "Servers"
 endmenu
 
 menu "Utilities"
+    source "$BR2_EXTERNAL/local/led-control/Config.in"
     source "$BR2_EXTERNAL/local/rxos-utils/Config.in"
 endmenu
 

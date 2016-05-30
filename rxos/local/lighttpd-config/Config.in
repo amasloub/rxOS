@@ -36,17 +36,4 @@ config BR2_LIGHTTPD_FAVICON
 	  Path to the favicon file relative to
 	  the static assets directory.
 
-config BR2_LIGHTTPD_INTERNALDIR
-	string "Internal data storage directory"
-	default "/mnt/downloads"
-	help
-	  Path of the internal data storage driectory 
-	  where ONDD will download the files.
-
-config BR2_LIGHTTPD_EXTERNALDIR
-    string "External data storage directory"
-	default "/mnt/external"
-	help
-	  Path of the external storage mount point.
-
 endif # BR2_PACKAGE_LIGHTTPD_CUSTOM
