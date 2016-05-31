@@ -14,6 +14,8 @@ define RXOS_UTILS_INSTALL_TARGET_CMDS
 		$(@D)/status.sh
 	$(INSTALL) -Dm0755 $(@D)/service.sh $(TARGET_DIR)/usr/sbin/service
 	$(INSTALL) -Dm0755 $(@D)/status.sh $(TARGET_DIR)/usr/bin/status
+	$(INSTALL) -Dm0755 $(@D)/chbootfsmode.sh \
+		$(TARGET_DIR)/usr/sbin/chbootfsmode
 endef
 
 $(eval $(generic-package))
