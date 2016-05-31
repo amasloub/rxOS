@@ -7,6 +7,7 @@ file /lib/ld-%LIBC_VER%.so %PREFIX%/lib/ld-%LIBC_VER%.so 755 0 0
 slink /lib/ld-linux-armhf.so.3 ld-%LIBC_VER%.so 777 0 0
 file /lib/libc-%LIBC_VER%.so %PREFIX%/lib/libc-%LIBC_VER%.so 755 0 0
 slink /lib/libc.so.6 libc-%LIBC_VER%.so 777 0 0
+file /bin/fsck.vfat %PREFIX%/sbin/fsck.vfat 755 0 0
 
 nod /dev/console 644 0 0 c 5 1
 file /bin/busybox %PREFIX%/bin/busybox 755 0 0
