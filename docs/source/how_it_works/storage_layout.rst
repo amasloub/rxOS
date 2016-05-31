@@ -30,7 +30,7 @@ Stores the boot files. It contains the following files:
 - Raspberry Pi 3 binary device tree
 - Stage 2 and 3 bootloader
 - ``start.elf``
-- Kernel image (``zImage``)
+- Kernel image (``kernel.img``)
 - Main and fallback rootfs SquashFS images (``root.sqfs``, ``fallback.sqfs``)
 - Factory default SquashFS image (``factory.sqfs``)
 
