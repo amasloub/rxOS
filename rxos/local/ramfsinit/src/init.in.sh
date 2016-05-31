@@ -186,14 +186,24 @@ mkdir -p /tmpfs/upper /tmpfs/work
 # Wait for SD card if needed
 [ -e "/dev/mmcblk0p1" ] || wait_for_sd
 
+# Perform disk check on the SD card
+fsck.vfat -yp /dev/mmcblk0p1
+
 # We are ready to mount the boot partition. Since this partition is on a 
 # removable medium, we use `-o errors=continue` to try and mount it at all 
 # costs. Ideally we would have access to fsck.vfat here, but that (1) makes the 
 # initial RAM filesystem image larger, and (2) it generally doen't help a whole
 # lot in real life.
-if ! mount -t vfat -o errors=continue "/dev/mmcblk0p1" /sdcard; then
-  bail "Failed to mount the SD card."
-fi
+mount -t vfat -o errors=continue "/dev/mmcblk0p1" /sdcard \
+  || bail "Failed to mount the SD card."
+
+# Remove any .REC files created by fsck as those are usually completely useless
+rm -f /sdcard/FSCK*.REC
+
+# Remount SD card as read-only to prevent unnecessary writes (we allow this to 
+# fail because we already have it mounted read-write which is good enough to 
+# continue booting)
+mount -o remount,ro,errors=continue "/dev/mmcblk0p1" /sdcard
 
 # Mount overlay images if any
 for overlay in /sdcard/overlay-*.sqfs; do
