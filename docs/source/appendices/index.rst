@@ -9,3 +9,4 @@ This section contains information that does not fit into other sections.
 
     source_tree_layout
     make_targets
+    updating_manually
