@@ -8,6 +8,7 @@ config BR2_PACKAGE_STORAGE_HOTPLUG
 	select BR2_PACKAGE_E2FSPROGS_FSCK
 	select BR2_PACKAGE_E2FSPROGS_E2FSCK
 	select BR2_PACKAGE_LED_CONTROL
+	select BR2_PACKAGE_NETCAT
 	help
 	  Enable storage hotplugging.
 

@@ -75,13 +75,13 @@ get_mpoint() {
 set_ondd_path() {
   path="$1"
   printf '<put uri="/output"><path>%s</path></put>\0' "$path" \
-    > "$ONDD_SOCKET"
+    | nc "local:$ONDD_SOCKET"
 }
 
 # Request FSAL index refresh
 fsal_refresh() {
   printf '<request><command><type>refresh</type></command></request>\0' \
-    > "$FSAL_SOCKET"
+    | nc "local:$FSAL_SOCKET"
 }
 
 # Return true if filesystem is supported
