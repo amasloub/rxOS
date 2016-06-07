@@ -140,6 +140,11 @@ doboot() {
   exec switch_root /root /sbin/init $CMDLINE
 }
 
+# INTERMISSION
+echo "Dropping to shell"
+exec sh
+exit 0
+
 ###############################################################################
 # SHOW STARTS HERE
 ###############################################################################
