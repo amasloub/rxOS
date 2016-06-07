@@ -1,62 +1,108 @@
-Appendix: Creating a Chrooted Build Environment in Arch Linux
-=============================================================
+Appendix: Creating a chrooted build environment under Arch Linux
+================================================================
 
-Package requirements:
-    - arch-install-scripts
-    - devtools
+Because the rxOS build depends on a large number of complex software packages,
+and Arch Linux is a rolling release distribution, discrepancies between the
+package versions installed on developers' machines may lead to random build
+failure for some. To ensure maximum compatibility, we can set up a build
+environment in a chroot and fix the package versions to known good ones.
 
-Step 0: Pick a directory
-------------------------
-Choose the directory you would like to have the chroot's root folder in.
-For instance: 
+A chroot is more or less a full Linux distro within a distro (sans the kernel,
+init scripts, bootloader, and things you do not need for bootstrapping). It is
+created in an arbitrary directory within our install, and can use different
+versions of software as if they were installed on the host system.
 
-``/home/ben/.chroot/``
+Arch Linux makes it easy to create the chrooted environment by making the
+scripts normally used during installation available in form of packages.
 
-Optionally set the variable ``$CHROOT`` to the target directory for copy-paste
-later. 
+Requirements
+------------
 
-``CHROOT='/home/ben/.chroot/'``
+To build the chrooted environment, you will need a working Arch Linux install,
+and the following packages:
 
-Step 1: Install the base system
--------------------------------
-Install the base packages. 
+- ``arch-install-scripts``
+- ``devtools``
 
-``mkarchroot $CHROOT/root base``
+Creating the chroot
+-------------------
 
-Step 2: Edit the mirror list
-----------------------------
-Open the mirror list (``$CHROOT/etc/pacman.d/mirrorlist``) with your favorite 
-editor, and replace the contents with the line below.
+We will first pick a directory where we will keep our chroot(s). Let's call
+this directory ``chroots`` for simplicity::
 
-``Server = https://archive.archlinux.org/repos/2016/02/19/$repo/os/$arch``
+    $ mkdir chroots
 
-Step 3: Downgrade the chroot
-----------------------------
-First log into the chroot with ``sudo arch-chroot $CHROOT /bin/bash``. Then do 
-a system downgrade with ``sudo pacman -Syyuu``.
+Once we have the directory, we create the actual chroot directory within it::
 
-Step 4: Install the requisite packages
---------------------------------------
-Use the command below to install packages required for building.
+    $ mkarchroot chroots/buildroot base
 
-    ``pacman -S base-devel python2 python2-pip bc unzip rsync wget cpio sudo`` 
+The ``base`` argument is the name of the package group we want installed in the
+chroot. Although we can install any number of packages, we won't do it at this
+stage because we want to downgrade all installed packages to a known good
+version. At this step, we merely want to install packages that will allow us to
+do so later.
 
-Step 5: Create a user
---------------------------------------
-Use the command below to create a user.
+Next we need to edit the ``mirrorlist`` file *within the chroot* to facilitate
+the downgrade. ::
 
-    ``useradd -m -G wheel -s /bin/bash ben``
+    $ echo 'Server = https://archive.archlinux.org/repos/2016/02/19/$repo/os/$arch' \
+        > chroots/buildroot/etc/pacmand.d/mirrorlist
 
-Leave the chroot logged in and create another session on the host system.
-Create a symlink from the user's home directory to somewhere convenient on the
-host system, for instance ``ln -s $CHROOT/home/ben/ /home/ben/chroot_home``. 
+Once the mirrorlist is edited, we can enter the chroot, remove unnecessary
+packages and downgrade the packages we need::
 
-Step 6: Clone the repo
-----------------------
-From the host system (so you don't have to install git on the chroot), enter 
-the symlinked directory and clone the rxOS repo.
+    $ sudo arch-chroot chroots/buildroot /bin/bash
+    # pacman -Rncs linux linux-firmware systemd
+    # pacman -Syyuu
 
-Step 7: Start building!
------------------------
-In the chroot session enter the newly cloned repo under your user's home
-directory, then simply run ``make``.
+.. note::
+    If you use a terminal emulator that isn't quite xterm-compatible, you may
+    need to install terminfo files for your terminal emulator within the
+    chroot. For urxvt, for example, you need to install
+    ``rxvt-unicode-terminfo`` package. Neglecting to do so will result in weird
+    terminal behavior such a Backspace not echoing correctly.
+
+Next we install the build prerequisites::
+
+    # pacman -S base-devel python2 git mercurial bc unzip rsync wget cpio
+
+Once everything is installed, we can remove the package cache to recover disk
+space::
+
+    # pacman -Scc
+
+Creating the unprivileged user
+------------------------------
+
+There is no need, nor it is desirable, to perform the builds as root.
+Therefore, we need a normal user account to use while building. Inside the
+chroot we run the following command::
+
+    $ useradd -Umk /etc/skel <USERNAME>
+
+Making development files available to the chroot
+------------------------------------------------
+
+While inside the chrooted environment, we cannot access any files on the host
+system. Since it is wasteful to clone the code inside the chroot, install all
+the development tools, and otherwise bloat the chroot, we will make the
+development files (local git repository) available within the chroot. This
+allows us to user our normal environment to work on the files (edit, etc),
+while using the chroot for the actual build.
+
+Since symlinking to location outside the chroot does not work, we will use a 
+bind mount instead. From the host system::
+
+    $ sudo mount --bind /path/to/local/repo \
+        chroots/buildroot/home/<USERNAME>/rxos
+
+Building
+--------
+
+Now whenever we want to build, we enter the chroot and build as the
+unprivileged user::
+
+    $ sudo arch-chroot chroots/buildroot /bin/bash
+    # su <USERNAME>
+    $ cd rxos
+    ... build commands ...
