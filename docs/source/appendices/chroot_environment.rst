@@ -104,5 +104,5 @@ unprivileged user::
 
     $ sudo arch-chroot chroots/buildroot /bin/bash
     # su <USERNAME>
-    $ cd rxos
+    $ cd ~/rxos
     ... build commands ...
