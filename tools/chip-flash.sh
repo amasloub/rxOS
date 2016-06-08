@@ -49,14 +49,8 @@
 
 set -e
 
-# Set-up
-SCRIPTDIR="$(dirname "$0")"
-. "$SCRIPTDIR/helpers.sh"
-
 # Relevant paths
-RXOS_DIR="$(cd "$SCRIPTDIR/../../"; pwd)"
-HOST_DIR="$RXOS_DIR/out/host"
-BINARIES_DIR="$RXOS_DIR/out/images"
+BINARIES_DIR="$(pwd)"
 TMPDIR=
 
 # Execution parameters
@@ -76,11 +70,11 @@ ROOTFS="$BINARIES_DIR/rootfs.ubifs.lzo"
 
 # Memory locations
 SPL_ADDR=0x43000000
-UBOOT_SCRIPT_ADDR=0x43100000
 UBOOT_ADDR=0x4a000000
 UBOOT_ENV_ADDR=0x4b000000
-LINUX_ADDR=0x4c000000
-ROOTFS_ADDR=0x4d000000
+UBOOT_SCRIPT_ADDR=0x43100000
+LINUX_ADDR=0x4d000000
+ROOTFS_ADDR=0x4e000000
 
 # Offsets
 SPL_OFF=0x0                   # 0     +0
@@ -90,9 +84,6 @@ UBOOT_ENV_OFF=0xC0000         # 12M   +4M
 LINUX_OFF=0x1000000           # 16M   +4M
 ROOTFS_OFF=0x1800000          # 24M   +8M
 ROOTFS_BACKUP_OFF=0x5800000   # 88M   +64M
-
-# Set path so Buildroot host utils can be reused
-PATH="$HOST_DIR/bin":$PATH
 
 # Abort with an error message
 abort() {
@@ -195,13 +186,13 @@ wait_for_boot() {
 # Print a number in hex format
 hex() {
   local num="$1"
-  printf "0x%08x" "$num"
+  printf "0x%X" "$num"
 }
 
 # Return the size of a file in bytes
 filesize() {
   local path="$1"
-  stat --printf="%s" "$path"
+  stat -c%s $path
 }
 
 # Return the size of a file in hex
@@ -251,15 +242,15 @@ page_align() {
 # It is the caller's responsibility to ensure that the target size is larger
 # than the current size.
 pad_to() {
-  local size="$1"
+  local padded_size="$1"
   local path="$2"
   local source_size
   local source_size_hex
   local dpages
-  source_size="$(filesize "$path")"
   source_size_hex="$(hexsize "$path")"
-  dpages="$(( (size - source_size_hex) / PAGE_SIZE_HEX ))"
-  dd if=/dev/urandom of="$path" seek="$source_size" bs=$PAGE_SIZE \
+  source_pages="$(( source_size_hex / PAGE_SIZE_HEX ))"
+  dpages="$(( (padded_size - source_size_hex) / PAGE_SIZE_HEX ))"
+  dd if=/dev/urandom of="$path" seek="$source_pages" bs=16k \
     count="$dpages" status=none
 }
 
@@ -285,6 +276,18 @@ add_ecc() {
   local out="$2"
   spl-image-builder -d -r 3 -u 4096 -o "$OOB_SIZE" -o "$PAGE_SIZE" -c 1024 \
     -s 64 "$in" "$out"
+}
+
+# Print a section message
+msg() {
+  local msg="$1"
+  echo "===> $msg"
+}
+
+# Print a subjection message
+submsg() {
+  local msg="$1"
+  echo ".... $msg"
 }
 
 ###############################################################################
@@ -354,11 +357,11 @@ SPL_SIZE=$(splsize "$TMPDIR/spl-with-ecc.bin")
 
 submsg "Preparing the U-Boot binary"
 page_align "$UBOOT" "$TMPDIR/uboot.bin"
-UBOOT_SIZE=0xC0000
+UBOOT_SIZE=0x400000
 pad_to "$UBOOT_SIZE" "$TMPDIR/uboot.bin"
 
 submsg "Preparing the U-Boot env file"
-UBOOT_ENV_SIZE=0x40000
+UBOOT_ENV_SIZE=0x400000
 
 submsg "Preparing the kernel image"
 page_align "$LINUX" "$TMPDIR/zImage"
@@ -417,6 +420,8 @@ wait_for_fel || abort "Unable to find CHIP in FEL mode"
 submsg "Executing SPL"
 fel spl "$SPL" || abort "Failed to execute SPL"
 
+sleep 2
+
 submsg "Uploading SPL"
 fel write "$SPL_ADDR" "$TMPDIR/spl-with-ecc.bin"
 
@@ -432,12 +437,16 @@ fel write "$LINUX_ADDR" "$TMPDIR/zImage"
 submsg "Uploading rootfs image"
 fel write "$ROOTFS_ADDR" "$ROOTFS"
 
+submsg "Uploading U-Boot script"
+fel write "$UBOOT_SCR_ADDR" "$TMPDIR/uboot.scr"
+
 ###############################################################################
 # Executing flash
 ###############################################################################
 
 msg "Executing flash"
 do_or_dry 'fel exe "$UBOOT_ADDR"'
+wait_for_boot
 
 # Finish up
 msg "Cleaning up"
