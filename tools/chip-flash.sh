@@ -60,6 +60,7 @@ CHIP_DEVID="0525:a4a7"
 PAGE_SIZE=16384
 PAGE_SIZE_HEX=0x4000
 OOB_SIZE=1664
+START="$(date '+%s.%N')"
 
 # Source files
 SPL="$BINARIES_DIR/sunxi-spl.bin"
@@ -175,12 +176,12 @@ with_timeout() {
 
 # Wait for CHIP in FEL mode to connected
 wait_for_fel() {
-  with_timeout 1 "Waiting for CHIP in FEL mode" "fel ver"
+  with_timeout 1 "[$(timestamp)] .... Waiting for CHIP in FEL mode" "fel ver"
 }
 
 # Wait for CHIP to reconnect after being flashed
 wait_for_boot() {
-  with_timeout 6 "Flashing CHIP" "has_device $CHIP_DEVID"
+  with_timeout 6 "[$(timestamp)] .... Flashing CHIP" "has_device $CHIP_DEVID"
 }
 
 # Print a number in hex format
@@ -278,16 +279,22 @@ add_ecc() {
     -s 64 "$in" "$out"
 }
 
+# Print the amount of time elapsed since script was started
+timestamp() {
+  local current=$(date '+%s.%N')
+  printf '%6.2f' "$(echo "$current - $START" | bc)"
+}
+
 # Print a section message
 msg() {
   local msg="$1"
-  echo "===> $msg"
+  echo "[$(timestamp)] ===> $msg"
 }
 
 # Print a subjection message
 submsg() {
   local msg="$1"
-  echo ".... $msg"
+  echo "[$(timestamp)] .... $msg"
 }
 
 ###############################################################################
