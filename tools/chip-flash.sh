@@ -21,8 +21,9 @@
 #   6         64        root          Root filesystem ubi volume
 #   7         64        root-backup   Backup root filesystem ubi volume
 #   8         32        overlay       Root filesytem overlay ubi volume
-#   9         600       cache         Download
-#   10        -         data          Application data
+#   9         600       cache         Download cache
+#   10        2048      appdata       Application data
+#   11        -         data          Downloads
 #   ========  ========  ============  ====================================
 #
 # Of the partitions in the table, 0 through 7 are flashed by this tool. The
@@ -74,7 +75,7 @@ SPL_ADDR=0x43000000
 UBOOT_ADDR=0x4a000000
 UBOOT_ENV_ADDR=0x4b000000
 UBOOT_SCRIPT_ADDR=0x43100000
-LINUX_ADDR=0x4d000000
+LINUX_ADDR=0x42000000
 ROOTFS_ADDR=0x4e000000
 
 # Offsets
