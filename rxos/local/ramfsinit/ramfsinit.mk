@@ -28,7 +28,7 @@ define RAMFSINIT_INSTALL_TARGET_CMDS
 		$(BINARIES_DIR)/initramfs/default.cpio.in
 	sed -i '$(RAMFSINIT_CPIO_SED_CMDS)' \
 		$(BINARIES_DIR)/initramfs/default.cpio.in
-	$(INSTALL) -Dm644 $(@D)/init.in.sh \
+	$(INSTALL) -Dm644 $(@D)/init.$(call qstrip,$(BR2_RAMFSINIT_INIT_TYPE)).in.sh \
 		$(BINARIES_DIR)/initramfs/init
 	sed -i '$(RAMFSINIT_INIT_SED_CMDS)' $(BINARIES_DIR)/initramfs/init
 endef

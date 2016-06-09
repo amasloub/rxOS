@@ -1,4 +1,4 @@
-config BR2_PACKAGE_RAMFSINIT
+menuconfig BR2_PACKAGE_RAMFSINIT
 	bool "Create early userspace cpio archive"
 	select BR2_TARGET_ROOTFS_INITRAMFS
 	select BR2_INITRAMFS_USE_OTHER
@@ -18,3 +18,33 @@ config BR2_PACKAGE_RAMFSINIT
 	  appending to this list in the package's makefile.
 
 	  https://outernet.is/
+
+
+if BR2_PACKAGE_RAMFSINIT
+
+choice
+	prompt "Main storage device"
+	default BR2_RAMFSINIT_NAND
+	help
+	  Create init script for a particular storage type.
+
+config BR2_RAMFSINIT_NAND
+	bool "NAND flash"
+	help
+	  The init script will assume NAND flash
+	  main storage. (e.g., CHIP)
+
+config BR2_RAMFSINIT_SDCARD
+	bool "SD card"
+	help
+	  The init script will assume SD card
+	  main storage. (e.g., Raspberry Pi)
+	  
+endchoice
+
+config BR2_RAMFSINIT_INIT_TYPE
+	string
+	default "nand" if BR2_RAMFSINIT_NAND
+	default "sdcard" if BR2_RAMFSINIT_SDCARD
+
+endif # BR2_PACKAGE_RAMFSINIT

@@ -16,9 +16,10 @@ export PATH=/bin
 # Script parameters
 TMPFS_SIZE="%TMPFS_SIZE%m"
 VERSION="%VERSION%"
-CMDLINE="$@"
+CMDLINE="$*"
 OVERLAYS=
 CONSOLE=/dev/console
+ROOT_PARTS="root root-backup"
 
 # Check whether command line has some argument
 hasarg() {
@@ -80,7 +81,7 @@ mount_overlay() {
 # layer.
 mount_root() {
   mtdpart="$1"
-  echo "Attempt to mount $image_path"
+  echo "Attempt to mount ubi0:$mtdpart"
   mount -t ubifs -o ro "ubi0:$mtdpart" /root || return 1
   test_exe /rootfs/sbin/init || return 1
   lower="lowerdir=/rootfs"
@@ -120,7 +121,7 @@ doboot() {
   if hasarg noroot; then
     sleep 10
     echo "Do not boot into rootfs"
-    exec $SH
+    exec sh
   fi
   echo "Attempt boot $rootfs_image"
   set_up_boot
@@ -179,19 +180,14 @@ for overlay in /overlays/overlay-*.sqfs; do
   mount_overlay "$overlay"
 done
 
-# The userspace is contained in SquashFS images. There are three such images on 
-# the boot partition:
+# The userspace is contained on one of two MTD partitions. These are:
 #
-# - root.sqfs
-# - failsafe.sqfs
-# - factory.sqfs
+# - root
+# - root-backup
 #
-# Initially, they are all identical. During the lifecycle of the receiver, OTA u
-# updates will overwrite the first two leaving the last one intact. 
-#
-# The following block of code will attempt to boot each of the images in turn,
-# and fall back on the factory.sqfs as last resort.
-for rootfs_image in $ROOT_IMAGES; do
+# The following block of code will attempt to boot each of the partitions in 
+# turn, and fall back on the factory.sqfs as last resort.
+for rootfs_image in $ROOT_PARTS; do
   if mount_root "$rootfs_image"; then
     doboot "$rootfs_image"
   fi
