@@ -16,9 +16,9 @@ export PATH=/bin
 # Script parameters
 TMPFS_SIZE="%TMPFS_SIZE%m"
 VERSION="%VERSION%"
-ROOT_IMAGES="root.sqfs backup.sqfs factory.sqfs"
 CMDLINE="$@"
 OVERLAYS=
+CONSOLE=/dev/console
 
 # Check whether command line has some argument
 hasarg() {
@@ -37,19 +37,6 @@ bail() {
   echo "Dropping into emergency shell"
   export PS1="[rxOS emergency shell]# "
   exec sh
-}
-
-# Wait for /dev/mmcblk0p1 to appear
-#
-# Since we need the SD card to be present, we must wait for it to appear in the
-# /dev directory. It is usually not necessary to wait too long, but it can 
-# still happen that the device node is not present at this point (perhaps due 
-# to some external device being plugged in).
-wait_for_sd() {
-  echo "Waiting for SD card to become available"
-  while ! [ -e "/dev/mmcblk0p1" ]; do
-    sleep 1
-  done
 }
 
 # Check that specified path is an executable file or a link that points to one
@@ -78,7 +65,7 @@ overlay_basename() {
 mount_overlay() {
   overlay_image="$1"
   overlay_name="$(overlay_basename "$overlay_image")"
-  mount_path="/overlays/$overlay_name"
+  mount_path="/omnt/$overlay_name"
   mkdir -p "$mount_path"
   mount -t squashfs "$overlay_image" -o loop,ro "$mount_path" \
     > /dev/null 2>&1 || return 1
@@ -92,9 +79,9 @@ mount_overlay() {
 # the read-only rootfs image using OverlayFS to provide a volatile write 
 # layer.
 mount_root() {
-  image_path="/sdcard/$1"
+  mtdpart="$1"
   echo "Attempt to mount $image_path"
-  mount -t squashfs "$image_path" -o loop,ro /rootfs || return 1
+  mount -t ubifs -o ro "ubi0:$mtdpart" /root || return 1
   test_exe /rootfs/sbin/init || return 1
   lower="lowerdir=/rootfs"
   # Add any overlays
@@ -140,11 +127,6 @@ doboot() {
   exec switch_root /root /sbin/init $CMDLINE
 }
 
-# INTERMISSION
-echo "Dropping to shell"
-exec sh
-exit 0
-
 ###############################################################################
 # SHOW STARTS HERE
 ###############################################################################
@@ -154,9 +136,9 @@ mount -t devtmpfs devtmpfs /dev
 mount -t proc proc /proc
 
 # Setup console
-exec 0</dev/console
-exec 1>/dev/console
-exec 2>/dev/console
+exec 0<$CONSOLE
+exec 1>$CONSOLE
+exec 2>$CONSOLE
 
 echo "++++ Starting rxOS v$VERSION ++++"
 
@@ -164,7 +146,7 @@ echo "++++ Starting rxOS v$VERSION ++++"
 # mount the root partition on the SD card. These mount points exist strictly 
 # within the initial RAM filesystem and will be preserved after switch_root is 
 # performed.
-mkdir -p /sdcard /rootfs /tmpfs /root /overlays
+mkdir -p /sdcard /rootfs /tmpfs /root /overlays /omnt
 
 # If 'shell' has been passed as a kernel command line argument, drop into
 # emergency shell right away.
@@ -188,30 +170,12 @@ done
 mount -t tmpfs tmpfs -o "size=$TMPFS_SIZE" /tmpfs || return 1
 mkdir -p /tmpfs/upper /tmpfs/work 
 
-# Wait for SD card if needed
-[ -e "/dev/mmcblk0p1" ] || wait_for_sd
-
-# Perform disk check on the SD card
-fsck.vfat -yp /dev/mmcblk0p1
-
-# We are ready to mount the boot partition. Since this partition is on a 
-# removable medium, we use `-o errors=continue` to try and mount it at all 
-# costs. Ideally we would have access to fsck.vfat here, but that (1) makes the 
-# initial RAM filesystem image larger, and (2) it generally doen't help a whole
-# lot in real life.
-mount -t vfat -o errors=continue "/dev/mmcblk0p1" /sdcard \
-  || bail "Failed to mount the SD card."
-
-# Remove any .REC files created by fsck as those are usually completely useless
-rm -f /sdcard/FSCK*.REC
-
-# Remount SD card as read-only to prevent unnecessary writes (we allow this to 
-# fail because we already have it mounted read-write which is good enough to 
-# continue booting)
-mount -o remount,ro,errors=continue "/dev/mmcblk0p1" /sdcard
-
 # Mount overlay images if any
-for overlay in /sdcard/overlay-*.sqfs; do
+
+# TODO: mount -t ubi -o ro ubi0:overlay /overlays
+# We can't do that yet cause there's no ubi volume for overlay. This should be
+# provided by a boot hook.
+for overlay in /overlays/overlay-*.sqfs; do
   mount_overlay "$overlay"
 done
 
