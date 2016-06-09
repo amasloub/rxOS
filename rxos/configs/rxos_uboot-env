@@ -17,7 +17,7 @@ fdtfile=sun5i-r8-chip.dtb
 
 # NAND Options
 mtdids=nand0=sunxi-nand.0
-mtdparts=mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),8m(linux),64m(root),64m(root-backup),32m(overlay),32m(conf),600m(cache),-(data)
+mtdparts=mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),8m(linux),64m(root),64m(root-backup),32m(overlay),32m(conf),600m(cache),2048m(appdata),-(data)
 
 # Default boot options
 bootargs=consoleblank=0
