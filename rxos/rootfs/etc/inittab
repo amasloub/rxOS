@@ -18,7 +18,9 @@
 # This file is a modified version of inittab
 # file from the Buildroot project. In particular
 # the mounting of proc was disabled as it is already
-# done in the initramfs.
+# done in the initramfs. Some code has been copied from
+# The NextThingCo version of the inittab file as well,
+# to facilitate gadget serial usage.
 #
 # (c) 2001 Erik Andersen <andersen@codepoet.org>
 # (c) 2016 Outernet Inc
@@ -34,7 +36,9 @@
 ::sysinit:/etc/init.d/rcS
 
 # Put a getty on the serial port
-tty1::respawn:/sbin/getty -L  tty1 0 vt100 # GENERIC_SERIAL
+ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 # GENERIC_SERIAL
+ttyGS0::respawn:/sbin/getty -L ttyGS0 115200 vt100 # gadget serial
+tty0::respawn:/sbin/getty -L tty0 115200 vt100 # framebuffer console
 
 # Stuff to do for the 3-finger salute
 #::ctrlaltdel:/sbin/reboot
