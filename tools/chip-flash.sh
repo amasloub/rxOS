@@ -18,8 +18,8 @@
 #   3         4         uboot         U-Boot binary
 #   4         4         env           U-Boot environment
 #   5         8         linux         Linux kernel zImage w/DTB
-#   6         64        root          Root filesystem ubi volume
-#   7         64        root-backup   Backup root filesystem ubi volume
+#   6         100       root          Root filesystem ubi volume
+#   7         100       root-backup   Backup root filesystem ubi volume
 #   8         32        overlay       Root filesytem overlay ubi volume
 #   9         600       cache         Download cache
 #   10        2048      appdata       Application data
@@ -63,13 +63,6 @@ PAGE_SIZE_HEX=0x4000
 OOB_SIZE=1664
 START="$(date '+%s.%N')"
 
-# Source files
-SPL="$BINARIES_DIR/sunxi-spl.bin"
-UBOOT="$BINARIES_DIR/u-boot-dtb.bin"
-UBOOT_ENV="$BINARIES_DIR/uboot-env.bin"
-LINUX="$BINARIES_DIR/zImage.sun5i-r8-chip"
-ROOTFS="$BINARIES_DIR/rootfs.ubifs.lzo"
-
 # Memory locations
 SPL_ADDR=0x43000000
 UBOOT_ADDR=0x4a000000
@@ -79,13 +72,13 @@ LINUX_ADDR=0x42000000
 ROOTFS_ADDR=0x4e000000
 
 # Offsets
-SPL_OFF=0x0                   # 0     +0
-SPL_BACKUP_OFF=0x40000        # 4M    +4M
-UBOOT_OFF=0x80000             # 8M    +4M
-UBOOT_ENV_OFF=0xC0000         # 12M   +4M
-LINUX_OFF=0x1000000           # 16M   +4M
-ROOTFS_OFF=0x1800000          # 24M   +8M
-ROOTFS_BACKUP_OFF=0x5800000   # 88M   +64M
+SPL_OFF=0x0                   # 0
+SPL_BACKUP_OFF=0x40000        # 4M     +4M
+UBOOT_OFF=0x80000             # 8M     +4M
+UBOOT_ENV_OFF=0xC0000         # 12M    +4M
+LINUX_OFF=0x1000000           # 16M    +4M
+ROOTFS_OFF=0x1800000          # 24M    +8M
+ROOTFS_BACKUP_OFF=0x7C00000   # 124M   +100M
 
 # Abort with an error message
 abort() {
@@ -96,13 +89,15 @@ abort() {
 
 # Print usage
 usage() {
-  echo "Usage: $0 [-htkD]"
+  echo "Usage: $0 [-htkD] [-b PATH]"
   echo
   echo "Options:"
   echo "  -h  Show this message and exit"
   echo "  -t  Test mode: do not boot into the flashed system "
   echo "      (remain in U-boot)"
   echo "  -k  Keep temporary directory"
+  echo "  -b  Location of the directory containing the images"
+  echo "      (defaults to current directory)"
   echo "  -D  Dry run (do not perform any flashing, just echo"
   echo "      what the script would do)"
   echo
@@ -307,7 +302,7 @@ KEEP_TMPDIR=n
 DRY_RUN=n
 
 # Parse the command line options
-while getopts "htkD" opt; do
+while getopts "htkDb:" opt; do
   case $opt in
     h)
       usage
@@ -322,6 +317,9 @@ while getopts "htkD" opt; do
     D)
       DRY_RUN=y
       ;;
+    b)
+      BINARIES_DIR="$OPTARG"
+      ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       echo
@@ -330,6 +328,13 @@ while getopts "htkD" opt; do
       ;;
   esac
 done
+
+# Source files
+SPL="$BINARIES_DIR/sunxi-spl.bin"
+UBOOT="$BINARIES_DIR/u-boot-dtb.bin"
+UBOOT_ENV="$BINARIES_DIR/uboot-env.bin"
+LINUX="$BINARIES_DIR/zImage.sun5i-r8-chip"
+ROOTFS="$BINARIES_DIR/rootfs.ubi"
 
 # Check prereqisites
 has_command fel || abort "Missing command 'fel'
@@ -446,7 +451,7 @@ submsg "Uploading rootfs image"
 fel write "$ROOTFS_ADDR" "$ROOTFS"
 
 submsg "Uploading U-Boot script"
-fel write "$UBOOT_SCR_ADDR" "$TMPDIR/uboot.scr"
+fel write "$UBOOT_SCRIPT_ADDR" "$TMPDIR/uboot.scr"
 
 ###############################################################################
 # Executing flash
