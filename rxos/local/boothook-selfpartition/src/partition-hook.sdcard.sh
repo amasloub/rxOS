@@ -1,4 +1,4 @@
-#!/busybox sh
+#!/bin/sh
 #
 # Create partitions according to parameters set via the build configuration.
 #

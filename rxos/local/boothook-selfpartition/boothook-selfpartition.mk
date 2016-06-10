@@ -24,19 +24,21 @@ BOOTHOOK_SELFPARTITION_HOOK_SED_CMDS += s|%APPDATA%|$(call qstrip,$(BR2_BOOTHOOK
 
 BOOTHOOK_SELFPARTITION_FSTABL_SED_CMDS += s|%PRIMARY%|$(call qstrip,$(BR2_STORAGE_PRIMARY))|g;
 
+BOOTHOOK_SELFPARTITION_STORAGE = $(call qstrip,$(BR2_RAMFSINIT_INIT_TYPE))
+
 define BOOTHOOK_SELFPARTITION_INSTALL_TARGET_CMDS
 	$(SED) '$(BOOTHOOK_SELFPARTITION_HOOK_SED_CMDS)' \
-		$(@D)/partition-hook.sh
+		$(@D)/partition-hook.$(BOOTHOOK_SELFPARTITION_STORAGE).sh
 	$(SED) '$(BOOTHOOK_SELFPARTITION_CPIO_SED_CMDS)' \
-		$(@D)/init.cpio.in
+		$(@D)/init.$(BOOTHOOK_SELFPARTITION_STORAGE).cpio.in
 	$(SED) '$(BOOTHOOK_SELFPARTITION_FSTABL_SED_CMDS)' \
-		$(@D)/fstab
-	$(INSTALL) -Dm644 $(@D)/partition-hook.sh \
-		$(BINARIES_DIR)/initramfs/partition-hook.sh
-	$(INSTALL) -Dm644 $(@D)/init.cpio.in \
-		$(BINARIES_DIR)/initramfs/selfpartition.cpio.in
+		$(@D)/fstab.$(BOOTHOOK_SELFPARTITION_STORAGE)
 
-	$(INSTALL) -Dm644 $(@D)/fstab $(TARGET_DIR)/etc/fstab
+	$(INSTALL) -Dm644 $(@D)/partition-hook.$(BOOTHOOK_SELFPARTITION_STORAGE).sh \
+		$(BINARIES_DIR)/initramfs/partition-hook.sh
+	$(INSTALL) -Dm644 $(@D)/init.$(BOOTHOOK_SELFPARTITION_STORAGE).cpio.in \
+		$(BINARIES_DIR)/initramfs/selfpartition.cpio.in
+	$(INSTALL) -Dm644 $(@D)/fstab.$(BOOTHOOK_SELFPARTITION_STORAGE) $(TARGET_DIR)/etc/fstab
 	$(INSTALL) -dm755 $(TARGET_DIR)/mnt/{conf,cache,data,downloads}
 endef
 

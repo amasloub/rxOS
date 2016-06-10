@@ -1,8 +1,11 @@
 menuconfig BR2_PACKAGE_BOOTHOOK_SELFPARTITION
 	bool "Add extra data partitions"
 	select BR2_PACKAGE_RAMFSINIT
-	select BR2_PACKAGE_E2FSPROGS
-	select BR2_PACKAGE_E2FSPROGS_MKE2FS
+	select BR2_PACKAGE_E2FSPROGS if BR2_RAMFSINIT_SDCARD
+	select BR2_PACKAGE_E2FSPROGS_MKE2FS if BR2_RAMFSINIT_SDCARD
+	select BR2_PACKAGE_MTD if BR2_RAMFSINIT_NAND
+	select BR2_PACKAGE_MTD_UBIMKVOL if BR2_RAMFSINIT_NAND
+	select BR2_PACKAGE_MTD_UBINFO if BR2_RAMFSINIT_NAND
 	help
 	  Create data partition for receiver state persistence.
 	  The pre-boot hook script is generated and installed in 
@@ -13,9 +16,17 @@ menuconfig BR2_PACKAGE_BOOTHOOK_SELFPARTITION
 
 if BR2_PACKAGE_BOOTHOOK_SELFPARTITION
 
+if BR2_RAMFSINIT_NAND
+
+comment "Partition sizes are specified using U-boot environment"
+comment "and must match the values specified below."
+
+endif # BR2_RAMFSINIT_NAND
+
+
 config BR2_BOOTHOOK_SELFPARTITION_CONFIG_SIZE
 	string "Configuration partition size (MiB)"
-	default 24
+	default 32
 	help
 	  Size of the system configuration partition. This 
 	  partition stores persistent system configuration.
