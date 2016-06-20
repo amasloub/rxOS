@@ -33,9 +33,6 @@ relpath() {
     echo "${path##$par/}"
 }
 
-# Remove existing statics
-rm -rf "$COLLECT_TO/"*
-
 # Find all static directories in all libarian components
 for d in "$SITES"/librarian_*/static; do
   msg "Collecting static assets in '$d'"
