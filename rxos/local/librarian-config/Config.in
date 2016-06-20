@@ -26,10 +26,18 @@ config BR2_LIBRARIAN_PORT
 
 config BR2_LIBRARIAN_DEFROUTE
 	string "Default route"
-	default "files:list"
+	default "filemanager:list"
 	help
 	  Default route that will be used as an 
 	  alias for root URL.
+
+config BR2_LIBRARIAN_DEFROUTEARGS
+	string "Default route arguments"
+	default "path:"
+	help
+	  Default route arguments that will be passed
+	  to the route constructor. It is a key-value
+	  pair, separated by `:`.
 
 config BR2_LIBRARIAN_LOGPATH
 	string "Log file path"
