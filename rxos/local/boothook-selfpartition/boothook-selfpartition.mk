@@ -9,10 +9,6 @@ BOOTHOOK_SELFPARTITION_LICENSE = GPLv3+
 BOOTHOOK_SELFPARTITION_SITE = $(BR2_EXTERNAL)/local/boothook-selfpartition/src
 BOOTHOOK_SELFPARTITION_SITE_METHOD = local
 
-ifeq ($(BR2_PACKAGE_BOOTHOOK_SELFPARTITION),y)
-INIT_CPIO_LISTS += selfpartition.cpio.in
-endif
-
 BOOTHOOK_SELFPARTITION_LIBC_VER = $(call qstrip,$(BR2_GLIBC_VERSION_STRING))
 BOOTHOOK_SELFPARTITION_CPIO_SED_CMDS = s|%PREFIX%|$(TARGET_DIR)|g;
 BOOTHOOK_SELFPARTITION_CPIO_SED_CMDS += s|%BINDIR%|$(BINARIES_DIR)|g;
@@ -26,20 +22,38 @@ BOOTHOOK_SELFPARTITION_FSTABL_SED_CMDS += s|%PRIMARY%|$(call qstrip,$(BR2_STORAG
 
 BOOTHOOK_SELFPARTITION_STORAGE = $(call qstrip,$(BR2_RAMFSINIT_INIT_TYPE))
 
-define BOOTHOOK_SELFPARTITION_INSTALL_TARGET_CMDS
-	$(SED) '$(BOOTHOOK_SELFPARTITION_HOOK_SED_CMDS)' \
-		$(@D)/partition-hook.$(BOOTHOOK_SELFPARTITION_STORAGE).sh
-	$(SED) '$(BOOTHOOK_SELFPARTITION_CPIO_SED_CMDS)' \
-		$(@D)/init.$(BOOTHOOK_SELFPARTITION_STORAGE).cpio.in
-	$(SED) '$(BOOTHOOK_SELFPARTITION_FSTABL_SED_CMDS)' \
-		$(@D)/fstab.$(BOOTHOOK_SELFPARTITION_STORAGE)
+ifeq ($(BOOTHOOK_SELFPARTITION_STORAGE),nand)
 
-	$(INSTALL) -Dm644 $(@D)/partition-hook.$(BOOTHOOK_SELFPARTITION_STORAGE).sh \
-		$(BINARIES_DIR)/initramfs/partition-hook.sh
-	$(INSTALL) -Dm644 $(@D)/init.$(BOOTHOOK_SELFPARTITION_STORAGE).cpio.in \
-		$(BINARIES_DIR)/initramfs/selfpartition.cpio.in
-	$(INSTALL) -Dm644 $(@D)/fstab.$(BOOTHOOK_SELFPARTITION_STORAGE) $(TARGET_DIR)/etc/fstab
+define BOOTHOOK_SELFPARTITION_INSTALL_TARGET_CMDS
+	$(SED) '$(BOOTHOOK_SELFPARTITION_FSTABL_SED_CMDS)' \
+		$(@D)/fstab.nand
+	$(INSTALL) -Dm644 $(@D)/fstab.nand $(TARGET_DIR)/etc/fstab
 	$(INSTALL) -dm755 $(TARGET_DIR)/mnt/{conf,cache,data,downloads}
 endef
+
+else
+
+ifeq ($(BR2_PACKAGE_BOOTHOOK_SELFPARTITION),y)
+INIT_CPIO_LISTS += selfpartition.cpio.in
+endif
+
+define BOOTHOOK_SELFPARTITION_INSTALL_TARGET_CMDS
+	$(SED) '$(BOOTHOOK_SELFPARTITION_HOOK_SED_CMDS)' \
+		$(@D)/partition-hook.sdcard.sh
+	$(SED) '$(BOOTHOOK_SELFPARTITION_CPIO_SED_CMDS)' \
+		$(@D)/init.sdcard.cpio.in
+	$(SED) '$(BOOTHOOK_SELFPARTITION_FSTABL_SED_CMDS)' \
+		$(@D)/fstab.sdcard
+
+	$(INSTALL) -Dm644 $(@D)/partition-hook.sdcard.sh \
+		$(BINARIES_DIR)/initramfs/partition-hook.sh
+	$(INSTALL) -Dm644 $(@D)/init.sdcard.cpio.in \
+		$(BINARIES_DIR)/initramfs/selfpartition.cpio.in
+	$(INSTALL) -Dm644 $(@D)/fstab.sdcard $(TARGET_DIR)/etc/fstab
+
+	$(INSTALL) -dm755 $(TARGET_DIR)/mnt/{conf,cache,data,downloads}
+endef
+
+endif # BOOTHOOK_SELFPARTITION_STORAGE == nand
 
 $(eval $(generic-package))

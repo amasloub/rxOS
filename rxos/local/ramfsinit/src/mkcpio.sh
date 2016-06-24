@@ -16,8 +16,6 @@ set -e
 . "$BR2_EXTERNAL/scripts/helpers.sh"
 . "$BR2_EXTERNAL/scripts/args.sh"
 
-# $INITRAMFS_FILE comes from args
-
 INIT_DIR=${BINARIES_DIR}/initramfs
 INIT_LIST=${INIT_DIR}/init.cpio
 INITRAMFS=${BINARIES_DIR}/$INITRAMFS_FILE

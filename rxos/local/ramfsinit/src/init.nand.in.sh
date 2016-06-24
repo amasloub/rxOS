@@ -80,9 +80,9 @@ mount_overlay() {
 # the read-only rootfs image using OverlayFS to provide a volatile write 
 # layer.
 mount_root() {
-  mtdpart="$1"
-  echo "Attempt to mount ubi0:$mtdpart"
-  mount -t ubifs -o ro "ubi0:$mtdpart" /root || return 1
+  volname="$1"
+  echo "Attempt to mount ubi0:$volname"
+  mount -t ubifs -o ro "ubi0:$volname" /rootfs || return 1
   test_exe /rootfs/sbin/init || return 1
   lower="lowerdir=/rootfs"
   # Add any overlays
@@ -101,7 +101,7 @@ mount_root() {
 # Also move the devtmpfs mount point into the root mount point.
 set_up_boot() {
   mkdir -p /root/boot /root/dev
-  mount --move /sdcard /root/boot
+  mount --move /linux /root/boot
   mount --move /dev /root/dev
   mount --move /proc /root/proc
 }
@@ -147,7 +147,7 @@ echo "++++ Starting rxOS v$VERSION ++++"
 # mount the root partition on the SD card. These mount points exist strictly 
 # within the initial RAM filesystem and will be preserved after switch_root is 
 # performed.
-mkdir -p /sdcard /rootfs /tmpfs /root /overlays /omnt
+mkdir -p /rootfs /tmpfs /root /linux /omnt
 
 # If 'shell' has been passed as a kernel command line argument, drop into
 # emergency shell right away.
@@ -172,11 +172,8 @@ mount -t tmpfs tmpfs -o "size=$TMPFS_SIZE" /tmpfs || return 1
 mkdir -p /tmpfs/upper /tmpfs/work 
 
 # Mount overlay images if any
-
-# TODO: mount -t ubi -o ro ubi0:overlay /overlays
-# We can't do that yet cause there's no ubi volume for overlay. This should be
-# provided by a boot hook.
-for overlay in /overlays/overlay-*.sqfs; do
+mount -t ubifs -o ro ubi0:linux /linux
+for overlay in /linux/overlay-*.sqfs; do
   mount_overlay "$overlay"
 done
 

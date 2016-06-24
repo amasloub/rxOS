@@ -1,7 +1,5 @@
 menuconfig BR2_PACKAGE_RAMFSINIT
 	bool "Create early userspace cpio archive"
-	select BR2_TARGET_ROOTFS_INITRAMFS
-	select BR2_INITRAMFS_USE_OTHER
 	help
 	  Creates the initial RAM filesystem image that can be
 	  linked into the kernel. The compression option for the 
