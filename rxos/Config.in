@@ -59,6 +59,8 @@ menu "Firmware configuration"
 
 	endif # RXOS_BUILD_SDIMAGE
 
+	source "$BR2_EXTERNAL/local/ubi-image/Config.in"
+
 endmenu
 
 menu "System configuration"
