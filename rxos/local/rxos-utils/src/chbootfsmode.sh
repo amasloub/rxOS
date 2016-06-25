@@ -9,8 +9,7 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-BOOTPART=1
-BOOTDEV="/dev/mmcblk0p$BOOTPART"
+BOOTDEV="%BOOTDEV%"
 
 # Return 0 if boot device is mounted read-only
 is_ro() {

@@ -164,4 +164,7 @@ endmenu
 menu "Hardware support"
     source "$BR2_EXTERNAL/package/firmware-brcmfmac43430-sdio/Config.in"
     source "$BR2_EXTERNAL/package/firmware-mt7601u-usb/Config.in"
+    source "$BR2_EXTERNAL/package/firmware-mt7601u-usb/Config.in"
+    source "$BR2_EXTERNAL/package/rtl8723bs_bt/Config.in"
+    source "$BR2_EXTERNAL/package/rtl8723bs_mp_driver/Config.in"
 endmenu

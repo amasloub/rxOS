@@ -10,6 +10,8 @@
 # Some rights reserved.
 
 LIBRARIAN_PORT="%LIBRARIAN_PORT%"
+STORAGE_DEVICE="%STORAGE_DEVICE%"
+PARTITIONS="%PARTITIONS%"
 
 hdr() {
   msg="$1"
@@ -64,7 +66,7 @@ get_ip() {
 check_mount() {
   dev="$1"
   hdr "Checking mount for $dev: "
-  if mount | egrep "^/dev/$dev" >/dev/null 2>&1; then
+  if mount | egrep "^(/dev/)?$dev" >/dev/null 2>&1; then
     pass
   else
     fail
@@ -107,11 +109,11 @@ check_net wlan0
 get_ip eth0
 get_ip wlan0
 
-check_devnode mmcblk0 
+check_devnode "$STORAGE_DEVICE"
 check_devnode dvb/adapeter0/frontend0
 
-for part in 5 6 7 8; do
-  check_mount "mmcblk0p$part"
+for part in $PARTITIONS; do
+  check_mount "${STORAGE_DEVICE}${part}"
 done
 
 check_server "Librarian HTTP" "http://127.0.0.1:$LIBRARIAN_PORT/"
