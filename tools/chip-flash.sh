@@ -54,7 +54,7 @@ set -e
 SCRIPTDIR="$(dirname "$0")"
 
 # Prefer host dirs
-HOST_DIR="$(cd "$SCRIPTDIR/../out/host")"
+HOST_DIR="$SCRIPTDIR/../out/host"
 if [ -d "$HOST_DIR" ]; then
   export PATH="$HOST_DIR/usr/bin:$HOST_DIR/usr/sbin:$PATH"
 fi
