@@ -7,8 +7,34 @@ menuconfig BR2_PACKAGE_LED_CONTROL
 
 if BR2_PACKAGE_LED_CONTROL
 
+choice
+	prompt "LED control method"
+	default BR2_LED_CONTROL_SYSFS
+	help
+	  Method of controlling the LED(s).
+
+config BR2_LED_CONTROL_SYSFS
+	bool "sysfs"
+	help
+	  Use sysfs to controll the LED(s).
+
+config BR2_LED_CONTROL_I2C
+	bool "i2c"
+	select BR2_PACKAGE_I2C_TOOLS
+	help
+	  User i2c-tools to controll the LED(s).
+
+endchoice
+
+config BR2_LED_CONTROL_METHOD
+	string
+	default "sysfs" if BR2_LED_CONTROL_SYSFS
+	default "i2c" if BR2_LED_CONTROL_I2C
+
+if BR2_LED_CONTROL_SYSFS
+
 config BR2_LED_DEVNUM
-	string "LED device number"
+	int "LED device number"
 	default 0
 	help
 	  Number of the LED device.
@@ -17,5 +43,29 @@ config BR2_LED_DEVNUM
 	  will be used:
 
 	  /sys/class/leds/ledN
+
+endif # BR2_LED_CONTROL_SYSFS
+
+if BR2_LED_CONTROL_I2C
+
+config BR2_LED_BUS
+	int "LED device i2c bus"
+	default 0
+	help
+	  Bus number
+
+config BR2_LED_CHIP
+	hex "LED device i2c chip ID"
+	default 0x34
+	help
+	  Chip ID
+
+config BR2_LED_ADDR
+	hex "LED device i2c data address"
+	default 0x93
+	help
+	  Data address
+
+endif # BR2_LED_CONTROL_I2C
 
 endif # BR2_PACKAGE_LED_CONTROL
