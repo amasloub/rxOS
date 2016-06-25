@@ -4,3 +4,22 @@ config BR2_PACKAGE_RXOS_UTILS
 	select BR2_PACKAGE_CURL
 	help
 	  Set of command line tools for working with rxOS.
+
+if BR2_PACKAGE_RXOS_UTILS
+
+config BR2_RXOS_UTILS_STORAGE
+	string
+	default "mmcblk0" if BR2_RAMFSINIT_SDCARD
+	default "ubi0" if BR2_RAMFSINIT_NAND
+
+config BR2_RXOS_UTILS_PARTITIONS
+	string 
+	default "p5 p6 p7 p8" if BR2_RAMFSINIT_SDCARD
+	default ":linux :conf :cache :appdata :data" if BR2_RAMFSINIT_NAND
+
+config BR2_RXOS_UTILS_BOOTDEV
+	string
+	default "/dev/mmcblk0p1" if BR2_RAMFSINIT_SDCARD
+	default "ubi0:linux" if BR2_RAMFSINIT_NAND
+
+endif  # BR2_PACKAGE_RXOS_UTILS
