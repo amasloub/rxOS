@@ -9,7 +9,18 @@ NETWORK_CONFIG_LICENSE = GPL
 NETWORK_CONFIG_SITE = $(BR2_EXTERNAL)/local/network-config/src
 NETWORK_CONFIG_SITE_METHOD = local
 
-NETWORK_CONFIG_SUBS = s|%IFACE%|$(call qstrip,$(BR2_NETWORK_CONFIG_AP_IF))|;
+ifeq ($(BR2_NETWORK_CONFIG_HAS_ETH),y)
+NETWORK_CONFIG_IFACES = eth0 $(call qstrip,$(BR2_NETWORK_CONFIG_AP_IF))
+define NETWORK_CONFIG_INSTALL_ETH
+	$(INSTALL) -Dm755 $(@D)/ifplugd.action $(TARGET_DIR)/etc/ifplugd.action
+	$(INSTALL) -Dm755 $(@D)/dhcpcfg $(TARGET_DIR)/usr/sbin/dhcpcfg
+endef
+else
+NETWORK_CONFIG_IFACES = $(call qstrip,$(BR2_NETWORK_CONFIG_AP_IF))
+endif
+
+NETWORK_CONFIG_SUBS += s|%IFACES%|$(NETWORK_CONFIG_IFACES)|;
+NETWORK_CONFIG_SUBS += s|%IFACE%|$(call qstrip,$(BR2_NETWORK_CONFIG_AP_IF))|;
 NETWORK_CONFIG_SUBS += s|%SSID%|$(call qstrip,$(BR2_NETWORK_CONFIG_AP_NAME))|;
 NETWORK_CONFIG_SUBS += s|%IP%|$(call qstrip,$(BR2_NETWORK_CONFIG_AP_IP))|;
 NETWORK_CONFIG_SUBS += s|%START%|$(call qstrip,$(BR2_NETWORK_CONFIG_DHCP_START))|;
@@ -25,9 +36,8 @@ define NETWORK_CONFIG_INSTALL_TARGET_CMDS
 
 	$(INSTALL) -Dm644 $(@D)/hostapd.conf $(TARGET_DIR)/etc/hostapd.conf
 	$(INSTALL) -Dm644 $(@D)/dnsmasq.conf $(TARGET_DIR)/etc/dnsmasq.conf
-	$(INSTALL) -Dm755 $(@D)/ifplugd.action $(TARGET_DIR)/etc/ifplugd.action
-	$(INSTALL) -Dm755 $(@D)/dhcpcfg $(TARGET_DIR)/usr/sbin/dhcpcfg
 	$(INSTALL) -Dm755 $(@D)/S81hostapd $(TARGET_DIR)/etc/init.d/S81hostapd
+	$(NETWORK_CONFIG_INSTALL_ETH)
 endef
 
 $(eval $(generic-package))

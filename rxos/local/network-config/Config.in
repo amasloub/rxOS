@@ -9,6 +9,11 @@ menuconfig BR2_PACKAGE_NETWORK_CONFIG
 
 if BR2_PACKAGE_NETWORK_CONFIG
 
+config BR2_NETOWKR_CONFIG_HAS_ETH
+    bool "Use Ethernet interface (DHCP)"
+	help
+	  Configure Ethernet interface eth0 with DHCP.
+
 config BR2_NETWORK_CONFIG_AP_IF
 	string "Access point interface"
 	default "wlan0"

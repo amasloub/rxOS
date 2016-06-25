@@ -9,7 +9,7 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-auto lo eth0 %IFACE%
+auto lo %IFACES%
 
 iface lo inet loopback
 
