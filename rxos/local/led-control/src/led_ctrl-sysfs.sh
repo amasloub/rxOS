@@ -15,6 +15,7 @@ LED_BRIGHTNESS="$LED/brightness"
 LED_DELAY_ON="$LED/delay_on"
 LED_DELAY_OFF="$LED/delay_off"
 
+VERY_SLOW_INTERVAL=1000
 SLOW_INTERVAL=500
 FAST_INTERVAL=100
 
@@ -50,4 +51,8 @@ led_slow_blink() {
 
 led_fast_blink() {
   led_blink $FAST_INTERVAL
+}
+
+led_very_slow_blink() {
+  led_blink "$VERY_SLOW_INTERVAL"
 }
