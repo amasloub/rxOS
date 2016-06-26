@@ -12,11 +12,13 @@ UBI_IMAGE_DEPENDENCIES += host-mtd
 
 UBINIZE_CFG_SED_CMDS += s|BINARIES_DIR|$(BINARIES_DIR)|g;
 
+ifeq ($(BR2_PACKAGE_UBI_IMAGE),y)
+BR2_ROOTFS_POST_IMAGE_SCRIPT += $(UBI_IMAGE_SITE)/mkubi.sh
+endif
+
 define UBI_IMAGE_INSTALL_TARGET_CMDS
 	$(SED) '$(UBINIZE_CFG_SED_CMDS)' $(@D)/ubinize.cfg
 	$(INSTALL) -Dm644 $(@D)/ubinize.cfg $(BINARIES_DIR)/ubinize.cfg
 endef
 
 $(eval $(generic-package))
-
-BR2_ROOTFS_POST_IMAGE_SCRIPT += $(UBI_IMAGE_SITE)/mkubi.sh
