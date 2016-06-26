@@ -15,8 +15,8 @@ INTERVAL="$(echo "$1" | awk '{print $1 / 1000}')"
 . /usr/lib/led_ctrl.sh
 
 while true; do
-  led_on
+  led_set 1
   sleep "$INTERVAL"
-  led_blank
+  led_set 0
   sleep "$INTERVAL"
 done

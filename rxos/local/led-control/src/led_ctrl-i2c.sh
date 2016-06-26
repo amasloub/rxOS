@@ -19,13 +19,14 @@ kill_blink() {
   kill -KILL $blink_pids
 }
 
-led_blank() {
-  $I2C 0
+led_set() {
+  intensity="$1"
+  $I2C "$intensity"
 }
 
 led_off() {
   kill_blink
-  led_blank
+  led_set 0
 }
 
 led_timer() {
@@ -42,7 +43,7 @@ led_mmc() {
 
 led_on() {
   led_off
-  $I2C 1
+  led_set 1
 }
 
 led_blink() {
