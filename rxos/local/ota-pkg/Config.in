@@ -1,0 +1,43 @@
+menuconfig BR2_PACKAGE_OTA_PKG
+	bool "Build an OTA update package file"
+	select BR2_PACKAGE_PKGTOOL
+	select BR2_PACKAGE_HOST_PKGTOOL
+	help
+	  Build a .pkg file for performing OTA and 
+	  USB stick updates.
+
+if BR2_PACKAGE_OTA_PKG
+
+config BR2_OTA_PKG_VERSIONLESS
+	bool "Ignore installed firmware version"
+	help
+	  When this option is turned on, the installer
+	  script will not check the version of the firmware
+	  that is already installed. This will allow the 
+	  new firmware to be installed regardless of 
+	  whether the existing firmware is newer or older
+	  than the one that is going to be installed.
+
+	  When this option is off, only newer versions
+	  can be installed.
+
+config BR2_OTA_PKG_KEY
+	string "Package signature key file"
+	help
+	  Specify a path to package key file that is used
+	  to sign the package for OTA update verfication
+	  on the receivers.
+
+config BR2_OTA_PKG_PREINSTALL
+	string "Pre-install script"
+	help
+	  Specify a path to a script that will be executed 
+	  before installation.
+
+config BR2_OTA_PKG_POSTINSTALL
+	string "Post-install script"
+	help
+	  Specify a path to a script that will be executed
+	  after installation.
+
+endif # BR2_PACKAGE_OTA_PKG

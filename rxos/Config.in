@@ -60,6 +60,7 @@ menu "Firmware configuration"
 	endif # RXOS_BUILD_SDIMAGE
 
 	source "$BR2_EXTERNAL/local/ubi-image/Config.in"
+	source "$BR2_EXTERNAL/local/ota-pkg/Config.in"
 
 endmenu
 
@@ -154,11 +155,13 @@ endmenu
 
 menu "Utilities"
     source "$BR2_EXTERNAL/local/led-control/Config.in"
+    source "$BR2_EXTERNAL/package/pkgtool/Config.in"
     source "$BR2_EXTERNAL/local/rxos-utils/Config.in"
 endmenu
 
 menu "Host utilities"
 	source "$BR2_EXTERNAL/package/dir2fat32/Config.in.host"
+    source "$BR2_EXTERNAL/package/pkgtool/Config.in.host"
 endmenu
 
 menu "Hardware support"
