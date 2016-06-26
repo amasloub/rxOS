@@ -13,7 +13,7 @@
 
 case "$1" in
   start)
-    led_on
+    led_blink 1000
     ;;
   stop)
     led_off

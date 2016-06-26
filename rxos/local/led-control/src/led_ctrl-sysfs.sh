@@ -9,7 +9,7 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-LED="/sys/class/leds/led0"
+LED="/sys/class/leds/led%LED_NUM%"
 LED_TRIGGER="$LED/trigger"
 LED_BRIGHTNESS="$LED/brightness"
 LED_DELAY_ON="$LED/delay_on"
