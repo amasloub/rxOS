@@ -14,6 +14,10 @@ CHIP="%LED_CHIP%"
 ADDR="%LED_ADDR%"
 I2C="i2cset -f -y $BUS $CHIP $ADDR"
 
+VERY_SLOW_INTERVAL=1000
+SLOW_INTERVAL=500
+FAST_INTERVAL=100
+
 kill_blink() {
   blink_pids="$(ps ax | grep '{blink}' | grep -v grep | awk '{print $1}')"
   kill -KILL $blink_pids
@@ -58,4 +62,8 @@ led_slow_blink() {
 
 led_fast_blink() {
   led_blink "$FAST_INTERVAL"
+}
+
+led_very_slow_blink() {
+  led_blink "$VERY_SLOW_INTERVAL"
 }

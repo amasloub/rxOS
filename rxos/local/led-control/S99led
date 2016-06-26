@@ -11,9 +11,15 @@
 
 . /usr/lib/led_ctrl.sh
 
+reset_led() {
+  sleep 60
+  led_on
+}
+
 case "$1" in
   start)
-    led_blink 1000
+    led_very_slow_blink
+    reset_led &
     ;;
   stop)
     led_off
