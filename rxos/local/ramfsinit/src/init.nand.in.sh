@@ -132,6 +132,9 @@ doboot() {
 # SHOW STARTS HERE
 ###############################################################################
 
+# Set the date to a sane value
+date "2015-01-01 0:00:00"
+
 # Populate the /dev and /proc directories
 mount -t devtmpfs devtmpfs /dev
 mount -t proc proc /proc
