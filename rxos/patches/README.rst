@@ -21,6 +21,9 @@ hostapd/2.5     0001   n/a                      n/a      enable the
 --------------  -----  -----------------------  -------  ----------------------
 uboot           0000   Outernet                 GPL      change fastboot buffer
                                                          size to 300MB
+--------------  -----  -----------------------  -------  ----------------------
+pkgtool         0000   Outernet                 GPL      fixes handling of 
+                                                         UBI volume update.
 ==============  =====  =======================  =======  ======================
 
 .. note::
