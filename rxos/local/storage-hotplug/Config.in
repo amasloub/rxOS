@@ -1,4 +1,4 @@
-config BR2_PACKAGE_STORAGE_HOTPLUG
+menuconfig BR2_PACKAGE_STORAGE_HOTPLUG
 	bool "Storage hotplugging"
 	depends on BR2_PACKAGE_EUDEV
 	select BR2_PACKAGE_NTFS_3G
@@ -10,6 +10,17 @@ config BR2_PACKAGE_STORAGE_HOTPLUG
 	select BR2_PACKAGE_LED_CONTROL
 	help
 	  Enable storage hotplugging.
+
+if BR2_PACKAGE_STORAGE_HOTPLUG
+
+config BR2_STORAGE_HOTPLUG_CHECK_PKG
+	bool "Check for firmware update on hotplug"
+	select BR2_PACKAGE_PKGTOOL
+	help
+	  Check for presence of .pkg file on the
+	  storage device and execute it.
+
+endif # BR2_PACKAGE_STORAGE_HOTPLUG
 
 
 if !BR2_PACKAGE_EUDEV
