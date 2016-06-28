@@ -84,13 +84,13 @@ mount_root() {
   echo "Attempt to mount ubi0:$volname"
   mount -t ubifs -o ro "ubi0:$volname" /rootfs || return 1
   test_exe /rootfs/sbin/init || return 1
-  lower="lowerdir=/rootfs"
+  lower="/rootfs"
   # Add any overlays
   for overlay in $OVERLAYS; do
-    lower="$lower:$overlay"
+    lower="$overlay:$lower"
   done
   mount -t overlay overlay \
-    -o "$lower",upperdir=/tmpfs/upper,workdir=/tmpfs/work /root
+    -o "lowerdir=$lower",upperdir=/tmpfs/upper,workdir=/tmpfs/work /root
 }
 
 # Set things up for switch_root

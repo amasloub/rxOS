@@ -80,7 +80,7 @@ msg "Creating Linux UBIFS image"
 tmpdir="$(mktemp -d "/tmp/rxos-linux-XXXXXXX")"
 cp "$LINUX" "$tmpdir/zImage"
 cp "$DTB" "$tmpdir/sun5i-r8-chip.dtb"
-cp "$BINARIES_DIR/overlays/*.sqfs" "$tmpdir" >/dev/null 2>&1 \
+cp -v "$BINARIES_DIR/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
   || echo "WARN: Overlays not copied"  # but it's ok
 mkubifs "$tmpdir" "$BINARIES_DIR/linux.ubifs"
 rm -rf "$tmpdir"
