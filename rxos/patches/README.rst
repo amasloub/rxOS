@@ -19,8 +19,6 @@ hostapd/2.5     0001   n/a                      n/a      enable the
                                                          so that the driver
                                                          is built
 --------------  -----  -----------------------  -------  ----------------------
-linux           0000   Outernet                 GPL      modified boot-up logo
---------------  -----  -----------------------  -------  ----------------------
 uboot           0000   Outernet                 GPL      change fastboot buffer
                                                          size to 300MB
 ==============  =====  =======================  =======  ======================
