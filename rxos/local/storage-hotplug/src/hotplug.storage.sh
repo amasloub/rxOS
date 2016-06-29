@@ -39,6 +39,8 @@ MOUNT_OPTS="
 ntfs:windows_names,fmask=133,dmask=022,recover
 vfat:utf8
 "
+CHECK_PKG="%CHECK_PKG%"
+PLATFORM="$(cat /etc/platform)"
 
 case "$ID_FS_TYPE" in
   ntfs)
@@ -120,6 +122,22 @@ umount_ext() {
   umountf "$EXTERNAL_MPOINT"
 }
 
+# Run firmware update
+run_pkg() {
+  log "Checking for firmware updates"
+  pkg="$(find "$TMPMOUNT" -name "$PLATFORM*.pkg" -maxdepth 1 | sort | tail -n1)"
+  [ -z "$pkg" ] && return 0
+  [ -x "$pkg" ] || return 0
+  log "Executing firmware update in $pkg"
+  if "$pkg"; then
+    log "Finished executing firmware update"
+    exit 0
+  else
+    log "Failed not execute firmware update"
+    return 1
+  fi
+}
+
 # Log specified message and quit with non-0 return code
 #
 # The LED is truned off before exiting.
@@ -162,6 +180,9 @@ add() {
     rm -rf "$TMPMOUNT"
     exit 0
   fi
+
+  # Check for firmware updates if needed
+  [ "$CHECK_PKG" = y ] && run_pkg
 
   # Now we start the real-deal mounting
 
