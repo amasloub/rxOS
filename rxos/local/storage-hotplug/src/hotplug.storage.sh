@@ -124,10 +124,18 @@ umount_ext() {
 
 # Run firmware update
 run_pkg() {
-  pkg_file="$(find "$TMPMOUNT" -name "${PLATFORM}*.pkg" | sort | tail -n)"
-  [ -z "$pkg_file" ] && return 0
-  [ -x "$pkg_file" ] || return 0
-  $pkg_file
+  log "Checking for firmware updates"
+  pkg="$(find "$TMPMOUNT" -name "$PLATFORM*.pkg" -maxdepth 1 | sort | tail -n1)"
+  [ -z "$pkg" ] && return 0
+  [ -x "$pkg" ] || return 0
+  log "Executing firmware update in $pkg"
+  if "$pkg"; then
+    log "Finished executing firmware update"
+    exit 0
+  else
+    log "Failed not execute firmware update"
+    return 1
+  fi
 }
 
 # Log specified message and quit with non-0 return code
