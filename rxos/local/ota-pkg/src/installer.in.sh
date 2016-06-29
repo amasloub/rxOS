@@ -43,14 +43,14 @@ find_mtd() {
 extract_to_bootfs() {
   filename="$1"
   $LOG "Installing $filename"
-  chbootfsmode || fail "Could not unlock boot partition"
+  mount -o remount,rw /boot || fail "Could not unlock boot partition"
   cp "/boot/$filename" "/boot/${filename}.backup" \
     || fail "Could not back up /boot/${filename}"
   sync
   $INSTALLER --extract "$filename" /boot \
     || fail "Could not extract $filename"
   sync
-  chbootfsmode
+  mount -o remount,ro /boot
   $LOG "Installed /boot/$filename"
 }
 
