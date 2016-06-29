@@ -87,6 +87,7 @@ menu "System configuration"
 		  Note that '$$' is used instead of '$'
 
 	source "$BR2_EXTERNAL/local/ramfsinit/Config.in"
+	source "$BR2_EXTERNAL/local/boothook-gserial/Config.in"
 	source "$BR2_EXTERNAL/local/boothook-selfpartition/Config.in"
 	source "$BR2_EXTERNAL/local/setup/Config.in"
 	source "$BR2_EXTERNAL/local/persist-conf/Config.in"

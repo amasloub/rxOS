@@ -1,0 +1,23 @@
+dir /lib 755 0 0
+dir /lib/modules 755 0 0
+dir /lib/modules/%KVER% 755 0 0
+dir /lib/modules/%KVER%/kernel 755 0 0
+dir /lib/modules/%KVER%/kernel/fs 755 0 0
+dir /lib/modules/%KVER%/kernel/fs/configfs 755 0 0
+dir /lib/modules/%KVER%/kernel/drivers 755 0 0
+dir /lib/modules/%KVER%/kernel/drivers/usb 755 0 0
+dir /lib/modules/%KVER%/kernel/drivers/usb/gadget 755 0 0
+dir /lib/modules/%KVER%/kernel/drivers/usb/gadget/function 755 0 0
+dir /lib/modules/%KVER%/kernel/drivers/usb/gadget/legacy 755 0 0
+
+file /lib/modules/%KVER%/kernel/fs/configfs/configfs.ko %PREFIX%/lib/modules/%KVER%/kernel/fs/configfs/configfs.ko 644 0 0
+file /lib/modules/%KVER%/kernel/drivers/usb/gadget/function/usb_f_acm.ko %PREFIX%/lib/modules/%KVER%/kernel/drivers/usb/gadget/function/usb_f_acm.ko 644 0 0 
+file /lib/modules/%KVER%/kernel/drivers/usb/gadget/function/u_serial.ko %PREFIX%/lib/modules/%KVER%/kernel/drivers/usb/gadget/function/u_serial.ko 644 0 0
+file /lib/modules/%KVER%/kernel/drivers/usb/gadget/function/u_ether.ko %PREFIX%/lib/modules/%KVER%/kernel/drivers/usb/gadget/function/u_ether.ko 644 0 0
+file /lib/modules/%KVER%/kernel/drivers/usb/gadget/function/usb_f_ecm.ko %PREFIX%/lib/modules/%KVER%/kernel/drivers/usb/gadget/function/usb_f_ecm.ko 644 0 0
+file /lib/modules/%KVER%/kernel/drivers/usb/gadget/legacy/g_cdc.ko %PREFIX%/lib/modules/%KVER%/kernel/drivers/usb/gadget/legacy/g_cdc.ko 644 0 0
+file /lib/modules/%KVER%/kernel/drivers/usb/gadget/libcomposite.ko %PREFIX%/lib/modules/%KVER%/kernel/drivers/usb/gadget/libcomposite.ko 644 0 0
+file /lib/modules/%KVER%/modules.symbols %PREFIX%/lib/modules/%KVER%/modules.symbols 644 0 0
+
+file /lib/modules/%KVER%/modules.dep %BINDIR%/initramfs/modules.dep 644 0 0
+file /hook-gserial.sh %BINDIR%/initramfs/gserial-hook.sh 755 0 0
