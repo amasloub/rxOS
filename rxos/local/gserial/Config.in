@@ -1,4 +1,4 @@
-config BR2_PACKAGE_BOOTHOOK_GSERIAL
+config BR2_PACKAGE_GSERIAL
 	bool "Enable support for gadget serial/network"
 	help
 	  Enable support for gadget serial
