@@ -17,6 +17,9 @@ You will need to have the following packages installed:
 - wget
 - mercurial (hg)
 
+.. note::
+    Right now, the build will not work with gcc 6 and later.
+
 .. [1] The build tools include compilers (e.g., gcc), standard libraries, and 
        build automation tools (make, automake, autoconf, etc). In some Linux
        distributions, there are packages that bundle these tools together

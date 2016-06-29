@@ -34,7 +34,7 @@ You can read more about boot hooks in :doc:`boot_hooks.rst`.
 Mounting the rootfs
 -------------------
 
-There are three root filesystem images on the SD card. The ``rootfs.sqfs`` is
+On the SD card there are three root filesystem images. The ``rootfs.sqfs`` is
 the default root filesystem image. ``backup.sqfs`` is the same image as the
 default one, and serves as a backup in case the first image is corrupted or OTA
 update fails. Lastly, the ``factory.sqfs`` serves as a fallback image. The
@@ -44,6 +44,9 @@ Root filesystem images are loop-mounted read-only and are overlaid with a RAM
 disk that provides the write layer. This provides protection against corruption
 resulting from partial writes and allows the user to reset the device to a
 known state by power-cycling it.
+
+The situation is similar for NAND flash, but the root filesystem is stored as
+UBI volumes, and there are only two copies.
 
 Emergency shell
 ---------------

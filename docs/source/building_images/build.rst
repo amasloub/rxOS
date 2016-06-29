@@ -71,7 +71,8 @@ applied to the kernel can be found in ``rxos/patches/linux`` directory.
 The kernel configuration is found in the ``rxos/configs/rxos_kernel_defconfig``
 file.
 
-The following files are generated during the build:
+The following files are generated during the build targeting the Raspberry Pi
+board:
 
 ==============  ===============================================================
 zImage          kernel image with linked initramfs
@@ -83,8 +84,24 @@ The ``kernel.img`` file is created by a post-image hook called
 ``rxos/scripts/add_trailer.sh``. The script's source includes more information
 on what it does and why.
 
+The following files are generated during the build targeting the CHIP board:
+
+==============  ===============================================================
+zImage          kernel image with linked initramfs
+==============  ===============================================================
+
 To restart the build from the kernel image compilation you can use the
 ``rebuild-with-linux`` target.
+
+U-Boot compilation
+------------------
+
+The CHIP build will also generate a bootloader image, ``u-boot-dtb.bin`` and
+its derivative SPL images (secondary program loader), ``sunxi-spl.bin`` and
+``sunxi-spl-with-ecc.bin``.
+
+To recompile U-Boot, the ``uboot-dirclean`` target is used to clean the U-Boot
+build, and ``uboot-rebuild`` target to rebuild it.
 
 Rootfs compilation
 ------------------

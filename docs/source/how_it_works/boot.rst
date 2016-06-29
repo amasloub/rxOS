@@ -3,12 +3,19 @@ The boot process
 
 The boot process is divided into 3 stages:
 
-- Raspberry Pi boot
+- Hardware boot
 - Early userspace init
 - Userspace init
 
+Storage contents
+----------------
+
+The are two types of storage devices used in rxOS, based on the target device.
+On Raspberry Pi, SD cards are used, while on CHIP, the built-in NAND flash
+storage is used.
+
 SD card boot partition contents
--------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The first partition of the SD card is a 400MB FAT32 partition with the
 following contents:
@@ -22,8 +29,30 @@ following contents:
 - backup root filesystem image (``backup.sqfs``)
 - original factory root filesystem image (``factory.sqfs``)
 
+NAND contents
+~~~~~~~~~~~~~
+
+The NAND contains the following:
+
+- SPL (secondary program loader) partition
+- SPL backup partition
+- U-Boot bootloader partition
+- U-Boot bootloader environment partition
+- boot partition
+    - kernel image (``zImage``)
+    - device tree blob (``sun5i-r8-chip.dtb``)
+- root filesystem partition
+- backup root filesystem partition
+- data partitions
+
+Hardware boot
+-------------
+
+Before any of the rxOS-specific software is executed, there is a phase in which
+the base hardware is initialized and the hardware-specific bootloaders are run.
+
 Raspberry Pi boot
------------------
+~~~~~~~~~~~~~~~~~
 
 The first stage is the same for all Raspberry Pi devices, but it will be
 described here for completeness.
@@ -56,6 +85,22 @@ by default, configurable via ``config.txt``), which is executed on the ARM CPU.
 The kernel image contains a minimal early userspace and its ``init`` script is
 executed.
 
+CHIP boot
+~~~~~~~~~
+
+When the board receives power, code in the boot rom (BROM) is executed. This
+code will activate a small amount of memory and load SPL from either the first
+NAND partition or its backup image on the second partition.
+
+SPL's job is to activate all of DRAM and load the U-Boot bootloader from the
+third partition.
+
+When U-Boot is activated it reads the boot parameters from the U-Boot
+environment partition. By default, this will cause U-Boot to mount the boot
+partition (labelled 'linux'), and load the kernel image and the DTB from it.
+
+Finally, the kernel image is executed.
+
 The early userspace
 -------------------
 
@@ -63,25 +108,33 @@ Early userspace initialization happens within the ``init`` script in the root
 of the kernel's initramfs. We will refer to this script as EI for brevity
 (early init).
 
-EI is generated from a template found in ``rxos/initramfs/init.in.sh`` file.
-The sources are thoroughly documented, so if you need to know more than what's
-presented here, you are welcome to peruse the sources.
-
-EI starts between 3 and 5 seconds after kernel starts booting. 
+EI is generated from a template found in ``rxos/initramfs/init.*.in.sh`` file.
+The asterix in the name can be either 'nand' or 'sdcard' depending on the
+target platform. The sources are thoroughly documented, so if you need to know
+more than what's presented here, you are welcome to peruse the sources.
 
 It first mounts devtmpfs to ``/dev`` so that device nodes are accessible. It
-then mounts the SD card in order to access root filesystem images. There are
-three possible candidates for the final userspace, and those are ``root.sqfs``,
-``backup.sqfs``, and ``factory.sqfs``. These images are LZ4-compressed SquashFS
-images that contain the userspace executables, code, and data.
+then mounts the boot partition in order to access root filesystem
+images/partitions.
+
+On Raspberry Pi, additional data partitions are created. For NAND-based boot,
+this step is skipped because the extra partitions are programmed along with the
+base system when the NAND is flashed at the factory.
+
+On Raspberry Pi, there are three possible candidates for the final userspace,
+and those are ``root.sqfs``, ``backup.sqfs``, and ``factory.sqfs``.  On CHIP,
+there are two possible candidates, ``ubi0:root`` and ``ubi0:root-backup``.
 
 A RAM disk with size configurable at build-time (default is 80 MiB) is created
 to serve as a write-enabled overlay over the read-only root filesystem. The
 mount points for the SD card and devtmpfs are moved to ``/boot`` and ``/dev``
 in the target rootfs, respectively.
 
+If overlay SquashFS images are found (named ``overlay-<name>.sqfs``), they are
+laid over the root filesystem to provide device-specific extension.
+
 For each candidate root filesystem, EI mounts the image, and creates a write
-overlay using Overlay FS and the previously configured RAM disk. It then
+overlay using OverlayFS and the previously configured RAM disk. It then
 attempts to switch to the new root filesystem using BusyBox's ``switch_root``
 command which executes the ``/sbin/init`` binary in the target root filesystem.
 
@@ -89,8 +142,9 @@ If the switch is successful, early userspace initialization is complete and the
 userspace proper takes over.
 
 If the switch is not successful, the next candidate is tried until no root
-filesystem candidates are left. If none of the root filesystem images can be
-booted, EI starts an emergency shell where troubleshooting can be performed.
+filesystem candidates are left. If none of the root filesystem
+images/partitions can be booted, EI starts an emergency shell where
+troubleshooting can be performed.
 
 .. note::
     Even if switch is successful, it does not mean the boot will succeed.
@@ -106,28 +160,8 @@ The userspace
 
 Userspace initialization happens in the rootfs and is carried out by the init
 scripts in ``/etc/init.d``. The init scripts are executed synchronously in the
-lexical file name order. This subsection provides an overview of the
-initialization but not a description of what each of the scripts does.
+lexical file name order.
 
-1. First the SD card is probed for existence of an extended partition, and one
-   is created if not found, with the following logical partitions:
-
-   - 5: 24MB ext4 partition for storing system file overrides
-   - 6: 600MB download cache partition
-   - 7: 1024MB application data partition
-   - 8: remaining unallocated space
-
-2. The logical partitions are mounted:
-
-   - partition 5 to ``/mnt/conf``
-   - partition 6 to ``/mnt/cache``
-   - partition 7 to ``/mnt/data``
-   - partition 8 to ``/mnt/downloads``
-
-3. Files listed in persist list are symlinked from ``/mnt/conf`` to
-   appropriate parts of the root filesystem, overriding the read-only files
-   found in the rootfs image (e.g., ``/etc/shadow``, network configuration, 
-   etc)
-4. Lower-level system services are started (networking, SSH server, FTP server,
-   HTTP server)
-5. Applications are started (ONDD, FSAL, Librarian)
+The userspace will start the WiFi hotspot, web and database servers, and
+Outernet applications. Any attached external storage devices will also be
+mounted during this stage.
