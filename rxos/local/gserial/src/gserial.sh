@@ -9,4 +9,4 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-modprobe g_serial
+modprobe g_cdc
