@@ -17,6 +17,11 @@ iface eth0 inet manual
   post-up /usr/sbin/dhcpcfg $IFACE up
   pre-down /usr/sbin/dhcpcfg $IFACE down
 
+iface usb0 inet static
+  address %GE_IP%
+  netmask %NETMASK%
+  dns-nameservers %GE_IP%
+
 allow-hotplug %IFACE%
 iface wlan0 inet static
   address %IP%

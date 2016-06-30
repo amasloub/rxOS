@@ -9,10 +9,17 @@ menuconfig BR2_PACKAGE_NETWORK_CONFIG
 
 if BR2_PACKAGE_NETWORK_CONFIG
 
-config BR2_NETOWKR_CONFIG_HAS_ETH
+config BR2_NETOWRK_CONFIG_HAS_ETH
     bool "Use Ethernet interface (DHCP)"
 	help
 	  Configure Ethernet interface eth0 with DHCP.
+
+config BR2_NETWORK_CONFIG_HAS_GETH
+	bool "Use gadget Ethernet interface (static)"
+	help
+	  Configure the gadget Ethernet interface (usb0)
+	  with static IP address and DHCP server enabled
+	  on it.
 
 config BR2_NETWORK_CONFIG_AP_IF
 	string "Access point interface"
@@ -34,13 +41,13 @@ config BR2_NETWORK_CONFIG_AP_IP
 
 config BR2_NETWORK_CONFIG_DHCP_START
 	string "DHCP IP range start"
-	default 10.0.0.10
+	default "10.0.0.100"
 	help
 	  Start of the IP range that will be assigned to clients.
 
 config BR2_NETWORK_CONFIG_DHCP_END
 	string "DHCP IP range end"
-	default 10.0.0.254
+	default "10.0.0.254"
 	help
 	  End address of the IP range that will be assigned to clients.
 
@@ -61,5 +68,33 @@ config BR2_NETWORK_CONFIG_TAG
 	default "lan"
 	help
 	  Domain name used by the clients.
+
+if BR2_NETWORK_CONFIG_HAS_GETH
+
+config BR2_NETWORK_CONFIG_GETH_IP
+	string "Gadget Ethernet IP address"
+	default "10.10.10.10"
+	help
+	  IPv4 address of the access point.
+
+config BR2_NETWORK_CONFIG_GETH_HOSTNAME
+	string "Gadget Ethernet hostname"
+	default "usb.rxos.com"
+	help
+	  Hostname to use in DNS resolution.
+
+config BR2_NETWORK_CONFIG_GETH_DHCP_START
+	string "Gadget Ethernet DHCP IP range start"
+	default "10.10.10.100"
+	help
+	  Start of the IP range that will be assigned to clients.
+
+config BR2_NETWORK_CONFIG_GETH_DHCP_END
+	string "Gadget Ethernet DHCP IP range end"
+	default "10.10.10.254"
+	help
+	  End address of the IP range that will be assigned to clients.
+
+endif # BR2_NETWORK_CONFIG_HAS_GETH
 
 endif
