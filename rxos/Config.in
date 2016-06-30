@@ -90,6 +90,7 @@ menu "System configuration"
 	source "$BR2_EXTERNAL/local/boothook-selfpartition/Config.in"
 	source "$BR2_EXTERNAL/local/setup/Config.in"
 	source "$BR2_EXTERNAL/local/persist-conf/Config.in"
+	source "$BR2_EXTERNAL/local/gserial/Config.in"
 	source "$BR2_EXTERNAL/local/storage-hotplug/Config.in"
 endmenu
 
