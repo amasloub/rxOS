@@ -20,7 +20,7 @@ FAST_INTERVAL=100
 
 kill_blink() {
   blink_pids="$(ps ax | grep '{blink}' | grep -v grep | awk '{print $1}')"
-  kill -KILL $blink_pids
+  kill -KILL $blink_pids >/dev/null 2>&1
 }
 
 led_set() {
