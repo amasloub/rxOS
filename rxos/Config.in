@@ -112,6 +112,8 @@ menu "Applications"
 	if BR2_PACKAGE_PYTHON_LIBRARIAN
 	comment "Content access"
 		source "$BR2_EXTERNAL/package/python-lftp/Config.in"
+	comment "Network"
+		source "$BR2_EXTERNAL/package/python-librarian-netinterfaces/Config.in"
 	comment "Misc"
 		source "$BR2_EXTERNAL/package/python-librarian-analytics/Config.in"
 	endif
