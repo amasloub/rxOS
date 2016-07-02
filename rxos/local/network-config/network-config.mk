@@ -28,6 +28,15 @@ define NETWORK_CONFIG_INSTALL_ETH
 endef
 endif # BR2_NETWORK_CONFIG_HAS_ETH
 
+ifeq ($(BR2_NETWORK_CONFIG_WLAN_NOPOWERSAVE),y)
+define NETWORK_CONFIG_INSTALL_NOPOWERSAVE
+	$(INSTALL) -Dm755 $(@D)/wlan_powersave.sh \
+		$(TARGET_DIR)/usr/sbin/setup.d/wlan_powersave.sh
+	$(INSTALL) -Dm644 $(@D)/99-wifi.rules \
+		$(TARGET_DIR)/etc/udev/rules.d/99-wifi.rules
+endef
+endif # BR2_NETWORK_CONFIG_WLAN_NOPOWERSAVE
+
 ifeq ($(BR2_NETWORK_CONFIG_HAS_GETH),y)
 NETWORK_CONFIG_IFACES += usb0
 NETWORK_CONFIG_DHCP_IFACES += usb0
@@ -60,6 +69,7 @@ define NETWORK_CONFIG_INSTALL_TARGET_CMDS
 	$(INSTALL) -Dm644 $(@D)/dnsmasq.conf $(TARGET_DIR)/etc/dnsmasq.conf
 	$(INSTALL) -Dm755 $(@D)/S81hostapd $(TARGET_DIR)/etc/init.d/S81hostapd
 	$(NETWORK_CONFIG_INSTALL_ETH)
+	$(NETWORK_CONFIG_INSTALL_NOPOWERSAVE)
 endef
 
 $(eval $(generic-package))

@@ -2,6 +2,7 @@ menuconfig BR2_PACKAGE_NETWORK_CONFIG
 	bool "Network configuration"
 	select BR2_PACKAGE_DNSMASQ
 	select BR2_PACKAGE_HOSTAPD
+	select BR2_PACKAGE_IW
 	help
 	  Configuration and init scripts necessary to start a wireless hotspot.
 	  
@@ -96,5 +97,11 @@ config BR2_NETWORK_CONFIG_GETH_DHCP_END
 	  End address of the IP range that will be assigned to clients.
 
 endif # BR2_NETWORK_CONFIG_HAS_GETH
+
+config BR2_NETWORK_CONFIG_WLAN_NOPOWERSAVE
+	bool "Disable power management for wifi0 interface"
+	help
+	  When this is enabled, power-saving is disabled for 
+	  wifi0 interface.
 
 endif
