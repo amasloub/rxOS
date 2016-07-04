@@ -77,6 +77,8 @@ clean-rootfs:
 	@-rm $(IMAGES_DIR)/rxos*
 	@-rm $(IMAGES_DIR)/*.txt
 	@-rm $(IMAGES_DIR)/*.pkg
+	@-rm $(IMAGES_DIR)/*.zip
+	@-rm $(IMAGES_DIR)/*.md5
 	@-rm $(IMG_FILE)
 
 clean-linux: clean-rootfs

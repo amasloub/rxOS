@@ -9,25 +9,49 @@
 
 GITVER = $(shell cd $(BR2_EXTERNAL);git rev-parse --short HEAD)
 FULL_VERSION = v$(call qstrip,$(RXOS_VERSION))+$(GITVER)
-DATE = $(shell date +%Y%m%d)
-BASENAME = $(BINARIES_DIR)/rxos-image-$(FULL_VERSION)-$(DATE)
-ZIPNAME = $(BASENAME).zip
-MD5NAME = $(BASENAME).md5
+DATE = $(shell date +%Y%m%d%H%M)
+SDCARD_BASENAME = $(BINARIES_DIR)/rxos-image-$(FULL_VERSION)-$(DATE)
+SDCARD_ZIPNAME = $(SDCARD_BASENAME).zip
+SDCARD_MD5NAME = $(SDCARD_BASENAME).md5
+FLASH_BASENAME = $(BINARIES_DIR)/rxos-chip-flash-$(FULL_VERSION)-$(DATE)
+FLASH_ZIPNAME = $(FLASH_BASENAME).zip
+FLASH_MD5NAME = $(FLASH_BASENAME).md5
 
 
-.PHONY: release-zip
+.PHONY: release-zip release-flash
 
-$(BINARIES_DIR)/INSTALL.txt:
-	$(INSTALL) -m644 $(BR2_EXTERNAL)/misc/INSTALL.txt \
-		$(BINARIES_DIR)/INSTALL.txt
-	sed -i 's|%VER%|$(FULL_VERSION)|' $(BINARIES_DIR)/INSTALL.txt
-	$(HOST_DIR)/usr/bin/unix2dos $(BINARIES_DIR)/INSTALL.txt
 
-$(ZIPNAME): $(BINARIES_DIR)/sdcard.img $(BINARIES_DIR)/INSTALL.txt
+$(BINARIES_DIR)/INSTALL.txt: $(BR2_EXTERNAL)/misc/INSTALL.txt
+	$(INSTALL) -m644 $< $@
+	$(SED) 's|%VER%|$(FULL_VERSION)|' $@
+	$(HOST_DIR)/usr/bin/unix2dos $@
+
+$(BINARIES_DIR)/README.txt: $(BR2_EXTERNAL)/misc/README.txt
+	$(INSTALL) -m644 $< $@
+	$(HOST_DIR)/usr/bin/unix2dos $@
+
+$(BINARIES_DIR)/99-chip.rules: $(BR2_EXTERNAL)/misc/99-chip.rules
+	$(INSTALL) -m644 $< $@
+
+$(SDCARD_ZIPNAME): $(BINARIES_DIR)/sdcard.img $(BINARIES_DIR)/INSTALL.txt
 	zip -j "$@" "$<" $(BINARIES_DIR)/INSTALL.txt COPYING
 
-$(MD5NAME): $(ZIPNAME)
+$(SDCARD_MD5NAME): $(SDCARD_ZIPNAME)
 	md5sum "$<" > "$@"
 	sed -i 's|$(BINARIES_DIR)/||' "$@"
 
-release-zip: $(MD5NAME)
+$(FLASH_ZIPNAME): $(BINARIES_DIR)/board.ubi $(BINARIES_DIR)/README.txt $(BINARIES_DIR)/99-chip.rules
+	zip -j "$@" \
+		$(BINARIES_DIR)/{board.ubi,sunxi-spl.bin,sunxi-spl-with-ecc.bin,u-boot-dtb.bin,README.txt,99-chip.rules} \
+		$(TARGET_DIR)/etc/platform-release \
+		$(BR2_EXTERNAL)/../tools/chip-flash.sh \
+		$(BR2_EXTERNAL)/../COPYING
+
+$(FLASH_MD5NAME): $(FLASH_ZIPNAME)
+	md5sum "$<" > "$@"
+	sed -i 's|$(BINARIES_DIR)/||' "$@"
+
+
+release-sdcard: $(SDCARD_MD5NAME)
+
+release-flash: $(FLASH_MD5NAME)
