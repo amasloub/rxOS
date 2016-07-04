@@ -10,23 +10,23 @@
 # Some rights reserved.
 
 DAEMON=/usr/sbin/sdr100
+JSON_PATH="%JSON_PATH%"
 PID_FILE=/var/run/sdr.run
-
-. /etc/conf.d/sdr
+DAEMON_ARGS="$(/usr/sbin/sdrargs "$JSON_PATH")"
 
 [ -x "$DAEMON" ] || exit 0
-[ -z "$DAEMON_ARGS" ] || exit 0
+[ -z "$DAEMON_ARGS" ] && exit 0
 
 pre_start() {
   # Unload modules because demod does not like it
-  rmmod dvb_usb_rtl28xxu
-  rmmod rtl2832
+  rmmod dvb_usb_rtl28xxu 2>/dev/null
+  rmmod rtl2832 2>/dev/null
 }
 
 start() {
   printf "Starting SDR demodulator: "
   pre_start
-  start-stop-daemon start-stop-daemon -S -q -p "$PID_FILE" --exec "$DAEMON" \
+  start-stop-daemon -S -q -m -b -p "$PID_FILE" --exec "$DAEMON" \
     -- $DAEMON_ARGS
   if [ $?  ]; then
     echo "OK"
