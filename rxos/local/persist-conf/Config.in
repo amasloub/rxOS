@@ -14,11 +14,8 @@ if BR2_PACKAGE_PERSIST_CONF
 config BR2_PERSISTENT_CONF_LIST
 	string "Persistent configuration file list"
 	help
-	  Path to the file listing the candidates for
-	  persistent configuration. The file must list
-	  the paths (files or directories) one per line,
-	  and the paths must be absolute.
-
+	  Space-separated list of files and directories
+	  to persist.
 
 config BR2_PERSISTENT_CONF_DIR
 	string "Persistent configuration directory"
