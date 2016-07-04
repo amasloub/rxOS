@@ -385,6 +385,11 @@ UBI_IMAGE="$TMPDIR/board.ubi"
 msg "Creating U-Boot script"
 submsg "Writing script source"
 cat <<EOF > "$TMPDIR/uboot.cmds"
+echo "==> Resetting environment"
+env default mtdparts
+env default bootargs
+env default bootcmd
+saveenv
 echo "==> Setting up MTD partitions"
 setenv mtdparts 'mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),-(UBI)'
 saveenv
