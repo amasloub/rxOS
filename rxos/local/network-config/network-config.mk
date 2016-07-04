@@ -31,7 +31,7 @@ endif # BR2_NETWORK_CONFIG_HAS_ETH
 ifeq ($(BR2_NETWORK_CONFIG_WLAN_NOPOWERSAVE),y)
 define NETWORK_CONFIG_INSTALL_NOPOWERSAVE
 	$(INSTALL) -Dm755 $(@D)/wlan_powersave.sh \
-		$(TARGET_DIR)/usr/sbin/setup.d/wlan_powersave.sh
+		$(TARGET_DIR)/usr/sbin/wlan_powersave.sh
 	$(INSTALL) -Dm644 $(@D)/99-wifi.rules \
 		$(TARGET_DIR)/etc/udev/rules.d/99-wifi.rules
 endef
