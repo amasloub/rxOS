@@ -11,7 +11,7 @@
 
 DAEMON=/usr/sbin/sdr100
 JSON_PATH="%JSON_PATH%"
-PID_FILE=/var/run/sdr.run
+PID_FILE=/var/run/sdr.pid
 DAEMON_ARGS="$(/usr/sbin/sdrargs "$JSON_PATH")"
 
 [ -x "$DAEMON" ] || exit 0
