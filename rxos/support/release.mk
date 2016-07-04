@@ -8,12 +8,12 @@
 # Some rights reserved.
 
 GITVER = $(shell cd $(BR2_EXTERNAL);git rev-parse --short HEAD)
-FULL_VERSION = v$(call qstrip,$(RXOS_VERSION))+$(GITVER)
 DATE = $(shell date +%Y%m%d%H%M)
-SDCARD_BASENAME = $(BINARIES_DIR)/rxos-image-$(FULL_VERSION)-$(DATE)
+FULL_VERSION = v$(call qstrip,$(RXOS_VERSION))-$(DATE)+$(GITVER)
+SDCARD_BASENAME = $(BINARIES_DIR)/rxos-image-$(FULL_VERSION)
 SDCARD_ZIPNAME = $(SDCARD_BASENAME).zip
 SDCARD_MD5NAME = $(SDCARD_BASENAME).md5
-FLASH_BASENAME = $(BINARIES_DIR)/rxos-chip-flash-$(FULL_VERSION)-$(DATE)
+FLASH_BASENAME = $(BINARIES_DIR)/rxos-chip-flash-$(FULL_VERSION)
 FLASH_ZIPNAME = $(FLASH_BASENAME).zip
 FLASH_MD5NAME = $(FLASH_BASENAME).md5
 
