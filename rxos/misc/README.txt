@@ -88,32 +88,36 @@ Example output may look like this:
 
     [  0.01 ] ===> Preparing the payloads
     [  0.01 ] .... Preparing the SPL binary
-    [  0.02 ] .... Preparing the U-Boot binary
-    [  0.32 ] .... Preparing sparse UBI image
-    [  0.50 ] ===> Creating U-Boot script
-    [  0.50 ] .... Writing script source
-    [  0.51 ] .... Writing script image
-    [  0.51 ] ===> Uploading payloads
-    [  0.51 ] .... Waiting for CHIP in FEL mode...OK
-    [  0.52 ] .... Executing SPL
-    [  2.05 ] .... Uploading SPL
-    [  8.92 ] .... Uploading U-Boot
-    [ 16.21 ] .... Uploading U-Boot script
-    [ 16.22 ] ===> Executing flash
-    [ 16.23 ] .... Waiting for fastboot.......OK
+    [  0.01 ] .... Preparing the U-Boot binary
+    [  0.30 ] .... Preparing sparse UBI image
+    [  0.41 ] ===> Creating U-Boot script
+    [  0.42 ] .... Writing script source
+    [  0.42 ] .... Writing script image
+    [  0.42 ] ===> Uploading payloads
+    [  0.43 ] .... Waiting for CHIP in FEL mode...OK
+    [  0.44 ] .... Executing SPL
+    [  1.97 ] .... Uploading SPL
+    [  8.86 ] .... Uploading U-Boot
+    [ 16.15 ] .... Uploading U-Boot script
+    [ 16.16 ] ===> Executing flash
+    [ 16.17 ] .... Waiting for fastboot.......OK
     target reported max download size of 314572800 bytes
-    sending 'UBI' (212992 KB)...
-    OKAY [ 14.321s ]
+    sending 'UBI' (204800 KB)...
+    OKAY [ 16.949s ]
     writing 'UBI'...
-    OKAY [ 47.038s ]
-    finished. total time: 61.359s
+    OKAY [ 44.200s ]
+    finished. total time: 61.149s
     resuming boot...
     OKAY [  0.000s ]
     finished. total time: 0.000s
-    [102.12] ===> Verifying
-    [102.12] .... Waiting for boot.................................TIMEOUT
-    ERROR: Unable to detect booted CHIP
+    [101.84] ===> Cleaning up
+    [101.86] ===> Done
 
-Note that the script will *always* time out waiting for boot. This is a known
-issue. By the time the script times out, the CHIP should already be booted with
-the Outernet software.
+    !!! DO NOT DISCONNECT JUST YET. !!!
+
+    Your CHIP is now flashed. It will now boot and prepare the system.
+    Status LED will start blinking when it's ready.
+
+As the message says, within about 2 minutes, the status LED will start
+blinking. At that point, you will be able to start using your newly flashed
+CHIP.
