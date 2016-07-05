@@ -13,6 +13,7 @@ DAEMON=/usr/sbin/sdr100
 JSON_PATH="%JSON_PATH%"
 PID_FILE=/var/run/sdr.pid
 DAEMON_ARGS="$(/usr/sbin/sdrargs "$JSON_PATH")"
+RESET_PAUSE=900  # seconds
 
 [ -x "$DAEMON" ] || exit 0
 [ -z "$DAEMON_ARGS" ] && exit 0
@@ -56,7 +57,7 @@ reset() {
   [ -f "$PID_FILE" ] || exit 0
   kill -9 "$(cat "$PID_FILE")"
   rm "$PID_FILE"
-  sleep 60
+  sleep "$RESET_PAUSE"
   start
 }
 
