@@ -17,6 +17,14 @@ FLASHSCRIPT="$FLASHKIT_PATH/chip-flash.sh"
 PATH="$PATH:$FLASHKIT_PATH/bin"
 export PATH
 
+flash() {
+  local devid="$1"
+  local logpath
+  logpath="$LOGDIR/$(date '+%Y%m%d-%H%M%S')-$devid.log"
+  "$FLASHSCRIPT" -D "$devid" >"$logpath" 2>&1
+  echo "COMPLETED $devid, WATCH FOR BLINKING LED"
+}
+
 echo "Creating FIFO pipe at '$FIFO_PATH'"
 [ -e "$FIFO_PATH" ] && rm "$FIFO_PATH"
 mkfifo "$FIFO_PATH"
@@ -28,7 +36,6 @@ echo "Listening for device IDs..."
 while true; do
   while read -r devid; do
     echo "Got device ID: $devid"
-    logpath="$LOGDIR/$(date '+%Y%m%d-%H%M%S')-$devid.log"
-    "$FLASHSCRIPT" -D "$devid" >"$logpath" 2>&1 &
+    flash "$devid" &
   done < "$FIFO_PATH"
 done
