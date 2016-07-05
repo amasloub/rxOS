@@ -116,6 +116,8 @@ menu "Applications"
 		source "$BR2_EXTERNAL/package/python-librarian-netinterfaces/Config.in"
 	comment "Misc"
 		source "$BR2_EXTERNAL/package/python-librarian-analytics/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-sdr/Config.in"
+	endif
 endmenu
 
 menu "Libraries"
