@@ -83,6 +83,10 @@ UBOOT_ADDR=0x4a000000
 #UBOOT_ENV_ADDR=0x4b000000
 UBOOT_SCRIPT_ADDR=0x43100000
 
+# Command aliases
+FEL="fel"
+FASTBOOT="fastboot -i $FASTBOOT_ID"
+
 # Abort with an error message
 abort() {
   local msg="$*"
@@ -93,23 +97,29 @@ abort() {
 
 # Print usage
 usage() {
-  echo "Usage: $0 [-htkD] [-b PATH]"
-  echo
-  echo "Options:"
-  echo "  -h  Show this message and exit"
-  echo "  -k  Keep temporary directory"
-  echo "  -b  Location of the directory containing the images"
-  echo "      (defaults to current directory)"
-  echo "  -P  Only prepare the payload and quit (this option "
-  echo "      also selects -k)"
-  echo
-  echo "This program is part of rxOS."
-  echo "rxOS is free software licensed under the"
-  echo "GNU GPL version 3 or any later version."
-  echo
-  echo "(c) 2016 Outernet Inc"
-  echo "Some rights reserved."
-  echo
+  cat <<EOF
+Usage: $0 [-htkp] [-b PATH] [-D DEVID]
+
+Options:
+  -h  Show this message and exit
+  -k  Keep temporary directory
+  -b  Location of the directory containing the images
+      (defaults to current directory)
+  -p  Only prepare the payload and quit (this option 
+      also selects -k)
+  -D  Select a particular device instead of auto-detecting
+
+Parameters:
+  PATH    Path containing the binaries and images
+  DEVID   Device ID in <busid>:<devnum> format
+
+This program is part of rxOS.
+rxOS is free software licensed under the
+GNU GPL version 3 or any later version.
+
+(c) 2016 Outernet Inc
+Some rights reserved.
+EOF
 }
 
 # Check whether a command exists
@@ -157,19 +167,14 @@ with_timeout() {
   return 1
 }
 
-# Perform an action using fastboot client
-do_fb() {
-  fastboot -i "$FASTBOOT_ID" $@
-}
-
 # Test for fastboot
 has_fastboot() {
-  [ -n "$(do_fb devices)" ]
+  [ -n "$($FASTBOOT devices)" ]
 }
 
 # Wait for CHIP in FEL mode to connected
 wait_for_fel() {
-  with_timeout 1 "[$(timestamp)] .... Waiting for CHIP in FEL mode" "fel ver"
+  with_timeout 1 "[$(timestamp)] .... Waiting for CHIP in FEL mode" "$FEL ver"
 }
 
 # Wait for CHIP to reconnect after being flashed
@@ -300,7 +305,7 @@ submsg() {
 ###############################################################################
 
 # Parse the command line options
-while getopts "htkb:P" opt; do
+while getopts "htkb:pD:" opt; do
   case $opt in
     h)
       usage
@@ -312,8 +317,23 @@ while getopts "htkb:P" opt; do
     b)
       BINARIES_DIR="$OPTARG"
       ;;
-    P)
+    p)
       PREPARE_ONLY=y
+      ;;
+    D)
+      has_command udevadm || abort "-D option requires udev"
+      BUSNUM="$(echo "$OPTARG" | cut -d: -f1)"
+      DEVNUM="$(echo "$OPTARG" | cut -d: -f2)"
+      BUSNUM_CLEAN="$(echo "$BUSNUM" | sed 's/^0*//')"
+      DEVNUM_CLEAN="$(echo "$DEVNUM" | sed 's/^0*//')"
+      FEL="$FEL -d ${BUSNUM_CLEAN}:${DEVNUM_CLEAN}"
+      BUSNUM="$(echo "$OPTARG" | cut -d: -f1)"
+      DEVNUM="$(echo "$OPTARG" | cut -d: -f2)"
+      DEVNAME="/dev/bus/usb/$BUSNUM/$DEVNUM"
+      SYSPATH="$(udevadm info "$DEVNAME" | grep "P:" | awk '{print $2}')"
+      PORT="usb:${SYSPATH##*/}"
+      FASTBOOT="$FASTBOOT -s $PORT"
+      echo "Using device $DEVNAME on port $PORT"
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -446,35 +466,43 @@ msg "Uploading payloads"
 wait_for_fel || abort "Unable to find CHIP in FEL mode"
 
 submsg "Executing SPL"
-fel spl "$SPL" || abort "Failed to execute SPL"
+$FEL spl "$SPL" || abort "Failed to execute SPL"
 
 sleep 1
 
 submsg "Uploading SPL"
-fel write "$SPL_ADDR" "$SPL_ECC"
+$FEL write "$SPL_ADDR" "$SPL_ECC"
 
 submsg "Uploading U-Boot"
-fel write "$UBOOT_ADDR" "$TMPDIR/uboot.bin"
+$FEL write "$UBOOT_ADDR" "$TMPDIR/uboot.bin"
 
 #submsg "Uploading U-Boot env"
 #fel write "$UBOOT_ENV_ADDR" "$UBOOT_ENV"
 
 submsg "Uploading U-Boot script"
-fel write "$UBOOT_SCRIPT_ADDR" "$TMPDIR/uboot.scr"
+$FEL write "$UBOOT_SCRIPT_ADDR" "$TMPDIR/uboot.scr"
 
 ###############################################################################
 # Executing flash
 ###############################################################################
 
 msg "Executing flash"
-fel exe "$UBOOT_ADDR"
+$FEL exe "$UBOOT_ADDR"
 wait_for_fastboot || abort "Unable to find CHIP in fastboot mode"
-do_fb -u flash UBI "$UBI_IMAGE" || abort "Failed to flash board image"
-do_fb continue || abort "Unable to continue with the boot"
-
-msg "Verifying"
-wait_for_boot || abort "Unable to detect booted CHIP"
+$FASTBOOT -u flash UBI "$UBI_IMAGE" || abort "Failed to flash board image"
+$FASTBOOT continue || abort "Unable to continue with the boot"
 
 # Finish up
 msg "Cleaning up"
 [ "$KEEP_TMPDIR" == n ] && rm -rf "$TMPDIR"
+
+msg "Done"
+
+cat <<EOF
+
+!!! DO NOT DISCONNECT JUST YET. !!!
+
+Your CHIP is now flashed. It will now boot and prepare the system.
+Status LED will start blinking when it's ready.
+
+EOF
