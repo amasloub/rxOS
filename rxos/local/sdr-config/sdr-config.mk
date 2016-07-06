@@ -13,12 +13,13 @@ SDR_CONFIG_SED_CMDS += s|%JSON_PATH%|$(call qstrip,$(BR2_LIBRARIAN_SETTINGS_FILE
 
 define SDR_CONFIG_INSTALL_TARGET_CMDS
 	$(INSTALL) -Dm755 $(@D)/sdrargs.py $(TARGET_DIR)/usr/sbin/sdrargs
+	$(INSTALL) -Dm755 $(@D)/ontimeout.sh $(TARGET_DIR)/usr/sbin/ontimeout
 endef
 
 define SDR_CONFIG_INSTALL_INIT_SYSV
-	$(INSTALL) -Dm0755 $(BR2_EXTERNAL)/local/sdr-config/S80sdr \
-		$(TARGET_DIR)/etc/init.d/S80sdr
-	$(SED) '$(SDR_CONFIG_SED_CMDS)' $(TARGET_DIR)/etc/init.d/S80sdr
+	$(INSTALL) -Dm0755 $(BR2_EXTERNAL)/local/sdr-config/S90sdr \
+		$(TARGET_DIR)/etc/init.d/S90sdr
+	$(SED) '$(SDR_CONFIG_SED_CMDS)' $(TARGET_DIR)/etc/init.d/S90sdr
 endef
 
 $(eval $(generic-package))
