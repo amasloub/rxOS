@@ -1,5 +1,17 @@
-config BR2_PACKAGE_SDR_CONFIG
+menuconfig BR2_PACKAGE_SDR_CONFIG
 	bool "SDR init script and configuration"
 	help
 	  Install SDR demodulator configuration and 
 	  init script.
+
+
+if BR2_PACKAGE_SDR_CONFIG
+
+config BR2_SDR_BINARY_PATH
+	string "Path to demodulator executable"
+	default "/usr/sbin/sdr100"
+	help
+	  Absolute path to where demodulator executable
+	  file would be.
+
+endif
