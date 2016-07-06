@@ -121,3 +121,15 @@ Example output may look like this:
 As the message says, within about 2 minutes, the status LED will start
 blinking. At that point, you will be able to start using your newly flashed
 CHIP.
+
+Note on fastboot and virtual machines
+*************************************
+
+If you are using a virtualmachine (e.g., VirtualBox or VMware), you should be
+aware that, during the flashing, when the "Waiting for fastboot" message
+appears, the CHIP will change its USB ID. This means that the USB ID you
+originally set up while it was in FEL mode will no longer apply, and the
+guest OS will loose the connection to CHIP. This results in fastboot timeout.
+
+Once fastboot times out, you should reconfigure your virtual machine manager to
+make the new USB ID available to the guest.
