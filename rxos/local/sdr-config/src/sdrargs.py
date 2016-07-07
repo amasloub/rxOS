@@ -3,16 +3,19 @@
 import json
 
 
+SETTINGS_KEY = 'ondd_l'
+
+
 def read_args(target):
-    """ Read a json file and return its 'sdr' key value """
+    """ Read a json file and return its SETTINGS_KEY key value """
     with open(target, 'r') as settings_file:
         settings = json.load(settings_file)
-        return settings['sdr']
+        return settings[SETTINGS_KEY]
 
 
 def stringify_args(args):
     """ Create the text used by sdr100 as an argument string """
-    settings_text = ('-f {frequency} -u {uncertainty} -r {symbol_rate} '
+    settings_text = ('-f {frequency} -u {uncertainty} -r {symbolrate} '
                      '-s {sample_rate} -b {rf_filter}').format(**args)
     if args['descrambler']:
         settings_text += ' -w'
