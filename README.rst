@@ -70,6 +70,21 @@ Rebuild starting from the linux kernel::
 
     $ make rebuild-with-linux
 
+User makefiles
+--------------
+
+Any makefiles in the root of the source directory that are named ``user*.mk``
+will be included in the build, after all local and build packages, and support
+makefiles are executed. This makefiles can be used for temporary overrides and
+slight build adjustments.
+
+**Do not abuse user makefiles!** The more personal you make the build, the
+smaller the chance someone will be able to help you with it. 
+
+Example user makefiles are provided in the ``user`` directory. These makefiles
+are actually used in production so consider them 'working examples'. They can
+be symlinked to the source root.
+
 License
 -------
 

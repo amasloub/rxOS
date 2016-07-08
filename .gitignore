@@ -2,3 +2,4 @@
 /out
 /docs/build
 *.pem
+/user*.mk
