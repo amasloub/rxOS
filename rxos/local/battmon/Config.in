@@ -1,0 +1,11 @@
+config BR2_PACKAGE_BATTMON
+	bool "Monitor battery state"
+	select BR2_PACKAGE_BC
+	select BR2_PACKAGE_I2C_TOOLS
+	help
+	  This package installs a system service that 
+	  monitors battery charge state and voltage
+	  and reports abnormalities by flashing the
+	  status LED.
+
+
