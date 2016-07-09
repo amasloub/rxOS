@@ -28,7 +28,7 @@ start() {
   printf "Starting SDR demodulator: "
   pre_start
   start-stop-daemon -S -q -m -b -p "$PID_FILE" --exec "$DAEMON" \
-    -- $DAEMON_ARGS
+    -- -c $DAEMON_ARGS
   if [ $?  ]; then
     echo "OK"
   else
