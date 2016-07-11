@@ -1,4 +1,4 @@
-config BR2_PACKAGE_RXOS_UTILS
+menuconfig BR2_PACKAGE_RXOS_UTILS
 	bool "rxos-utils"
 	select BR2_PACKAGE_LIBCURL
 	select BR2_PACKAGE_CURL
@@ -21,5 +21,33 @@ config BR2_RXOS_UTILS_BOOTDEV
 	string
 	default "/dev/mmcblk0p1" if BR2_RAMFSINIT_SDCARD
 	default "ubi0:linux" if BR2_RAMFSINIT_NAND
+
+config BR2_RXOS_UTILS_PROCS
+	string "Processes"
+	default "hostapd dnsmasq dropbear postgres lighttpd fsal-daemon librarian ondd sdr100"
+	help
+	  The processes whose status is checked.
+
+config BR2_RXOS_UTILS_IFACES
+	string "Network interfaces"
+	default "wlan0 usb0"
+	help
+	  Network interfaces to check.
+
+config BR2_RXOS_UTILS_HOSTS
+	string "Host services"
+	default "Application:http:8000 HTTP:http:80; FTP:ftp:21"
+	help
+	  Local network services to check. The list is
+	  space-separated where each item has three
+	  parts in the following format:
+
+	      <label>:<protocol>:<port>
+
+config BR2_RXOS_UTILS_DEVNODES
+	string "Device nodes"
+	help
+	  Space-separate list of device nodes to check.
+	  Note that storage device node is always checked.
 
 endif  # BR2_PACKAGE_RXOS_UTILS
