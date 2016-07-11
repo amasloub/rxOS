@@ -1,5 +1,6 @@
 menuconfig BR2_PACKAGE_POSTGRES_CONFIG
 	bool "Postgres configuration"
+	select BR2_PACKAGE_POSTGRESQL
 	help 
 	  Install a postgres init script with
 	  build-specific configuration.
