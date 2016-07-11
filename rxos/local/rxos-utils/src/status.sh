@@ -12,42 +12,59 @@
 LIBRARIAN_PORT="%LIBRARIAN_PORT%"
 STORAGE_DEVICE="%STORAGE_DEVICE%"
 PARTITIONS="%PARTITIONS%"
+PROCS="%PROCS%"
+IFACES="%IFACES%"
+HOSTS="%HOSTS%"
+DEVNODES="%DEVNODES%"
+VERBOSE=0
+SUCCESS=0
+COLOR=0
 
-hdr() {
+report() {
   msg="$1"
-  printf "%-70s" "$msg"
-}
-
-pass() {
-  printf "\e[32mPASS\e[0m\n"
+  status="$2"
+  if [ $SUCCESS -eq 0 ] && [ "$status" = pass ]; then
+    return
+  fi
+  if [ $VERBOSE -eq 1 ]; then
+    printf "%-50s %s\n" "${msg}:" "$status"
+  else
+    echo "[$status] $msg"
+  fi
 }
 
 fail() {
-  printf "\e[31mFAIL\e[0m\n"
+  msg="$*"
+  report "$msg" fail
+}
+
+pass() {
+  msg="$*"
+  report "$msg" pass
 }
 
 check_process() {
   name="$1"
   binary="$(which "$name")"
-  hdr "Checking process $name: "
+  hdr="Process $name"
   if [ -z "$binary" ]; then
-    fail
+    fail "$hdr"
     return
   fi
-  if ps ax | grep "$binary" | grep -v grep >/dev/null 2>&1; then
-    pass
+  if ps ax | grep "$binary" | grep -q -v grep; then
+    pass "$hdr"
   else
-    fail
+    fail "$hdr"
   fi
 }
 
 check_net() {
   iface="$1"
-  hdr "Checking interface $iface: "
-  if ip link | grep "$iface" | grep "NO-CARRIER" >/dev/null 2>&1; then
-    fail
+  hdr="Interface $iface is up"
+  if [ "$(cat "/sys/class/net/$iface/operstate")" = up ]; then
+    pass "$hdr"
   else
-    pass
+    fail "$hdr"
   fi
 }
 
@@ -55,71 +72,118 @@ get_ip() {
   iface="$1"
   ipaddr=$(ip addr | grep -A1 "$iface" | grep "inet" \
     | awk '{print $2}' | cut -d/ -f1)
-  hdr "Interface $iface IPv4 address: "
+  hdr="Interface $iface IPv4 address"
   if [ -z "$ipaddr" ]; then
-    fail
+    fail "$hdr"
   else
-    echo "$ipaddr"
+    pass "$hdr"
   fi
 }
 
 check_mount() {
   dev="$1"
-  hdr "Checking mount for $dev: "
-  if mount | egrep "^(/dev/)?$dev" >/dev/null 2>&1; then
-    pass
+  hdr="Mounted $dev"
+  if mount | egrep -q "^(/dev/)?$dev"; then
+    pass "$hdr"
   else
-    fail
+    fail "$hdr"
   fi
 }
 
 check_devnode() {
   dev="$1"
-  hdr "Checking device node /dev/$dev: "
+  hdr="Device node /dev/$dev exists"
   if [ -e "/dev/$dev" ]; then
-    pass
+    pass "$hdr"
   else
-    fail
+    fail "$hdr"
   fi
 }
 
 check_server() {
   msg="$1"
-  url="$2"
-  hdr "Checking $msg server: "
-  if curl "$url" >/dev/null 2>&1; then
-    pass
+  proto="$2"
+  port="$3"
+  hdr="$msg server is responding"
+  if curl "$proto://localhost:$port/" >/dev/null 2>&1; then
+    pass "$hdr"
   else
-    fail
+    fail "$hdr"
   fi
 }
 
-check_process hostapd
-check_process dnsmasq
-check_process dropbear
-check_process postgres
-check_process lighttpd
-check_process monitoring-client
-check_process fsal-daemon
-check_process librarian
+usage() {
+  cat <<EOF
+Usage: $0 [-hvsc]
 
-check_net eth0
-check_net wlan0
+Options:
 
-get_ip eth0
-get_ip wlan0
+    -h    show this message and exit
+    -v    verbose output
+    -s    report success not just failure
+    -c    use colors
 
-check_devnode "$STORAGE_DEVICE"
-check_devnode dvb/adapeter0/frontend0
+
+This program is part of rxOS.
+rxOS is free software licensed under the
+GNU GPL version 3 or any later version.
+
+(c) Outernet Inc
+Some rights reserved.
+EOF
+}
+
+while getopts "hvsc" opt; do
+  case "$opt" in
+    h)
+      usage
+      exit 0
+      ;;
+    v)
+      VERBOSE=1
+      ;;
+    s)
+      SUCCESS=1
+      ;;
+    c)
+      COLOR=1
+      ;;
+    *)
+      echo "ERROR: invalid option '$opt'"
+      usage
+      exit 1
+  esac
+done
+
+for proc in $PROCS; do
+  check_process "$proc"
+done
+
+for iface in $IFACES; do
+  check_net "$iface"
+  get_ip "$iface"
+done
+
+for node in $DEVNODES; do
+  check_devnode "$node"
+done
 
 for part in $PARTITIONS; do
   check_mount "${STORAGE_DEVICE}${part}"
 done
 
-check_server "Librarian HTTP" "http://127.0.0.1:$LIBRARIAN_PORT/"
-check_server "nginx HTTP" "http://127.0.0.1/"
-check_server "lftp FTP" "ftp://127.0.0.1/"
+for host in $HOSTS; do
+  name="$(echo "$host" | cut -d: -f1)"
+  proto="$(echo "$host" | cut -d: -f2)"
+  port="$(echo "$host" | cut -d: -f3)"
+  check_server "$name" "$proto" "$port"
+done
 
+echo
 echo "Storage usage:"
 df -h | tail -n+2 | awk '{printf "%-20s %5s %10s\n", $6, $5, $4}' \
   | egrep -v "^(/dev|/run)"
+
+echo
+echo "Uptime:"
+uptime
