@@ -50,4 +50,10 @@ config BR2_RXOS_UTILS_DEVNODES
 	  Space-separate list of device nodes to check.
 	  Note that storage device node is always checked.
 
+config BR2_RXOS_UTILS_EXTRA_PATH
+	string "Additional PATH"
+	help
+	  When looking up processes, add the following to PATH.
+	  Should be a colon-separated list of path.
+
 endif  # BR2_PACKAGE_RXOS_UTILS

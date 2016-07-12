@@ -16,9 +16,18 @@ PROCS="%PROCS%"
 IFACES="%IFACES%"
 HOSTS="%HOSTS%"
 DEVNODES="%DEVNODES%"
+EXTRA_PATH="%PATH%"
 VERBOSE=0
 SUCCESS=0
 COLOR=0
+
+if [ -n "$EXTRA_PATH" ]; then
+  export PATH="$EXTRA_PATH:$PATH"
+fi
+
+# Test book-keeping
+TOTAL=0
+FAILURES=0
 
 report() {
   msg="$1"

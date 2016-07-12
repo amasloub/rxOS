@@ -19,6 +19,7 @@ RXOS_UTILS_STATUS_SED_CMDS += s|%IFACES%|$(foreach iface,$(call qstrip,$(BR2_RXO
 RXOS_UTILS_STATUS_SED_CMDS += s|%PROCS%|$(foreach proc,$(call qstrip,$(BR2_RXOS_UTILS_PROCS)),\n$(proc))|;
 RXOS_UTILS_STATUS_SED_CMDS += s|%HOSTS%|$(foreach host,$(call qstrip,$(BR2_RXOS_UTILS_HOSTS)),\n$(host))|;
 RXOS_UTILS_STATUS_SED_CMDS += s|%DEVNODES%|$(foreach node,$(RXOS_UTILS_DEVNODES),\n$(node))|;
+RXOS_UTILS_STATUS_SED_CMDS += s|%PATH%|$(call qstrip,$(BR2_RXOS_UTILS_EXTRA_PATH))|;
 RXOS_UTILS_BOOTMODE_SED_CMDS += s|%BOOTDEV%|$(call qstrip,$(BR2_RXOS_UTILS_BOOTDEV))|;
 
 define RXOS_UTILS_INSTALL_TARGET_CMDS
