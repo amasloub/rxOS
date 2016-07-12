@@ -32,6 +32,7 @@ FAILURES=0
 report() {
   msg="$1"
   status="$2"
+  TOTAL=$(( TOTAL + 1 ))
   if [ $SUCCESS -eq 0 ] && [ "$status" = pass ]; then
     return
   fi
@@ -45,6 +46,7 @@ report() {
 fail() {
   msg="$*"
   report "$msg" fail
+  FAILURES=$(( FAILURES + 1 ))
 }
 
 pass() {
@@ -187,6 +189,25 @@ for host in $HOSTS; do
   port="$(echo "$host" | cut -d: -f3)"
   check_server "$name" "$proto" "$port"
 done
+
+if [ $FAILURES -gt 0 ]; then
+  cat <<EOF
+
+                   **********************************
+                   ***** SOME TESTS HAVE FAILED *****
+                   **********************************
+
+NOTE:  Some items need more time to pass. For example, servers may need time
+before they start responding. Other items may need manual intervention before
+they become operational. When in doubt, rerun the tests after a short delay.
+
+EOF
+fi
+
+echo
+echo "Summary:"
+echo "Tests run:     $TOTAL"
+echo "Tests failed:  $FAILURES"
 
 echo
 echo "Storage usage:"
