@@ -116,7 +116,7 @@ check_server() {
   proto="$2"
   port="$3"
   hdr="$msg server is responding"
-  if curl "$proto://localhost:$port/" >/dev/null 2>&1; then
+  if curl --max-time 3 "$proto://localhost:$port/" >/dev/null 2>&1; then
     pass "$hdr"
   else
     fail "$hdr"
