@@ -13,5 +13,10 @@ FIFO_PATH="/tmp/autoflasher.fifo"
 
 [ -e "$FIFO_PATH" ] || exit 1
 
+if [ -z "$BUSNUM" ] || [ -z "$DEVNUM" ]; then
+  logger -st autoflasher.udev "Found CHIP with no bus/device number, ignoring"
+  exit 0
+fi
+
 logger -st autoflasher.udev "Found CHIP with device ID $BUSNUM:$DEVNUM"
 echo "$BUSNUM:$DEVNUM" >> "$FIFO_PATH"
