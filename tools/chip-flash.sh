@@ -20,7 +20,8 @@
 # 1         4         spl-backup    Backup SPL binary
 # 3         4         uboot         U-Boot binary
 # 4         4         env           U-Boot environment
-# 5         -         UBI           Partition that stores ubi volumes.
+# 5         400       swap          (reserved)
+# 6         -         UBI           Partition that stores ubi volumes.
 # ========  ========  ============  ====================================
 #
 # The flashing works roughly like this:
@@ -411,8 +412,9 @@ env default bootargs
 env default bootcmd
 saveenv
 echo "==> Setting up MTD partitions"
-setenv mtdparts 'mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),-(UBI)'
+setenv mtdparts 'mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),400m(swap),-(UBI)'
 saveenv
+mtdparts
 echo
 echo "==> Erasing NAND"
 nand erase.chip

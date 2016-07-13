@@ -41,13 +41,15 @@ they are used:
 +---+-------------------+-------+-----------+---------------------------------+
 | 4 | env               | 4M    | raw       | Bootloader settings             |
 +---+-------------------+-------+-----------+---------------------------------+
-| 5 | UBI                                   | Kernel and `Receiver state`_    |
+| 5 | swap              | 400M  | raw       | (reserved for future use)       |
++---+-------------------+-------+-----------+---------------------------------+
+| 6 | UBI                                   | Kernel and `Receiver state`_    |
 +---+-------------------+-------+-----------+---------------------------------+
 | 1 | linux             | 64M   | ubifs     | `Boot files`_                   |
 +---+-------------------+-------+-----------+---------------------------------+
-| 2 | root              | 128M  | ubifs     | Root filesytem                  |
+| 2 | root              | 200M  | ubifs     | Root filesytem                  |
 +---+-------------------+-------+-----------+---------------------------------+
-| 3 | root-backup       | 128M  | ubifs     | Backup root filesystem          |
+| 3 | root-backup       | 200M  | ubifs     | Backup root filesystem          |
 +---+-------------------+-------+-----------+---------------------------------+
 | 4 | conf              | 64M   | ubifs     | Persistent configuration        |
 +---+-------------------+-------+-----------+---------------------------------+
@@ -70,7 +72,7 @@ On Raspberry Pi, it contains the following files:
 - Stage 2 and 3 bootloader
 - ``start.elf``
 - Kernel image (``kernel.img``)
-- Main and fallback rootfs SquashFS images (``root.sqfs``, ``fallback.sqfs``)
+- Main and fallback rootfs SquashFS images (``root.sqfs``, ``backup.sqfs``)
 - Factory default SquashFS image (``factory.sqfs``)
 
 On CHIP, it contains the following files:
