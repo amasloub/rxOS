@@ -25,8 +25,16 @@ LIBRARIAN_SED_COMMANDS += s|%PRIMARY%|$(call qstrip,$(BR2_STORAGE_PRIMARY))|g;
 LIBRARIAN_SED_COMMANDS += s|%SECONDARY%|$(call qstrip,$(BR2_STORAGE_SECONDARY))|g;
 LIBRARIAN_SED_COMMANDS += s|%PLATFORM%|$(call qstrip,$(RXOS_PLATFORM))|g;
 
+ifneq ($(BR2_LIBRARIAN_EMERGENCY_TOKEN),"")
+define LIBRARIAN_CONFIG_INSTALL_EMERGENCY_TOKEN
+	echo '$(call qstrip,$(BR2_LIBRARIAN_EMERGENCY_TOKEN))' \
+		> $(TARGET_DIR)/etc/librarian.emergency
+endef
+endif
+
 define LIBRARIAN_CONFIG_INSTALL_TARGET_CMDS
 	$(INSTALL) -Dm644 $(@D)/librarian.ini $(TARGET_DIR)/etc/librarian.ini
+	$(LIBRARIAN_CONFIG_INSTALL_EMERGENCY_TOKEN)
 endef
 
 $(eval $(generic-package))

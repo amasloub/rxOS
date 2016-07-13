@@ -67,4 +67,10 @@ config BR2_LIBRARIAN_SETTINGS_FILE
 	help
 	  Path of the application settings file.
 
+config BR2_LIBRARIAN_EMERGENCY_TOKEN
+	string "Emergency token"
+	help
+	  Store the emergency token in 
+	  /etc/librarian.emergency.
+
 endif # BR2_PACKAGE_LIBRARIAN_CONFIG
