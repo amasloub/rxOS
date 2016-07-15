@@ -11,3 +11,5 @@ This section contains information that does not fit into other sections.
     make_targets
     updating_manually
     chroot_environment
+    chip_nand
+    tools
