@@ -9,14 +9,16 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-DAEMON=%BINPATH%
+DAEMON="/usr/bin/screen"
+SDR="%BINPATH%"
 JSON_PATH="%JSON_PATH%"
 PID_FILE=/var/run/sdr.pid
-DAEMON_ARGS="$(/usr/sbin/sdrargs "$JSON_PATH")"
+SDR_ARGS="$(/usr/sbin/sdrargs "$JSON_PATH")"
+DAEMON_ARGS="-T vt100 -dmS sdr $SDR $SDR_ARGS"
 RESET_PAUSE=900  # seconds
 
-[ -x "$DAEMON" ] || exit 0
-[ -z "$DAEMON_ARGS" ] && exit 0
+[ -x "$SDR" ] || exit 0
+[ -z "$SDR_ARGS" ] && exit 0
 
 pre_start() {
   # Unload modules because demod does not like it
@@ -27,8 +29,7 @@ pre_start() {
 start() {
   printf "Starting SDR demodulator: "
   pre_start
-  start-stop-daemon -S -q -m -b -p "$PID_FILE" --exec "$DAEMON" \
-    -- $DAEMON_ARGS
+  start-stop-daemon -Sqmp "$PID_FILE" -x "$DAEMON" -- $DAEMON_ARGS
   if [ $?  ]; then
     echo "OK"
   else
@@ -38,7 +39,7 @@ start() {
 
 stop() {
   printf "Stopping SDR demodulator: "
-  start-stop-daemon -K -q -p "$PID_FILE"
+  start-stop-daemon -Kqp "$PID_FILE" -x "$DAEMON"
   if [ $?  ]; then
     echo "OK"
   else
