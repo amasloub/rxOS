@@ -36,6 +36,7 @@ rootfs.ubifs
 rootfs.sqfs
 "
 KEY="$BINARIES_DIR/signature.pem"
+PWFILE="$BR2_EXTERNAL/../.password"
 
 create_pkg() {
   pkgname="$1"
@@ -58,8 +59,13 @@ create_pkg() {
 if [ -f "$KEY" ]
 then
   msg "Package signing"
-  read -r -s -p "Package key password: " PASSWORD
-  echo
+  if [ -f "$PWFILE" ]; then
+    PASSWORD="$(cat "$PWFILE")"
+    echo "Read password from password file"
+  else
+    read -r -s -p "Package key password: " PASSWORD
+    echo
+  fi
 fi
 
 msg "Creating full OTA update pkg"
