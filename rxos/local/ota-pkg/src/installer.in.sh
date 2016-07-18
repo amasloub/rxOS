@@ -47,8 +47,11 @@ extract_to_bootfs() {
   cp "/boot/$filename" "/boot/${filename}.backup" \
     || fail "Could not back up /boot/${filename}"
   sync
-  $INSTALLER --extract "$filename" /boot \
-    || fail "Could not extract $filename"
+  if ! $INSTALLER --extract "$filename" /boot; then
+    mv "/boot/${filename}.backup" "/boot/$filename"
+    sync
+    fail "Could not extract $filename"
+  fi
   sync
   mount -o remount,ro /boot
   $LOG "Installed /boot/$filename"
