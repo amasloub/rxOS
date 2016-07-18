@@ -2,8 +2,6 @@ menuconfig BR2_PACKAGE_OTA_PKG
 	bool "Build an OTA update package file"
 	select BR2_PACKAGE_PKGTOOL
 	select BR2_PACKAGE_HOST_PKGTOOL
-	select BR2_PACKAGE_UBOOT_TOOLS
-	select BR2_PACKAGE_UBOOT_TOOLS_FWPRINTENV
 	help
 	  Build a .pkg file for performing OTA and 
 	  USB stick updates.
