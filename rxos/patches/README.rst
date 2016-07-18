@@ -24,6 +24,9 @@ uboot           0000   Outernet                 GPL      change fastboot buffer
 --------------  -----  -----------------------  -------  ----------------------
 pkgtool         0000   Outernet                 GPL      fixes handling of 
                                                          UBI volume update.
+--------------  -----  -----------------------  -------  ----------------------
+ntc-uboot-t..   0000   Outernet                 GPL      fixes NAND storage
+                                                         check in fw_* tools
 ==============  =====  =======================  =======  ======================
 
 .. note::

@@ -1,0 +1,16 @@
+Fixes an issue where fw_* tools reject the CHIP's NAND flash because it has
+mtd.type == 8 (MLC), and the fw_env is not patched to support MLC yet. This is
+probably a stop-gap solution that should be replaced by proper MLC support.
+
+diff --git a/tools/env/fw_env.c b/tools/env/fw_env.c
+index 39f7333..90f02df 100644
+--- a/tools/env/fw_env.c
++++ b/tools/env/fw_env.c
+@@ -1103,6 +1103,7 @@ static int flash_read (int fd)
+ 		}
+ 		if (mtdinfo.type != MTD_NORFLASH &&
+ 		    mtdinfo.type != MTD_NANDFLASH &&
++		    mtdinfo.type != MTD_MLCNANDFLASH &&
+ 		    mtdinfo.type != MTD_DATAFLASH &&
+ 		    mtdinfo.type != MTD_UBIVOLUME) {
+ 			fprintf (stderr, "Unsupported flash type %u on %s\n",

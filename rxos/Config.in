@@ -158,12 +158,14 @@ endmenu
 
 menu "Utilities"
     source "$BR2_EXTERNAL/local/led-control/Config.in"
+    source "$BR2_EXTERNAL/package/ntc-uboot-tools/Config.in"
     source "$BR2_EXTERNAL/package/pkgtool/Config.in"
     source "$BR2_EXTERNAL/local/rxos-utils/Config.in"
 endmenu
 
 menu "Host utilities"
 	source "$BR2_EXTERNAL/package/dir2fat32/Config.in.host"
+    source "$BR2_EXTERNAL/package/ntc-uboot-tools/Config.in.host"
     source "$BR2_EXTERNAL/package/pkgtool/Config.in.host"
 endmenu
 
