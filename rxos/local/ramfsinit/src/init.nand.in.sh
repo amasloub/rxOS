@@ -20,6 +20,7 @@ CMDLINE="$*"
 OVERLAYS=
 CONSOLE=/dev/console
 ROOT_PARTS="root root-backup"
+SAFE_MODE_PIN=1016
 
 # Check whether command line has some argument
 hasarg() {
@@ -128,6 +129,7 @@ set_up_boot() {
   mount --move /linux /root/boot
   mount --move /dev /root/dev
   mount --move /proc /root/proc
+  mount --move /sys /root/sys
 }
 
 # Unount the root filesystem and related mounts
@@ -160,8 +162,10 @@ doboot() {
 date "2015-01-01 0:00:00"
 
 # Populate the /dev and /proc directories
+mkdir -p /sys
 mount -t devtmpfs devtmpfs /dev
 mount -t proc proc /proc
+mount -t sysfs sysfs /sys
 
 # Setup console
 exec 0<$CONSOLE
@@ -183,6 +187,14 @@ if hasarg "shell"; then
   exec sh
 fi
 
+# Determine whether we are using safe mode or not by checking the SAFE_MODE_PIN
+# value and presence of safemode command line argument
+echo "$SAFE_MODE_PIN" > /sys/class/gpio/export
+is_safe_mode=$(cat "/sys/class/gpio/gpio$SAFE_MODE_PIN/value")
+if hasarg "safemode" || [ "$is_safe_mode" = 0 ]; then
+  SKIP_OVERLAYS=y
+fi
+
 # Run setup hooks. The hooks are shell scripts that named like hook-*.sh. They
 # are executed once (in a subshell) and they are expected to decide for
 # themselves whether they need to run more than once. Because the hooks need to
@@ -200,9 +212,11 @@ mkdir -p /tmpfs/upper /tmpfs/work
 
 # Mount overlay images if any
 mount -t ubifs -o ro ubi0:linux /linux
-for overlay in /linux/overlay-*.sqfs; do
-  mount_overlay "$overlay"
-done
+if [ "$SKIP_OVERLAYS" != y ]; then
+  for overlay in /linux/overlay-*.sqfs; do
+    mount_overlay "$overlay"
+  done
+fi
 
 # The userspace is contained on one of two MTD partitions. These are:
 #
