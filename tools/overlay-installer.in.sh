@@ -124,6 +124,13 @@ if ! $INSTALLER --extract "$OVERLAY_FILE" /boot; then
   [ -n "$original" ] && mv "${original}.backup" "${original}" && sync
   fail "Could not extract $OVERLAY_FILE"
 fi
+if [ "/boot/$OVERLAY_FILE" != "$original" ]; then
+  # In case original filename is not the same as the new file, we need to
+  # remove the original.
+  rm "$original"
+  sync
+fi
+rm "$original"
 sync
 mount -o remount,ro /boot
 $LOG "Installed $OVERLAY_NAME"
