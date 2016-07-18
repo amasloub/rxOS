@@ -44,12 +44,16 @@ extract_to_bootfs() {
   filename="$1"
   $LOG "Installing $filename"
   mount -o remount,rw /boot || fail "Could not unlock boot partition"
-  cp "/boot/$filename" "/boot/${filename}.backup" \
-    || fail "Could not back up /boot/${filename}"
-  sync
-  if ! $INSTALLER --extract "$filename" /boot; then
-    mv "/boot/${filename}.backup" "/boot/$filename"
+  if [ -f "/boot/$filename" ]; then
+    cp "/boot/$filename" "/boot/${filename}.backup" \
+      || fail "Could not back up /boot/${filename}"
     sync
+  fi
+  if ! $INSTALLER --extract "$filename" /boot; then
+    if [ -f "/boot/${filename}.backup" ]; then
+      mv "/boot/${filename}.backup" "/boot/$filename"
+      sync
+    fi
     fail "Could not extract $filename"
   fi
   sync
