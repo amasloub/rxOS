@@ -56,6 +56,22 @@ overlay_basename() {
   basename "${overlay_path%.*}" | cut -d- -f2
 }
 
+# Mount a SquashFS image on loopback device
+loop_mount() {
+  image="$1"
+  mount_path="$2"
+  [ -z "$image" ] && return 1
+  [ -f "$image" ] || return 1
+  mkdir -p "$mount_path" || return 1
+  mount -t squashfs "$image" -o loop,ro "$mount_path" >/dev/null 2>&1
+}
+
+# Find a backup version of an overlay SquashFS image
+find_backup() {
+  name="$1"
+  find /linux -name "overlay-${name}-*.sqfs.backup" | tail -n1
+}
+
 # Mount the root filesystem overlay
 #
 # Root filesystem overlays are SquashFS images that represent fragments of the
@@ -67,11 +83,19 @@ mount_overlay() {
   overlay_image="$1"
   overlay_name="$(overlay_basename "$overlay_image")"
   mount_path="/omnt/$overlay_name"
-  mkdir -p "$mount_path"
-  mount -t squashfs "$overlay_image" -o loop,ro "$mount_path" \
-    > /dev/null 2>&1 || return 1
-  OVERLAYS="$OVERLAYS $mount_path"
-  echo "Using overlay $overlay_name"
+  if loop_mount "$overlay_image" "$mount_path"; then
+    OVERLAYS="$OVERLAYS $mount_path"
+    echo "Using overlay $overlay_name"
+    return 0
+  fi
+  if loop_mount "$(find_backup "$overlay_name")" "$mount_path"
+  then
+    OVERLAYS="$OVERLAYS $mount_path"
+    echo "Using overlay $overlay_name [BACKUP]"
+    return 0
+  fi
+  echo "Corrupted overlay $overlay_name"
+  return 1
 }
 
 # Mount the root filesystem
