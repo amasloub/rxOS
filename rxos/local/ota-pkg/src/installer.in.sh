@@ -40,23 +40,48 @@ find_mtd() {
   grep "\"$label\"" /proc/mtd 2>/dev/null | cut -d: -f1 | sed 's/mtd//'
 }
 
+# Extract a file to /boot performing a three-point swap
+#
+# When updating a file in the /boot directory, the update is performed using
+# the following three steps:
+#
+# 1. rename the old copy to <filename>.backup
+# 2. extract the new copy to <filename>.new
+# 3. rename the <filename>.new to filename
+#
+# In case #2 fails, <filename>.backup is restored to <filename> and if there is
+# a <filename>.new, it is removed. Failure during this step is not critical.
+# 
+# This update procedure assumes that the 'mv' command will always succeed or
+# fail (i.e., partial mv is not possible).
 extract_to_bootfs() {
   filename="$1"
-  $LOG "Installing $filename"
+  tgtpath="/boot/$filename"
+
+  $LOG "Installing $filename to $tgtpath"
   mount -o remount,rw /boot || fail "Could not unlock boot partition"
-  if [ -f "/boot/$filename" ]; then
-    cp "/boot/$filename" "/boot/${filename}.backup" \
-      || fail "Could not back up /boot/${filename}"
+
+  # Back up existing copy
+  if [ -f "$tgtpath" ]; then
+    mv "$tgtpath" "${tgtpath}.backup" \
+      || fail "Could not back up $filename"
     sync
   fi
-  if ! $INSTALLER --extract "$filename" /boot; then
-    if [ -f "/boot/${filename}.backup" ]; then
-      mv "/boot/${filename}.backup" "/boot/$filename"
-      sync
-    fi
+
+  # Try to extract the new copy to <filename>.new, and restore the backup if
+  # that fails.
+  if ! $INSTALLER --extract "$filename" "${tgtpath}.new"; then
+    [ -f "${tgtpath}.backup" ] \
+      && mv "${tgtpath}.backup" "$tgtpath"
+    [ -f "${tgtpath}.new" ] && rm "${tgtpath}.new"
+    sync
     fail "Could not extract $filename"
   fi
+
+  # Rename the new file to correct name
+  mv "${tgtpath}.new" "$tgtpath"
   sync
+
   mount -o remount,ro /boot
   $LOG "Installed /boot/$filename"
 }
