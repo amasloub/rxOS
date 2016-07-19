@@ -427,6 +427,8 @@ source ${scriptaddr};
 mtdparts;
 ubi part UBI;
 ubifsmount ubi0:linux;
+ubifsload ${scriptaddr} /boot.scr &&
+  source ${scriptaddr};
 ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb ||
   ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb.backup;
 for krnl in zImage zImage.backup; do
