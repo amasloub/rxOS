@@ -191,6 +191,7 @@ fi
 # value and presence of safemode command line argument
 echo "$SAFE_MODE_PIN" > /sys/class/gpio/export
 is_safe_mode=$(cat "/sys/class/gpio/gpio$SAFE_MODE_PIN/value")
+echo "$SAFE_MODE_PIN" > /sys/class/gpio/unexport
 if hasarg "safemode" || [ "$is_safe_mode" = 0 ]; then
   SKIP_OVERLAYS=y
 fi
