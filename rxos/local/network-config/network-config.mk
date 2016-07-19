@@ -23,6 +23,7 @@ NETWORK_CONFIG_ALIASES = /\#/$(NETWORK_CONFIG_AP_IP)
 ifeq ($(BR2_PACKAGE_NETWORK_CONFIG),y)
 PERSISTENT_CONF_LIST += /etc/hostname
 PERSISTENT_CONF_LIST += /etc/dropbear
+PERSISTENT_CONF_LIST += /etc/network/interfaces
 PERSISTENT_CONF_LIST += /etc/hostapd.conf
 PERSISTENT_CONF_LIST += /run/dnsmasq.leases
 endif
