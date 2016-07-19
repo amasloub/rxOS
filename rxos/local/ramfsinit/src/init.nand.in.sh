@@ -130,6 +130,7 @@ set_up_boot() {
   mount --move /dev /root/dev
   mount --move /proc /root/proc
   mount --move /sys /root/sys
+  [ "$SAFE_MODE" = y ] && touch /root/SAFEMODE
 }
 
 # Unount the root filesystem and related mounts
@@ -193,7 +194,7 @@ echo "$SAFE_MODE_PIN" > /sys/class/gpio/export
 is_safe_mode=$(cat "/sys/class/gpio/gpio$SAFE_MODE_PIN/value")
 echo "$SAFE_MODE_PIN" > /sys/class/gpio/unexport
 if hasarg "safemode" || [ "$is_safe_mode" = 0 ]; then
-  SKIP_OVERLAYS=y
+  SAFE_MODE=y
 fi
 
 # Run setup hooks. The hooks are shell scripts that named like hook-*.sh. They
@@ -213,7 +214,7 @@ mkdir -p /tmpfs/upper /tmpfs/work
 
 # Mount overlay images if any
 mount -t ubifs -o ro ubi0:linux /linux
-if [ "$SKIP_OVERLAYS" != y ]; then
+if [ "$SAFE_MODE" != y ]; then
   for overlay in /linux/overlay-*.sqfs; do
     mount_overlay "$overlay"
   done
