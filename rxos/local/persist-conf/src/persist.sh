@@ -15,6 +15,8 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
+[ -f /SAFEMODE ] && exit 0
+
 CONFDIR="%CONFDIR%"
 CONFLIST="/etc/persist.conf"
 

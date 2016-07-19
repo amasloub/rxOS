@@ -35,6 +35,7 @@ slink /bin/sed /bin/busybox 777 0 0
 slink /bin/egrep /bin/busybox 777 0 0
 slink /bin/grep /bin/busybox 777 0 0
 slink /bin/dd /bin/busybox 777 0 0
+slink /bin/touch /bin/busybox 777 0 0
 slink /bin/mount /bin/busybox 777 0 0
 slink /bin/umount /bin/busybox 777 0 0
 slink /bin/fdisk /bin/busybox 777 0 0
