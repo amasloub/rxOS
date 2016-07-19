@@ -405,6 +405,36 @@ UBI_IMAGE="$TMPDIR/board.ubi"
 
 msg "Creating U-Boot script"
 submsg "Writing script source"
+
+# NOTE: When modifying the script below, keep in mind the following.
+#
+# - Just in case: this is a U-Boot script, not a shell script
+# - Use single quote for the script, but if you need to interpolate a bash
+#   variable, make sure to escape all $ characters in U-Boot variables
+# - The whitespace is insignificant: two or more spaces will always end up as a
+#   single space in the final script, and line breaks will be stripped
+# - You *must not* use line continuation with backslash, and all lines will be
+#   concatenated anyway, but be sure to leave at least one space on the next
+#   line when continuing the previous one (it's best to indent the next line)
+# - You cannot use a line break instead of a semi-colon
+#
+# More useful information about U-Boot scripts:
+#
+#   http://compulab.co.il/utilite-computer/wiki/index.php/U-Boot_Scripts
+#
+bootscript='
+source ${scriptaddr};
+mtdparts;
+ubi part UBI;
+ubifsmount ubi0:linux;
+ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb ||
+  ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb.backup;
+for krnl in zImage zImage.backup; do
+  ubifsload ${kernel_addr_r} /${krnl} &&
+    bootz ${kernel_addr_r} - ${fdt_addr_r};
+done;
+'
+
 cat <<EOF > "$TMPDIR/uboot.cmds"
 echo "==> Resetting environment"
 env default mtdparts
@@ -437,7 +467,7 @@ echo
 # save the kernel image size as kernel_size environment variable.
 setenv kernel_size ${LINUX_SIZE}
 setenv bootargs 'consoleblank=0 earlyprintk console=ttyS0,115200 ubi.mtd=4'
-setenv bootcmd 'source \${scriptaddr}; mtdparts; ubi part UBI; ubifsmount ubi0:linux; ubifsload \$fdt_addr_r /sun5i-r8-chip.dtb; ubifsload \$kernel_addr_r /zImage; bootz \$kernel_addr_r - \$fdt_addr_r'
+setenv bootcmd '$(echo $bootscript)'
 saveenv
 echo
 echo "==> Disabling U-Boot script (this script)"
