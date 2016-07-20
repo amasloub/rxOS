@@ -1,0 +1,46 @@
+#!/bin/sh
+#
+# Start and stop wpa_supplicant
+#
+# Although this script looks like an init script, it is not, and it should not
+# be used as one. It is meant to be used as an ifupdown hook.
+#
+# This file is part of rxOS.
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+#
+# (c) 2016 Outernet Inc
+# Some rights reserved.
+
+INTERFACE="$1"
+ACTION="$2"
+CONFIG="/etc/wpa_supplicant.conf"
+PIDFILE="/var/run/wpa-${INTERFACE}.pid"
+
+start() {
+  wpa_supplicant -B -P "$PIDFILE" -c "$CONFIG" -i "$INTERFACE"
+}
+
+stop() {
+  pid="$(cat "$PIDFILE")"
+  [ -n "$pid" ] && kill "$pid"
+}
+
+restart() {
+  stop
+  sleep 5
+  start
+}
+
+help() {
+  cat <<EOF
+Usage: $0 INTERFACE COMMAND
+
+Paramters:
+
+  INTERFACE   interface on which to start wpa_supplicant
+  COMMAND     start, stop, or restart
+EOF
+}
+
+"${ACTION:=help}"
