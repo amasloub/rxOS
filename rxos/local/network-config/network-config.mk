@@ -89,6 +89,7 @@ define NETWORK_CONFIG_INSTALL_WLAN
 	$(call NETWORK_CONFIG_INSTALL_IFACE,wlan,$(NETWORK_CONFIG_AP_IF))
 	$(SED) '$(NETWORK_CONFIG_SUBS)' $(@D)/wlan-client.conf
 	$(INSTALL) -Dm755 $(@D)/wpa.sh $(TARGET_DIR)/usr/sbin/wpa
+	$(INSTALL) -Dm755 $(@D)/ap.sh $(TARGET_DIR)/usr/sbin/ap
 	$(INSTALL) -Dm644 $(@D)/wlan-client.conf \
 		$(NETWORK_CONFIG_PROFILES)/$(NETWORK_CONFIG_AP_IF)-client
 	$(INSTALL) -Dm644 $(@D)/wpa_supplicant.conf \
@@ -121,7 +122,6 @@ define NETWORK_CONFIG_INSTALL_TARGET_CMDS
 	$(SED) '$(NETWORK_CONFIG_SUBS)' $(@D)/hostapd.conf $(@D)/dnsmasq.conf
 	$(INSTALL) -Dm644 $(@D)/hostapd.conf $(TARGET_DIR)/etc/hostapd.conf
 	$(INSTALL) -Dm644 $(@D)/dnsmasq.conf $(TARGET_DIR)/etc/dnsmasq.conf
-	$(INSTALL) -Dm755 $(@D)/S81hostapd $(TARGET_DIR)/etc/init.d/S81hostapd
 	$(foreach ifacecmds,$(NETWORK_CONFIG_INSTALL_IFACES),$(call $(ifacecmds)))
 endef
 
