@@ -23,6 +23,12 @@ SDSOURCE = none
 SDNAME = none
 endif
 
+ifeq ($(BR2_OTA_PKG_VERSIONLESS), y)
+VERSIONED_PKG = y
+else
+VERSIONED_PKG = n
+endif
+
 BR2_ROOTFS_POST_SCRIPT_ARGS = $(RXOS_PLATFORM) \
 							  $(RXOS_VERSION) \
 							  $(BR2_LINUX_KERNEL_VERSION) \
@@ -31,7 +37,8 @@ BR2_ROOTFS_POST_SCRIPT_ARGS = $(RXOS_PLATFORM) \
 							  $(RXOS_TMPFS_SIZE) \
 							  $(SDSIZE) \
 							  $(SDSOURCE) \
-							  $(SDNAME)
+							  $(SDNAME) \
+							  $(VERSIONED_PKG)
 
 .PHONY: print-post-script-args
 
