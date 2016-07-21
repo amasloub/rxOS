@@ -178,9 +178,8 @@ for f in "zImage" "kernel.img" "$DTB"; do
   hasfile "$f" && extract_to_bootfs "$f"
 done
 
-for f in "u-boot-tdb.bin" "u-boot.env"; do
-  hasfile "$f" && flash_mtd "$f"
-done
+hasfile "u-boot-dtb.bin" && flash_mtd "u-boot-dtb.bin" "uboot"
+hasfile "uboot-env.bin" && flash_mtd "uboot-env.bin" "env"
 
 if hasfile "rootfs.ubifs"; then
   $LOG "Installing the root filesystem image"
