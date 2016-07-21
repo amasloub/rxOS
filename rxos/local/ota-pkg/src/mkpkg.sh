@@ -22,11 +22,21 @@ FULL_VERSION="v${VERSION}-${DATE}${SUFFIX}+$GITVER"
 
 PKGFILE="$BINARIES_DIR/${PLATFORM}-${FULL_VERSION}"
 INSTALLER="$BINARIES_DIR/installer.sh"
+BOOT_PACKAGING_CANDIDATES="
+zImage
+kernel.img
+sun5i-r8-chip.dtb
+u-boot-dtb.bin
+uboot-env.bin
+pre-install.sh
+post-install.sh
+"
 FULL_PACKAGING_CANDIDATES="
 zImage
 kernel.img
 sun5i-r8-chip.dtb
 u-boot-dtb.bin
+uboot-env.bin
 rootfs.ubifs
 rootfs.sqfs
 pre-install.sh
@@ -35,6 +45,8 @@ post-install.sh
 MINI_PACKAGING_CANDIDATES="
 rootfs.ubifs
 rootfs.sqfs
+pre-install.sh
+post-install.sh
 "
 KEY="$BINARIES_DIR/signature.pem"
 PWFILE="$BR2_EXTERNAL/../.password"
@@ -68,6 +80,9 @@ then
     echo
   fi
 fi
+
+msg "Creating boot OTA update pkg"
+create_pkg "${PKGFILE}-boot.pkg" "$BOOT_PACKAGING_CANDIDATES"
 
 msg "Creating full OTA update pkg"
 create_pkg "${PKGFILE}-full.pkg" "$FULL_PACKAGING_CANDIDATES"
