@@ -12,14 +12,28 @@
 ACTION="$1"
 PIDFILE="/var/run/hostapd.pid"
 CONF="/etc/hostapd.conf"
+LOG="logger -st ap"
 
 start() {
-  hostapd -B -P "$PIDFILE" "$CONF"
+  if hostapd -B -P "$PIDFILE" "$CONF"; then
+    $LOG "Started hostapd"
+    exit 0
+  else
+    $LOG "ERROR: Could not start hostapd"
+    exti 1
+  fi
 }
 
 stop() {
   pid="$(cat "$PIDFILE")"
-  [ -n "$pid" ] && kill "$pid"
+  [ -z "$pid" ] && exit 0
+  if kill "$pid"; then
+    $LOG "Stopped hostapd"
+    exit 0
+  else
+    $LOG "ERROR: Could not stop hostapd"
+    exit 1
+  fi
 }
 
 restart() {
@@ -28,13 +42,8 @@ restart() {
   start
 }
 
-reload() {
-  pid="$(cat "$PIDFILE")"
-  [ -n "$pid" ] && kill -s SIGHUP "$pid"
-}
-
 help() {
-  echo "Usage: $0 {start|stop|restart|reload}"
+  echo "Usage: $0 {start|stop|restart}"
 }
 
 "${ACTION:=help}"
