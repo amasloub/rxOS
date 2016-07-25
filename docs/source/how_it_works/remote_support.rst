@@ -16,19 +16,24 @@ Configuration file
 The remote access configuration file is named REMOTE (all-caps). The file
 contains configuration parameters in ``NAME='value'`` format, exactly one
 parameter per line. The following table contains all the possible parameters
-and their purpose. Parameters marked with a star (``*`` are required).
+and their purpose. All parameters are optional, and a blank REMOTE file is
+still a valid remote file.
 
 ==========  ======================  ===========================================
 Parameter   Example                 Meaning
 ==========  ======================  ===========================================
-PORT*       9978                    This value should be a port number issued
-                                    by Outernet staff.
+PORT        9978                    This value should be a port number issued
+                                    by Outernet staff. If omitted, a port
+                                    between 20000 and 30000 will be randomly
+                                    selected.
 ----------  ----------------------  -------------------------------------------
 HOST        support.outernet.is     Domain name of the support server as
-                                    specified by the Outernet staff.
+                                    specified by the Outernet staff. If
+                                    omitted, hub.outernet.is is used.
 ----------  ----------------------  -------------------------------------------
 NAME        john-lantern            Name of the receiver. This helps the
-                                    support staff identify the receiver.
+                                    support staff identify the receiver. If
+                                    omitted, the default name 'rxos' is used.
 ----------  ----------------------  -------------------------------------------
 SSID        mywifi                  SSID (access point name) of the access
                                     point which should be used to connect to

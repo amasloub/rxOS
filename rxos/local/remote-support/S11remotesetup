@@ -3,12 +3,9 @@
 # Configure the remote access parameters
 #
 # Configuration file is expected to exist at /mnt/external/REMOTE. The file
-# should contain the following variable:
+# should contain any of the following optional variables:
 #
 #     PORT='revssh port'
-#
-# Additionally, the following variables may also be used:
-#
 #     NAME='hostname'
 #     HOST='revssh server hostname'
 #     SSID='access point name'
@@ -71,6 +68,7 @@ setup() {
   [ -n "$NAME" ] && configure_hostname
   [ -n "$SSID" ] && configure_sta
   HOST="${HOST:=hub.outernet.is}"
+  PORT="${PORT:=$(( RANDOM % 10000 + 20000  ))}"
   echo "REVSSH_HOST=\"$HOST\"" > /etc/conf.d/remote
   echo "REVSSH_PORT=\"$PORT\"" >> /etc/conf.d/remote
   echo "REVSSH_IFACE=\"$IFACE\"" >> /etc/conf.d/remote
