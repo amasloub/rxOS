@@ -13,3 +13,4 @@ This section provides a high-level overview of how rxOS works.
     external_storage
     storage_layout
     ota_updates
+    remote_support
