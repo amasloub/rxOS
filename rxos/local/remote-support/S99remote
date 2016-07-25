@@ -13,7 +13,7 @@
 . /etc/conf.d/remote
 
 LOCAL_PORT="22"
-SSH_KEY="/mnt/external/remote_key"
+SSH_KEY="/etc/remote_key"
 DAEMON="/usr/bin/ssh"
 RESTART_DELAY="5"
 REMOTE_USER="nologin"

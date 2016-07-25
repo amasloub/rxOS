@@ -2,7 +2,7 @@ Setting up for remote support
 =============================
 
 rxOS allows remote support channel to be set up by adding a simple text file
-and support access keys on an USB stick and plugging it into the receiver.
+on an USB stick and plugging it into the receiver.
 
 .. note::
     Because of the security implicatins, remote support channel is only opened
@@ -16,8 +16,7 @@ Configuration file
 The remote access configuration file is named REMOTE (all-caps). The file
 contains configuration parameters in ``NAME='value'`` format, exactly one
 parameter per line. The following table contains all the possible parameters
-and their purpose. All parameters are optional, and a blank REMOTE file is
-still a valid remote file.
+and their purpose. All parameters are optional except the ``KEY``.
 
 ==========  ======================  ===========================================
 Parameter   Example                 Meaning
@@ -46,17 +45,15 @@ SSID        mywifi                  SSID (access point name) of the access
 PASSCODE    some secret             Passcode (password) of the wireless access
                                     point that should be used to connect to
                                     Internet.
+----------  ----------------------  -------------------------------------------
+KEY         (gibberish)             Access key that is used to establish a
+                                    connection with the server and provided by
+                                    the Outernet staff.
 ==========  ======================  ===========================================
 
 .. warning::
     Any and all values must be quoted using single quotes. Failure to do this
     may result in unexpected behavior.
-
-The remote access key
----------------------
-
-The remote access key file is provided by the Outernet staff and should be
-copied to the USB storage device and named ``remote_key``.
 
 .. warning::
     NEVER SHARE THE ACCESS KEY WITH ANYONE. You must ensure that the access key
@@ -70,7 +67,7 @@ Activating the support connection
 To activate the support connection:
 
 - power down the receiver
-- put the ``REMOTE`` and ``remote_key`` files onto USB storage device
+- put the ``REMOTE`` file onto USB storage device
 - plug the USB storage device into the receiver
 - power the reciever up
 
@@ -81,7 +78,7 @@ To deactivate the support connection:
 
 - power down the receiver
 - remove the USB storage device from the reciever (if you need to use the
-  storage device again, delete the ``REMOTE`` and ``remote_key`` files from it)
+  storage device again, delete the ``REMOTE`` file from it)
 - power the receiver up
 
 How it works
