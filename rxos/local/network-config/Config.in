@@ -20,7 +20,7 @@ menuconfig BR2_PACKAGE_NETWORK_CONFIG
 
 if BR2_PACKAGE_NETWORK_CONFIG
 
-config BR2_NETOWRK_CONFIG_HAS_ETH
+config BR2_NETWORK_CONFIG_HAS_ETH
     bool "Use Ethernet interface (DHCP)"
 	help
 	  Configure Ethernet interface eth0 with DHCP.

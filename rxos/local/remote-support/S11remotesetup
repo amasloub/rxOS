@@ -1,0 +1,112 @@
+#!/bin/sh
+#
+# Configure the remote access parameters
+#
+# Configuration file is expected to exist at /mnt/external/REMOTE. 
+#
+# The file must contain the remote access key:
+#
+#     KEY='AAAAB3NzaC1yc2EAAAADAQABAAABAQCdxhg....'
+#
+# The file may contain any of the following optional variables:
+#
+#     PORT='revssh port'
+#     NAME='hostname'
+#     HOST='revssh server hostname'
+#     SSID='access point name'
+#     PASSCODE='access point passcode'
+#
+# This file is part of rxOS.
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+#
+# (c) 2016 Outernet Inc
+# Some rights reserved.
+
+CONF_FILE="/mnt/external/REMOTE"
+AP_PROFILE="/etc/network/profiles.d/wlan0"
+STA_PROFILE="/etc/network/profiles.d/wlan0-client"
+WLAN_CFG="/etc/network/interfaces.d/wlan0"
+WPA_DEFAULTS="
+# wpa_supplicant configuration file
+#
+# This file is part of rxOS.
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+#
+# (c) 2016 Outernet Inc
+# Some rights reserved.
+
+ctrl_interface=/var/run/wpa_supplicant
+update_config=1
+fast_reauth=1
+ap_scan=1
+
+# -----> Place your configuration below this line <-----
+"
+WPA_REMOTE_MARKER="# REMOTE-CONNECTION"
+WPA_CONF="/etc/wpa_supplicant.conf"
+IFACE="eth0"
+
+use_profile() {
+  target_cfg="$1"
+  rm "$WLAN_CFG"
+  ln -s "$target_cfg" "$WLAN_CFG"
+}
+
+configure_sta() {
+  echo "$WPA_DEFAULTS" > "$WPA_CONF"
+  echo "$WPA_REMOTE_MARKER" >> "$WPA_CONF"
+  echo "$PASSCODE" | wpa_passphrase "$SSID" >> "$WPA_CONF"
+  use_profile "$STA_PROFILE"
+  sed -i "s/^.*wlan0.*$//" /etc/dnsmasq.conf
+  IFACE="wlan0"
+}
+
+configure_hostname() {
+  echo "$NAME" > /etc/hostname
+  hostname "$NAME"
+}
+
+setup() {
+  . "$CONF_FILE"
+  [ -n "$NAME" ] && configure_hostname
+  [ -n "$SSID" ] && configure_sta
+  [ -z "$KEY" ] && return 1
+  echo "$KEY" | base64 -d > /etc/remote_key
+  HOST="${HOST:=hub.outernet.is}"
+  PORT="${PORT:=$(( RANDOM % 10000 + 20000  ))}"
+  echo "REVSSH_HOST=\"$HOST\"" > /etc/conf.d/remote
+  echo "REVSSH_PORT=\"$PORT\"" >> /etc/conf.d/remote
+  echo "REVSSH_IFACE=\"$IFACE\"" >> /etc/conf.d/remote
+  return 0
+}
+
+disable() {
+  if grep -q "$WPA_REMOTE_MARKER" "$WPA_CONF"; then
+    echo "$WPA_DEFAULTS" > "$WPA_CONF"
+  fi
+  use_profile "$AP_PROFILE"
+}
+
+start() {
+  printf "Start remote session configuration: "
+  if [ -f "$CONF_FILE" ]; then
+    setup
+    echo "OK"
+  else
+    disable
+    echo "DISABLED"
+    exit 0
+  fi
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  *)
+    echo "Usage: $0 start"
+esac
+
+exit $?
