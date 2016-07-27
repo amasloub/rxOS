@@ -36,4 +36,17 @@ config BR2_LIGHTTPD_FAVICON
 	  Path to the favicon file relative to
 	  the static assets directory.
 
+config BR2_LIGHTTPD_UPLOAD_LIMIT
+	int "File upload size limit"
+	default 125829120
+	help
+	  Maximum upload size in bytes.
+
+config BR2_LIGHTTPD_UPLOAD_TMPDIR
+	string "File upload temp path"
+	default "/mnt/data"
+	help
+	  Directory for storing temporary files 
+	  during upload.
+
 endif # BR2_PACKAGE_LIGHTTPD_CUSTOM
