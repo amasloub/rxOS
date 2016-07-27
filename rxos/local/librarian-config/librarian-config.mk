@@ -34,7 +34,7 @@ endef
 endif
 
 define LIBRARIAN_CONFIG_INSTALL_TARGET_CMDS
-	$(SED) '$(LIBRARIAN_SET_COMMANDS)' $(@D)/cleartmp.sh
+	$(SED) '$(LIBRARIAN_SED_COMMANDS)' $(@D)/cleartmp.sh
 	$(INSTALL) -Dm644 $(@D)/librarian.ini $(TARGET_DIR)/etc/librarian.ini
 	$(INSTALL) -Dm755 $(@D)/cleartmp.sh $(TARGET_DIR)/etc/setup.d/cleartmp.sh
 	$(LIBRARIAN_CONFIG_INSTALL_EMERGENCY_TOKEN)
