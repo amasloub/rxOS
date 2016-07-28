@@ -144,6 +144,7 @@ Options:
       (defaults to current directory)
   -p  Only prepare the payload and quit (this option 
       also selects -k)
+  -N  Do not boot CHIP after flashing
   -D  Select a particular device instead of auto-detecting
   -E  Print the U-Boot environment and quit
 
@@ -364,7 +365,7 @@ submsg() {
 ###############################################################################
 
 # Parse the command line options
-while getopts "htkb:pD:E" opt; do
+while getopts "htkb:pND:E" opt; do
   case $opt in
     h)
       usage
@@ -378,6 +379,9 @@ while getopts "htkb:pD:E" opt; do
       ;;
     p)
       PREPARE_ONLY=y
+      ;;
+    N)
+      NOBOOT=y
       ;;
     D)
       has_command udevadm || abort "-D option requires udev"
@@ -468,6 +472,12 @@ UBI_IMAGE="$TMPDIR/board.ubi"
 msg "Creating U-Boot script"
 submsg "Writing script source"
 
+if [ "$NOBOOT" = y ]; then
+  BOOTSCR="while 1; do sleep 10; done"
+else
+  BOOTSCR="boot"
+fi
+
 cat <<EOF > "$TMPDIR/uboot.cmds"
 echo "==> Resetting environment"
 env default mtdparts
@@ -513,7 +523,7 @@ fastboot 0
 echo
 echo "**** PRAY! ****"
 echo
-boot
+$BOOTSCR
 EOF
 submsg "Writing script image"
 mkimage -A arm -T script -C none -n "flash CHIP" -d "$TMPDIR/uboot.cmds" \
@@ -563,7 +573,17 @@ msg "Cleaning up"
 
 msg "Done"
 
-cat <<EOF
+if [ "$NOBOOT" = y ]; then
+  cat <<EOF
+
+Your CHIP is now flashed. You may disconnect it, remove the FEL ground, and
+power it back up.
+
+EOF
+
+else
+
+  cat <<EOF
 
 !!! DO NOT DISCONNECT JUST YET. !!!
 
@@ -571,3 +591,5 @@ Your CHIP is now flashed. It will now boot and prepare the system.
 Status LED will start blinking when it's ready.
 
 EOF
+
+fi
