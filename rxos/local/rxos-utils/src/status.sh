@@ -62,7 +62,7 @@ check_process() {
     fail "$hdr"
     return
   fi
-  if ps ax | grep "$binary" | grep -q -v grep; then
+  if ps ax | egrep "($binary|$name)" | grep -q -v grep; then
     pass "$hdr"
   else
     fail "$hdr"
