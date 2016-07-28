@@ -473,7 +473,7 @@ msg "Creating U-Boot script"
 submsg "Writing script source"
 
 if [ "$NOBOOT" = y ]; then
-  BOOTSCR="while 1; do sleep 10; done"
+  BOOTSCR="while true; do sleep 10; done"
 else
   BOOTSCR="boot"
 fi
