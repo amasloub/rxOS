@@ -81,6 +81,16 @@ up. Disadvantages are that it is time consuming as it requires a complete rxOS
 build and that you are limited to packages that are in the build (or you have
 to create new ones for 3rd party packages that are not available in the build).
 
+.. warning::
+    This method uses the buildroot package infrastructure to create the
+    binaries. Because buildroot packages do not maintain a list of files that
+    belong to them, if a package you wish to compile overwrites a file from
+    another package, the overwritten file will be competely removed from the
+    output directory. If this happens, your build will be left in an
+    inconsistent state, and you will need to rebuild the original package to
+    which the overwritten file belongs, or, if you are not sure which package
+    you need to rebuild, do a clean rebuild of the entire project.
+
 First complete a rxOS build itself using the git tag for the version you wish
 to target. Next, build only the package you are interested in putting in your
 overlay. In this example, we will add htop::
