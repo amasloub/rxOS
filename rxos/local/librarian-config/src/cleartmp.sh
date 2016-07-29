@@ -13,3 +13,5 @@ TMPDIR="%TMPDIR%"
 
 [ -d "$TMPDIR" ] && rm -rf "$TMPDIR"
 mkdir -p "$TMPDIR"
+chown root.outernet "$TMPDIR"
+chmod 770 "$TMPDIR"
