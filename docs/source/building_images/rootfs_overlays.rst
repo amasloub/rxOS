@@ -69,6 +69,69 @@ Here are some examples of valid version numbers:
 - 1.3.002 - first major, third minor, second patch release
 - 5.1rc2 - second release candidate for 5.1 release
 
+Adding binary executables to overlays
+-------------------------------------
+
+Binary executables have to be compiled for the rxOS target platform(s). While
+you can create binaries any way you prefer, the simplest approach is to use the
+rxOS build itself to generate the binary files.
+
+The advantage of this method is that the build-related tooling is already set
+up. Disadvantages are that it is time consuming as it requires a complete rxOS
+build and that you are limited to packages that are in the build (or you have
+to create new ones for 3rd party packages that are not available in the build).
+
+First complete a rxOS build itself using the git tag for the version you wish
+to target. Next, build only the package you are interested in putting in your
+overlay. In this example, we will add htop::
+
+    $ make -s htop
+    >>> htop 1.0.3 Extracting
+    >>> htop 1.0.3 Patching
+    >>> htop 1.0.3 Updating config.sub and config.guess
+    >>> htop 1.0.3 Configuring
+    >>> htop 1.0.3 Autoreconfiguring
+    libtoolize: putting auxiliary files in '.'.
+    libtoolize: copying file './ltmain.sh'
+    ....
+    >>> htop 1.0.3 Patching libtool
+    ...
+    >>> htop 1.0.3 Building
+    ...
+    >>> htop 1.0.3 Installing to target
+     /usr/bin/mkdir -p '/home/hajime/code/rxos/out/target/usr/bin'
+     /usr/bin/mkdir -p '/home/hajime/code/rxos/out/target/usr/share/applications'
+     /usr/bin/mkdir -p '/home/hajime/code/rxos/out/target/usr/share/pixmaps'
+     /usr/bin/mkdir -p '/home/hajime/code/rxos/out/target/usr/share/man/man1'
+    ...
+
+.. note::
+    You don't have to (and you should not) select the package in the menu.
+    Making the target that matches the package name will build that package
+    even if it's not selected.
+
+Once the package has finished building, we will collect the new files. To do
+this we will use the ``newfiles.sh`` script::
+
+    $ tools/newfiles.sh path/to/overlay
+    usr/bin/htop
+    usr/share/pixmaps/htop.png
+    usr/share/applications/htop.desktop
+    usr/share/man/man1/htop.1
+
+Now the package files are moved to the overlay directory. The list of files
+shown in the output is the list of files that are copied to the overlay. Some
+of these files are stripped afterwards: in particular, the pixmaps,
+applications, and man directories will be stripped.
+
+Finally, we need to dirclean the package to reset it to unbuilt state::
+
+    $ make -s htop-dirclean
+
+The last step is optional, but we do it just in case we change our minds later
+and decide to make the package part of the build (otherwise buildroot will
+think the package is already built and won't rebuild it).
+
 Booting with an overlay
 -----------------------
 
