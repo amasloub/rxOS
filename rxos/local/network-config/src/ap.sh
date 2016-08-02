@@ -17,22 +17,22 @@ LOG="logger -st ap"
 start() {
   if hostapd -B -P "$PIDFILE" "$CONF"; then
     $LOG "Started hostapd"
-    exit 0
+    return 0
   else
     $LOG "ERROR: Could not start hostapd"
-    exti 1
+    return 1
   fi
 }
 
 stop() {
   pid="$(cat "$PIDFILE")"
-  [ -z "$pid" ] && exit 0
+  [ -z "$pid" ] && return 0
   if kill "$pid"; then
     $LOG "Stopped hostapd"
-    exit 0
+    return 0
   else
     $LOG "ERROR: Could not stop hostapd"
-    exit 1
+    return 1
   fi
 }
 
@@ -47,3 +47,4 @@ help() {
 }
 
 "${ACTION:=help}"
+exit $?
