@@ -40,18 +40,61 @@ find_mtd() {
   grep "\"$label\"" /proc/mtd 2>/dev/null | cut -d: -f1 | sed 's/mtd//'
 }
 
+# Extract a file to /boot performing a three-point swap
+#
+# When updating a file in the /boot directory, the update is performed using
+# the following three steps:
+#
+# 1. rename the old copy to <filename>.backup
+# 2. extract the new copy to <filename>.new
+# 3. rename the <filename>.new to filename
+#
+# In case #2 fails, <filename>.backup is restored to <filename> and if there is
+# a <filename>.new, it is removed. Failure during this step is not critical.
+# 
+# This update procedure assumes that the 'mv' command will always succeed or
+# fail (i.e., partial mv is not possible).
 extract_to_bootfs() {
   filename="$1"
-  $LOG "Installing $filename"
+  tgtpath="/boot/$filename"
+
+  $LOG "Installing $filename to $tgtpath"
   mount -o remount,rw /boot || fail "Could not unlock boot partition"
-  cp "/boot/$filename" "/boot/${filename}.backup" \
-    || fail "Could not back up /boot/${filename}"
+
+  # Back up existing copy
+  if [ -f "$tgtpath" ]; then
+    mv "$tgtpath" "${tgtpath}.backup" \
+      || fail "Could not back up $filename"
+    sync
+  fi
+
+  # Try to extract the new copy to <filename>.new, and restore the backup if
+  # that fails.
+  if ! $INSTALLER --extract "$filename" "${tgtpath}.new"; then
+    [ -f "${tgtpath}.backup" ] \
+      && mv "${tgtpath}.backup" "$tgtpath"
+    [ -f "${tgtpath}.new" ] && rm "${tgtpath}.new"
+    sync
+    fail "Could not extract $filename"
+  fi
+
+  # Rename the new file to correct name
+  mv "${tgtpath}.new" "$tgtpath"
   sync
-  $INSTALLER --extract "$filename" /boot \
-    || fail "Could not extract $filename"
-  sync
+
   mount -o remount,ro /boot
   $LOG "Installed /boot/$filename"
+}
+
+# Flash an image to a MTD partition
+flash_mtd() {
+  filename="$1"
+  mtdname="$2"
+  $LOG "Flashing $filename to $mtdname"
+  mtdpart="$(find_mtd "$mtdname")"
+  [ -z "$mtdpart" ] && fail "Could not find MTD partition $mtdname"
+  $INSTALLER --flash "$filename" "$mtdpart" \
+    || fail "Could not write to $mtdname"
 }
 
 exec_script() {
@@ -130,17 +173,13 @@ if [ "$IGNORE_VERSION" != "y" ]; then
 fi
 
 hasfile "pre-install.sh" && exec_script "pre-install.sh"
-hasfile "zImage" && extract_to_bootfs "zImage"
-hasfile "kernel.img" && extract_to_bootfs "kernel.img"
-hasfile "$DTB" && extract_to_bootfs "$DTB"
 
-if hasfile "u-boot-dtb.bin"; then
-  $LOG "Installing U-Boot"
-  mtdpart="$(find_mtd "U-Boot")"
-  [ -z "$mtdpart" ] && fail "Could not determine the mtd partition"
-  $INSTALLER --flash "u-boot-dtb.bin" "$mtdpart" \
-    || fail "Could not write U-Boot"
-fi
+for f in "zImage" "kernel.img" "$DTB"; do
+  hasfile "$f" && extract_to_bootfs "$f"
+done
+
+hasfile "u-boot-dtb.bin" && flash_mtd "u-boot-dtb.bin" "uboot"
+hasfile "uboot-env.bin" && flash_mtd "uboot-env.bin" "env"
 
 if hasfile "rootfs.ubifs"; then
   $LOG "Installing the root filesystem image"

@@ -27,3 +27,4 @@ TMPFS_SIZE=$7             # (int) Size of the overlay RAM disk (MiB)
 SDSIZE=$8                 # (int) Size of the SD card partition
 SDSOURCE=$9               # (str) Path to the SD card source
 SDNAME=${10}              # (str) Name of the output SD card image file
+VERSIONED_PKG=${11}       # (str) y if pkg should be versioned, n otherwise

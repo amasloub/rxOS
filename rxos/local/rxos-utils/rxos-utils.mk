@@ -22,6 +22,14 @@ RXOS_UTILS_STATUS_SED_CMDS += s|%DEVNODES%|$(foreach node,$(RXOS_UTILS_DEVNODES)
 RXOS_UTILS_STATUS_SED_CMDS += s|%PATH%|$(call qstrip,$(BR2_RXOS_UTILS_EXTRA_PATH))|;
 RXOS_UTILS_BOOTMODE_SED_CMDS += s|%BOOTDEV%|$(call qstrip,$(BR2_RXOS_UTILS_BOOTDEV))|;
 
+define RXOS_UTILS_INSTALL_CHIPGPIO
+	$(INSTALL) -Dm755 $(@D)/chipgpio.sh $(TARGET_DIR)/usr/lib/chipgpio.sh
+endef
+
+ifeq ($(BR2_RXOS_UTILS_INSTALL_CHIPGPIO),y)
+RXOS_UTILS_INSTALL_EXTRAS += RXOS_UTILS_INSTALL_CHIPGPIO
+endif
+
 define RXOS_UTILS_INSTALL_TARGET_CMDS
 	$(SED) '$(RXOS_UTILS_STATUS_SED_CMDS)' $(@D)/status.sh
 	$(SED) '$(RXOS_UTILS_BOOTMODE_SED_CMDS)' $(@D)/chbootfsmode.sh
@@ -38,6 +46,8 @@ define RXOS_UTILS_INSTALL_TARGET_CMDS
 	$(INSTALL) -Dm755 $(@D)/service.sh $(TARGET_DIR)/usr/sbin/service
 	$(INSTALL) -Dm0755 $(@D)/chbootfsmode.sh \
 		$(TARGET_DIR)/usr/sbin/chbootfsmode
+
+	$(foreach cmd,$(RXOS_UTILS_INSTALL_EXTRAS),$(call $(cmd)))
 endef
 
 $(eval $(generic-package))

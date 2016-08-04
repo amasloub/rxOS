@@ -4,13 +4,5 @@ Differences to stock NTC debian kernel:
 - Enabled LZ4 compression for SquashFS and disabled all other compressions
 - Disabled all initramfs compression support except LZ4
 - Enabled I2C bus multiplexing support
-- Enabled media support
-- Enabled digital TV support
-- Enabled software defined radio (SDR) support
-- Disabled camera/video grabber support
-- Disabled analog TV support
-- Disabled media controller API
-- Disabled DVB network support
-- Disabled autoselection of ancillary drivers
-- Disabled all ancillary drivers
-- Enabled Realtek RTL2832 SDR DVB frontend driver
+- Disabled media support
+- Disabled sound drivers

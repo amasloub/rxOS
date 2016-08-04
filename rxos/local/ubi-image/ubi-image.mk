@@ -22,3 +22,6 @@ define UBI_IMAGE_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+
+rebuild-ubi:
+	$(UBI_IMAGE_SITE)/mkubi.sh

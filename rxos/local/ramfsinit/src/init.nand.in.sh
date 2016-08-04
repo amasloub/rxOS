@@ -20,6 +20,7 @@ CMDLINE="$*"
 OVERLAYS=
 CONSOLE=/dev/console
 ROOT_PARTS="root root-backup"
+SAFE_MODE_PIN=1016
 
 # Check whether command line has some argument
 hasarg() {
@@ -56,6 +57,22 @@ overlay_basename() {
   basename "${overlay_path%.*}" | cut -d- -f2
 }
 
+# Mount a SquashFS image on loopback device
+loop_mount() {
+  image="$1"
+  mount_path="$2"
+  [ -z "$image" ] && return 1
+  [ -f "$image" ] || return 1
+  mkdir -p "$mount_path" || return 1
+  mount -t squashfs "$image" -o loop,ro "$mount_path" >/dev/null 2>&1
+}
+
+# Find a backup version of an overlay SquashFS image
+find_backup() {
+  name="$1"
+  find /linux -name "overlay-${name}-*.sqfs.backup" | tail -n1
+}
+
 # Mount the root filesystem overlay
 #
 # Root filesystem overlays are SquashFS images that represent fragments of the
@@ -67,11 +84,19 @@ mount_overlay() {
   overlay_image="$1"
   overlay_name="$(overlay_basename "$overlay_image")"
   mount_path="/omnt/$overlay_name"
-  mkdir -p "$mount_path"
-  mount -t squashfs "$overlay_image" -o loop,ro "$mount_path" \
-    > /dev/null 2>&1 || return 1
-  OVERLAYS="$OVERLAYS $mount_path"
-  echo "Using overlay $overlay_name"
+  if loop_mount "$overlay_image" "$mount_path"; then
+    OVERLAYS="$OVERLAYS $mount_path"
+    echo "Using overlay $overlay_name"
+    return 0
+  fi
+  if loop_mount "$(find_backup "$overlay_name")" "$mount_path"
+  then
+    OVERLAYS="$OVERLAYS $mount_path"
+    echo "Using overlay $overlay_name [BACKUP]"
+    return 0
+  fi
+  echo "Corrupted overlay $overlay_name"
+  return 1
 }
 
 # Mount the root filesystem
@@ -104,6 +129,8 @@ set_up_boot() {
   mount --move /linux /root/boot
   mount --move /dev /root/dev
   mount --move /proc /root/proc
+  mount --move /sys /root/sys
+  [ "$SAFE_MODE" = y ] && touch /root/SAFEMODE
 }
 
 # Unount the root filesystem and related mounts
@@ -136,8 +163,10 @@ doboot() {
 date "2015-01-01 0:00:00"
 
 # Populate the /dev and /proc directories
+mkdir -p /sys
 mount -t devtmpfs devtmpfs /dev
 mount -t proc proc /proc
+mount -t sysfs sysfs /sys
 
 # Setup console
 exec 0<$CONSOLE
@@ -159,6 +188,15 @@ if hasarg "shell"; then
   exec sh
 fi
 
+# Determine whether we are using safe mode or not by checking the SAFE_MODE_PIN
+# value and presence of safemode command line argument
+echo "$SAFE_MODE_PIN" > /sys/class/gpio/export
+is_safe_mode=$(cat "/sys/class/gpio/gpio$SAFE_MODE_PIN/value")
+echo "$SAFE_MODE_PIN" > /sys/class/gpio/unexport
+if hasarg "safemode" || [ "$is_safe_mode" = 0 ]; then
+  SAFE_MODE=y
+fi
+
 # Run setup hooks. The hooks are shell scripts that named like hook-*.sh. They
 # are executed once (in a subshell) and they are expected to decide for
 # themselves whether they need to run more than once. Because the hooks need to
@@ -176,9 +214,11 @@ mkdir -p /tmpfs/upper /tmpfs/work
 
 # Mount overlay images if any
 mount -t ubifs -o ro ubi0:linux /linux
-for overlay in /linux/overlay-*.sqfs; do
-  mount_overlay "$overlay"
-done
+if [ "$SAFE_MODE" != y ]; then
+  for overlay in /linux/overlay-*.sqfs; do
+    mount_overlay "$overlay"
+  done
+fi
 
 # The userspace is contained on one of two MTD partitions. These are:
 #

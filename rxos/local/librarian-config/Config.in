@@ -73,4 +73,10 @@ config BR2_LIBRARIAN_EMERGENCY_TOKEN
 	  Store the emergency token in 
 	  /etc/librarian.emergency.
 
+config BR2_LIBRARIAN_TMPDIR
+	string "Temporary directory"
+	default "/tmp"
+	help
+	  Directory to store temporary files.
+
 endif # BR2_PACKAGE_LIBRARIAN_CONFIG

@@ -3,6 +3,16 @@ menuconfig BR2_PACKAGE_NETWORK_CONFIG
 	select BR2_PACKAGE_DNSMASQ
 	select BR2_PACKAGE_HOSTAPD
 	select BR2_PACKAGE_IW
+	select BR2_PACKAGE_BUSYBOX_SHOW_OTHERS
+	select BR2_PACKAGE_DEBIANUTILS
+	select BR2_PACKAGE_IFUPDOWN
+	select BR2_PACKAGE_IPROUTE2
+	select BR2_PACKAGE_IFPLUGD
+	select BR2_PACKAGE_IPTABLES
+	select BR2_PACKAGE_WPA_SUPPLICANT
+	select BR2_PACKAGE_WPA_SUPPLICANT_NL80211
+	select BR2_PACKAGE_WPA_SUPPLICANT_CLI
+	select BR2_PACKAGE_WPA_SUPPLICANT_PASSPHRASE
 	help
 	  Configuration and init scripts necessary to start a wireless hotspot.
 	  
@@ -10,7 +20,7 @@ menuconfig BR2_PACKAGE_NETWORK_CONFIG
 
 if BR2_PACKAGE_NETWORK_CONFIG
 
-config BR2_NETOWRK_CONFIG_HAS_ETH
+config BR2_NETWORK_CONFIG_HAS_ETH
     bool "Use Ethernet interface (DHCP)"
 	help
 	  Configure Ethernet interface eth0 with DHCP.

@@ -90,6 +90,7 @@ menu "System configuration"
 	source "$BR2_EXTERNAL/local/boothook-selfpartition/Config.in"
 	source "$BR2_EXTERNAL/local/setup/Config.in"
 	source "$BR2_EXTERNAL/local/persist-conf/Config.in"
+	source "$BR2_EXTERNAL/local/remote-support/Config.in"
 	source "$BR2_EXTERNAL/local/gserial/Config.in"
 	source "$BR2_EXTERNAL/local/storage-hotplug/Config.in"
 endmenu
@@ -117,6 +118,7 @@ menu "Applications"
 	comment "Misc"
 		source "$BR2_EXTERNAL/package/python-librarian-analytics/Config.in"
 		source "$BR2_EXTERNAL/package/python-librarian-sdr/Config.in"
+		source "$BR2_EXTERNAL/package/python-librarian-simplified/Config.in"
 endmenu
 
 menu "Libraries"

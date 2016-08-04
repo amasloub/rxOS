@@ -1,5 +1,6 @@
 menuconfig BR2_PACKAGE_SDR_CONFIG
 	bool "SDR init script and configuration"
+	select BR2_PACKAGE_SCREEN
 	help
 	  Install SDR demodulator configuration and 
 	  init script.

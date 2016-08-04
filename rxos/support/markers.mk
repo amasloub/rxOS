@@ -7,7 +7,7 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-RXOS_BUILD = $(shell git rev-parse --short HEAD)
+RXOS_BUILD = $(shell cd $(BR2_EXTERNAL); git rev-parse --short HEAD)
 RXOS_TIMESTAMP = $(shell date -u --rfc-3339=seconds)
 RELEASE_FILE = $(TARGET_DIR)/etc/platform-release
 

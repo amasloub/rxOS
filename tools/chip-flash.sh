@@ -84,6 +84,42 @@ UBOOT_ADDR=0x4a000000
 #UBOOT_ENV_ADDR=0x4b000000
 UBOOT_SCRIPT_ADDR=0x43100000
 
+# Env settings
+#
+# NOTE: When modifying the script below, keep in mind the following.
+#
+# - Just in case: this is a U-Boot script, not a shell script
+# - Use single quote for the script, but if you need to interpolate a bash
+#   variable, make sure to escape all $ characters in U-Boot variables
+# - The whitespace is insignificant: two or more spaces will always end up as a
+#   single space in the final script, and line breaks will be stripped
+# - You *must not* use line continuation with backslash, and all lines will be
+#   concatenated anyway, but be sure to leave at least one space on the next
+#   line when continuing the previous one (it's best to indent the next line)
+# - You cannot use a line break instead of a semi-colon
+#
+# More useful information about U-Boot scripts:
+#
+#   http://compulab.co.il/utilite-computer/wiki/index.php/U-Boot_Scripts
+#
+MTDPARTS="sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),400m(swap),-(UBI)"
+BOOTARGS='
+consoleblank=0 
+earlyprintk 
+console=ttyS0,115200 
+ubi.mtd=5'
+BOOTCMDS='
+source ${scriptaddr};
+mtdparts;
+ubi part UBI;
+ubifsmount ubi0:linux;
+ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb ||
+  ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb.backup;
+for krnl in zImage zImage.backup; do
+  ubifsload ${kernel_addr_r} /${krnl} &&
+    bootz ${kernel_addr_r} - ${fdt_addr_r};
+done;'
+
 # Command aliases
 FEL="fel"
 FASTBOOT="fastboot -i $FASTBOOT_ID"
@@ -108,7 +144,9 @@ Options:
       (defaults to current directory)
   -p  Only prepare the payload and quit (this option 
       also selects -k)
+  -N  Do not boot CHIP after flashing
   -D  Select a particular device instead of auto-detecting
+  -E  Print the U-Boot environment and quit
 
 Parameters:
   PATH    Path containing the binaries and images
@@ -282,6 +320,27 @@ add_ecc() {
     -s 64 "$in" "$out"
 }
 
+# Generate the environment and echo it
+genenv() {
+  cat <<EOF
+timestamp=$(TZ=UTC date '+%Y-%m-%d %H:%M:%S %Z')
+console=ttyS0,115200
+dfu_alt_info_ram=kernel ram 0x42000000 0x1000000;fdt ram 0x43000000 0x100000;ramdisk ram 0x43300000 0x4000000
+fdt_addr_r=0x43000000
+fdtfile=sun5i-r8-chip.dtb
+kernel_addr_r=0x42000000
+mtdids=nand0=sunxi-nand.0
+scriptaddr=0x43100000
+stderr=serial,vga
+stdin=serial,usbkbd
+stdout=serial,vga
+mtdids=nand0=sunxi-nand.0
+mtdparts=mtdparts=$MTDPARTS
+bootargs=$(echo $BOOTARGS)
+bootcmd=$(echo $BOOTCMDS)
+EOF
+}
+
 # Print the amount of time elapsed since script was started
 timestamp() {
   local current
@@ -306,7 +365,7 @@ submsg() {
 ###############################################################################
 
 # Parse the command line options
-while getopts "htkb:pD:" opt; do
+while getopts "htkb:pND:E" opt; do
   case $opt in
     h)
       usage
@@ -320,6 +379,9 @@ while getopts "htkb:pD:" opt; do
       ;;
     p)
       PREPARE_ONLY=y
+      ;;
+    N)
+      NOBOOT=y
       ;;
     D)
       has_command udevadm || abort "-D option requires udev"
@@ -335,6 +397,10 @@ while getopts "htkb:pD:" opt; do
       PORT="usb:${SYSPATH##*/}"
       FASTBOOT="$FASTBOOT -s $PORT"
       echo "Using device $DEVNAME on port $PORT"
+      ;;
+    E)
+      genenv
+      exit 0
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -405,6 +471,13 @@ UBI_IMAGE="$TMPDIR/board.ubi"
 
 msg "Creating U-Boot script"
 submsg "Writing script source"
+
+if [ "$NOBOOT" = y ]; then
+  BOOTSCR="while true; do sleep 10; done"
+else
+  BOOTSCR="boot"
+fi
+
 cat <<EOF > "$TMPDIR/uboot.cmds"
 echo "==> Resetting environment"
 env default mtdparts
@@ -412,7 +485,7 @@ env default bootargs
 env default bootcmd
 saveenv
 echo "==> Setting up MTD partitions"
-setenv mtdparts 'mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),400m(swap),-(UBI)'
+setenv mtdparts 'mtdparts=$MTDPARTS'
 saveenv
 mtdparts
 echo
@@ -436,8 +509,8 @@ echo
 # The kerne image is usually smaller than the kernel partition. We therefore
 # save the kernel image size as kernel_size environment variable.
 setenv kernel_size ${LINUX_SIZE}
-setenv bootargs 'consoleblank=0 earlyprintk console=ttyS0,115200 ubi.mtd=4'
-setenv bootcmd 'source \${scriptaddr}; mtdparts; ubi part UBI; ubifsmount ubi0:linux; ubifsload \$fdt_addr_r /sun5i-r8-chip.dtb; ubifsload \$kernel_addr_r /zImage; bootz \$kernel_addr_r - \$fdt_addr_r'
+setenv bootargs '$(echo $BOOTARGS)'
+setenv bootcmd '$(echo $BOOTCMDS)'
 saveenv
 echo
 echo "==> Disabling U-Boot script (this script)"
@@ -450,7 +523,7 @@ fastboot 0
 echo
 echo "**** PRAY! ****"
 echo
-boot
+$BOOTSCR
 EOF
 submsg "Writing script image"
 mkimage -A arm -T script -C none -n "flash CHIP" -d "$TMPDIR/uboot.cmds" \
@@ -500,7 +573,17 @@ msg "Cleaning up"
 
 msg "Done"
 
-cat <<EOF
+if [ "$NOBOOT" = y ]; then
+  cat <<EOF
+
+Your CHIP is now flashed. You may disconnect it, remove the FEL ground, and
+power it back up.
+
+EOF
+
+else
+
+  cat <<EOF
 
 !!! DO NOT DISCONNECT JUST YET. !!!
 
@@ -508,3 +591,5 @@ Your CHIP is now flashed. It will now boot and prepare the system.
 Status LED will start blinking when it's ready.
 
 EOF
+
+fi

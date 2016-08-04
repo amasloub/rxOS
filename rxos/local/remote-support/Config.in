@@ -1,0 +1,6 @@
+config BR2_PACKAGE_REMOTE_SUPPORT
+	bool "Remote support access"
+	select BR2_PACKAGE_DROPBEAR_CLIENT
+	help
+	  Add support for remote reverse SSH access to
+	  the system via a hub server.

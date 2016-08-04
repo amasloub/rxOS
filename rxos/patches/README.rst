@@ -24,6 +24,10 @@ uboot           0000   Outernet                 GPL      change fastboot buffer
 --------------  -----  -----------------------  -------  ----------------------
 pkgtool         0000   Outernet                 GPL      fixes handling of 
                                                          UBI volume update.
+--------------  -----  -----------------------  -------  ----------------------
+linux           0000   Outernet                 GPL      fixes DTB to
+                                                         synchronize mtd parts
+                                                         with u-boot
 ==============  =====  =======================  =======  ======================
 
 .. note::
