@@ -1,26 +1,25 @@
-BOARD:=rxos
-BOARD_DIR=$(BOARD)
-DEFCONFIG=$(BOARD)_defconfig
+# This variable defines which of the supported boards are built. Supported 
+# boards can be listed with `make -s boards`.
+BOARD := chip
 
-# Board-agnostic settings
-BUILDROOT = ./buildroot
-CONFIG = $(OUTPUT)/.config
-BOARD_DIR = ./$(BOARD)
-
-# Build target
-TARGET_NAME = rxos
+# Build configuration
+BOARDS_DIR = rxos
+CONFIGS_DIR = $(BOARDS_DIR)/configs
+DEFCONFIG = $(BOARD)_board_defconfig
 
 # Build output files
-OUTPUT = out
-OUTPUT_DIR = ../$(OUTPUT)
+OUTPUT = out/$(BOARD)
+CONFIG = $(OUTPUT)/.config
 IMAGES_DIR = $(OUTPUT)/images
 KERNEL_IMAGE = $(IMAGES_DIR)/zImage
 BUILD_STAMP = $(OUTPUT)/.stamp_built
 IMG_FILE = $(IMAGES_DIR)/sdcard.img
 PKG_FILE = $(IMAGES_DIR)/rxos.pkg
-
-# External dir
-EXTERNAL = .$(BOARD_DIR)
+#
+# Buildroot-specific settings
+BUILDROOT = ./buildroot
+OUTPUT_DIR = ../$(OUTPUT)
+EXTERNAL = ../$(BOARDS_DIR)
 export BR2_EXTERNAL=$(EXTERNAL)
 
 .PHONY: \
@@ -40,7 +39,8 @@ export BR2_EXTERNAL=$(EXTERNAL)
 	clean-linux \
 	clean-deep \
 	clean \
-	config
+	config \
+	boards
 
 default: build
 
@@ -97,6 +97,11 @@ clean:
 
 config:
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) $(DEFCONFIG)
+
+boards:
+	-ls $(CONFIGS_DIR)/*_board_defconfig 2>/dev/null \
+		| xargs basename \
+		| sed 's/_board_defconfig//' 2>/dev/null
 
 $(BUILD_STAMP): $(CONFIG)
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR)
