@@ -14,11 +14,11 @@
 
 set -e
 
-SCRIPTDIR=$(dirname $0)
+SCRIPTDIR="${BR2_EXTERNAL}/scripts"
 . $SCRIPTDIR/helpers.sh
 . $SCRIPTDIR/args.sh
 
-TMPDIR="/tmp/rxos-sdimage-$(date +%s)"
+TMPDIR="$(mktemp -d /tmp/rxos-sdimage-XXXX)"
 
 msg "Collecting boot files"
 mkdir -p "$TMPDIR"
@@ -31,8 +31,19 @@ do
 done < "$SDSOURCE"
 IFS=$orig_ifs
 
+msg "Adding overlays"
+find "$BINARIES_DIR/overlays" -name "overlay-*.sqfs" 2>/dev/null \
+  | while read -r overlay; do
+  submsg "Adding $(basename $overlay)"
+  install "$overlay" "$TMPDIR" 
+done
+
 msg "Adding additional files"
-cp "$BINARIES_DIR/sdcard-extras/"* "$TMPDIR" || true
+find "$BINARIES_DIR/sdcard-extras" -type f 2>/dev/null \
+  | while read -r extra; do
+  submsg "Adding $(basename $extra)"
+  install "$extra" "$TMPDIR"
+done
 
 msg "Creating $SDNAME ($SDSIZE MiB)"
 dir2fat32 "$BINARIES_DIR/$SDNAME" "$SDSIZE" "$TMPDIR"

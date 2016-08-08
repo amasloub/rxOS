@@ -1,0 +1,35 @@
+menuconfig BR2_PACKAGE_SDIMAGE
+	bool "Build SD card image"
+	select BR2_PACKAGE_HOST_DIR2FAT32
+	help
+	  Build and SD card image containing the boot files
+	  (bootloader, firmware, kernel image, rootfs images).
+
+if BR2_PACKAGE_SDIMAGE
+
+config BR2_SDIMAGE_FILE
+	string "Output filename"
+	default "sdcard.img"
+	help
+	  Name of the output image file. The file will
+	  be stored in the $BINARIES_DIR.
+    
+config BR2_SDIMAGE_SIZE
+	int "Boot partition size in MiB"
+	default 200
+	help
+	  Size of the FAT32 partition that will store the 
+	  boot files.
+
+config BR2_SDIMAGE_SOURCE
+	string "File containing the file list for SD card image"
+	help
+	  The file should be in the following format:
+
+		  source_path:target_path
+
+	  The source_path points to the file within the 
+	  $BINARIES_DIR, and the target_path points to the
+	  intended path within the SD card.
+
+endif # BR2_PACKAGE_SDIMAGE

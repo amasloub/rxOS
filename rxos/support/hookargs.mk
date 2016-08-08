@@ -13,10 +13,10 @@ else
 CPIO_COMPRESSION=$(BR2_CPIO_COMPRESSION)
 endif
 
-ifeq ($(RXOS_BUILD_SDIMAGE), y)
-SDSIZE = $(call qstrip,$(RXOS_SDIMAGE_SIZE))
-SDSOURCE = $(call qstrip,$(RXOS_SDIMAGE_SOURCE))
-SDNAME = $(call qstrip,$(RXOS_SDIMAGE_FILE))
+ifeq ($(BR2_PACKAGE_SDIMAGE), y)
+SDSIZE = $(BR2_SDIMAGE_SIZE)
+SDSOURCE = $(call qstrip,$(BR2_SDIMAGE_SOURCE))
+SDNAME = $(call qstrip,$(BR2_SDIMAGE_FILE))
 else
 SDSIZE = 0
 SDSOURCE = none

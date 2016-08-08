@@ -1,0 +1,48 @@
+# /etc/inittab
+#
+# Note: BusyBox init doesn't support runlevels.  The runlevels field is
+# completely ignored by BusyBox init. If you want runlevels, use
+# sysvinit.
+#
+# Format for each entry: <id>:<runlevels>:<action>:<process>
+#
+# id        == tty to run on, or empty for /dev/console
+# runlevels == ignored
+# action    == one of sysinit, respawn, askfirst, wait, and once
+# process   == program to run
+#
+# This file is part of rxOS.
+# rxOS is free software licnesed under the
+# GNU GPL version 3 or any later version.
+#
+# This file is a modified version of inittab
+# file from the Buildroot project. In particular
+# the mounting of proc was disabled as it is already
+# done in the initramfs. Some code has been copied from
+# The NextThingCo version of the inittab file as well,
+# to facilitate gadget serial usage.
+#
+# (c) 2001 Erik Andersen <andersen@codepoet.org>
+# (c) 2016 Outernet Inc
+# Some rights reserved.
+
+# Startup the system
+::sysinit:/bin/mount -o remount,rw /
+::sysinit:/bin/mkdir -p /dev/pts
+::sysinit:/bin/mkdir -p /dev/shm
+::sysinit:/bin/mount -a
+::sysinit:/bin/hostname -F /etc/hostname
+# now run any rc scripts
+::sysinit:/etc/init.d/rcS
+
+# Put a getty on the serial port
+ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 # GENERIC_SERIAL
+tty0::respawn:/sbin/getty -L tty0 115200 vt100 # framebuffer console
+
+# Stuff to do for the 3-finger salute
+#::ctrlaltdel:/sbin/reboot
+
+# Stuff to do before rebooting
+::shutdown:/etc/init.d/rcK
+::shutdown:/sbin/swapoff -a
+::shutdown:/bin/umount -a -r
