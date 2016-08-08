@@ -82,7 +82,7 @@ loop_mount() {
 # Find a backup version of an overlay SquashFS image
 find_backup() {
   name="$1"
-  find /linux -name "overlay-${name}-*.sqfs.backup" | tail -n1
+  find /sdcard -name "overlay-${name}-*.sqfs.backup" | tail -n1
 }
 
 # Mount the root filesystem overlay
