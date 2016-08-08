@@ -18,7 +18,7 @@ FLASH_ZIPNAME = $(FLASH_BASENAME).zip
 FLASH_MD5NAME = $(FLASH_BASENAME).md5
 
 
-.PHONY: release-zip release-flash
+.PHONY: release-sdcard release-flash
 
 
 $(BINARIES_DIR)/INSTALL.txt: $(BR2_EXTERNAL)/misc/INSTALL.txt
