@@ -29,6 +29,28 @@ forgot it, you need two additional steps::
     $ git submodule init
     $ git submodule update
 
+Selecting the board
+-------------------
+
+rxOS build supports a few different target boards. These boards are selected
+using the ``BOARD`` variable in the makefile, like this::
+
+    $ make BOARD=<boardname> [TARGET]
+
+The boardname can be one of the following:
+
+- ``rpi3``: Raspberry Pi3
+- ``chip``: NTC C.H.I.P.
+
+Shortcut scripts for making for specific targets are available at the root of
+the source tree. These scripts are named after the respective target boards.
+For example, to bring up the configuration menu for Raspberry Pi 3::
+
+    $ ./rpi3 menuconfig
+
+In the rest of the documentation, you can replace ``make`` with the board
+script (e.g., ``./rpi3``) depending on the board you wish to build for.
+
 Starting the build
 ------------------
 
