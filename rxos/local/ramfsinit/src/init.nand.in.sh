@@ -162,7 +162,7 @@ doboot() {
 # Set the date to a sane value
 date "2015-01-01 0:00:00"
 
-# Populate the /dev and /proc directories
+# Populate the /dev, /proc, and /sys directories
 mkdir -p /sys
 mount -t devtmpfs devtmpfs /dev
 mount -t proc proc /proc
@@ -240,4 +240,4 @@ done
 # When no bootable root filesystem images are found, we drop into an emergency
 # shell. We will pause a few seconds before we drop into shell, so that shell
 # promp isn't interpolated into kernel messages.
-bail "Could not find working boot image. SD card may be damaged."
+bail "Could not find working boot image. Storage device may be damaged."

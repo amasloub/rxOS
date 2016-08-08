@@ -16,9 +16,10 @@ export PATH=/bin
 # Script parameters
 TMPFS_SIZE="%TMPFS_SIZE%m"
 VERSION="%VERSION%"
-ROOT_IMAGES="root.sqfs backup.sqfs factory.sqfs"
 CMDLINE="$@"
 OVERLAYS=
+CONSOLE=/dev/console
+ROOT_IMAGES="root.sqfs backup.sqfs factory.sqfs"
 
 # Check whether command line has some argument
 hasarg() {
@@ -68,6 +69,22 @@ overlay_basename() {
   basename "${overlay_path%.*}" | cut -d- -f2
 }
 
+# Mount a SquashFS image on loopback device
+loop_mount() {
+  image="$1"
+  mount_path="$2"
+  [ -z "$image" ] && return 1
+  [ -f "$image" ] || return 1
+  mkdir -p "$mount_path" || return 1
+  mount -t squashfs "$image" -o loop,ro "$mount_path" >/dev/null 2>&1
+}
+
+# Find a backup version of an overlay SquashFS image
+find_backup() {
+  name="$1"
+  find /linux -name "overlay-${name}-*.sqfs.backup" | tail -n1
+}
+
 # Mount the root filesystem overlay
 #
 # Root filesystem overlays are SquashFS images that represent fragments of the
@@ -78,12 +95,20 @@ overlay_basename() {
 mount_overlay() {
   overlay_image="$1"
   overlay_name="$(overlay_basename "$overlay_image")"
-  mount_path="/overlays/$overlay_name"
-  mkdir -p "$mount_path"
-  mount -t squashfs "$overlay_image" -o loop,ro "$mount_path" \
-    > /dev/null 2>&1 || return 1
-  OVERLAYS="$OVERLAYS $mount_path"
-  echo "Using overlay $overlay_name"
+  mount_path="/omnt/$overlay_name"
+  if loop_mount "$overlay_image" "$mount_path"; then
+    OVERLAYS="$OVERLAYS $mount_path"
+    echo "Using overlay $overlay_name"
+    return 0
+  fi
+  if loop_mount "$(find_backup "$overlay_name")" "$mount_path"
+  then
+    OVERLAYS="$OVERLAYS $mount_path"
+    echo "Using overlay $overlay_name [BACKUP]"
+    return 0
+  fi
+  echo "Corrupted overlay $overlay_name"
+  return 1
 }
 
 # Mount the root filesystem
@@ -94,15 +119,15 @@ mount_overlay() {
 mount_root() {
   image_path="/sdcard/$1"
   echo "Attempt to mount $image_path"
-  mount -t squashfs "$image_path" -o loop,ro /rootfs || return 1
+  loop_mount "$image_path" "/rootfs" || return 1
   test_exe /rootfs/sbin/init || return 1
-  lower="lowerdir=/rootfs"
+  lower="/rootfs"
   # Add any overlays
   for overlay in $OVERLAYS; do
-    lower="$lower:$overlay"
+    lower="$overlay:$lower"
   done
   mount -t overlay overlay \
-    -o "$lower",upperdir=/tmpfs/upper,workdir=/tmpfs/work /root
+    -o "lowerdir=$lower",upperdir=/tmpfs/upper,workdir=/tmpfs/work /root
 }
 
 # Set things up for switch_root
@@ -116,6 +141,8 @@ set_up_boot() {
   mount --move /sdcard /root/boot
   mount --move /dev /root/dev
   mount --move /proc /root/proc
+  mount --move /sys /root/sys
+  [ "$SAFE_MODE" = y ] && touch /root/SAFEMODE
 }
 
 # Unount the root filesystem and related mounts
@@ -144,14 +171,19 @@ doboot() {
 # SHOW STARTS HERE
 ###############################################################################
 
-# Populate the /dev and /proc directories
+# Set the date to a sane value
+date "2015-01-01 0:00:00"
+
+# Populate the /dev, /proc, and /sys directories
+mkdir -p /sys
 mount -t devtmpfs devtmpfs /dev
 mount -t proc proc /proc
+mount -t sysfs sysfs /sys
 
 # Setup console
-exec 0</dev/console
-exec 1>/dev/console
-exec 2>/dev/console
+exec 0<$CONSOLE
+exec 1>$CONSOLE
+exec 2>$CONSOLE
 
 echo "++++ Starting rxOS v$VERSION ++++"
 
@@ -159,13 +191,19 @@ echo "++++ Starting rxOS v$VERSION ++++"
 # mount the root partition on the SD card. These mount points exist strictly 
 # within the initial RAM filesystem and will be preserved after switch_root is 
 # performed.
-mkdir -p /sdcard /rootfs /tmpfs /root /overlays
+mkdir -p /sdcard /rootfs /tmpfs /root /omnt
 
 # If 'shell' has been passed as a kernel command line argument, drop into
 # emergency shell right away.
 if hasarg "shell"; then
   sleep 10
   exec sh
+fi
+
+# If 'safemode' has been passed as a kernel command line argument, enable safe
+# mode.
+if hasarg "safemode"; then
+  SAFE_MODE=y
 fi
 
 # Run setup hooks. The hooks are shell scripts that named like hook-*.sh. They
@@ -206,15 +244,17 @@ rm -f /sdcard/FSCK*.REC
 mount -o remount,ro,errors=continue "/dev/mmcblk0p1" /sdcard
 
 # Mount overlay images if any
-for overlay in /sdcard/overlay-*.sqfs; do
-  mount_overlay "$overlay"
-done
+if [ "$SAFE_MODE" != y ]; then
+  for overlay in /sdcard/overlay-*.sqfs; do
+    mount_overlay "$overlay"
+  done
+fi
 
 # The userspace is contained in SquashFS images. There are three such images on 
 # the boot partition:
 #
 # - root.sqfs
-# - failsafe.sqfs
+# - backup.sqfs
 # - factory.sqfs
 #
 # Initially, they are all identical. During the lifecycle of the receiver, OTA u
