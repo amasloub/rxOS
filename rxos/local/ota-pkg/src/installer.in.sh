@@ -10,7 +10,9 @@
 # Some rights reserved.
 
 VERSION="%VERSION%"
+SUBPLATFORM="%SUBPLATFORM%"
 LOCAL_VERSION="$(cat /etc/version 2>/dev/null)"
+LOCAL_SUBPLATFORM="$(cat /etc/subplatform 2>/dev/null)"
 IGNORE_VERSION="%IGNORE_VERSION%"
 DTB="%DTB%"
 
@@ -40,6 +42,16 @@ find_mtd() {
   grep "\"$label\"" /proc/mtd 2>/dev/null | cut -d: -f1 | sed 's/mtd//'
 }
 
+# Mount the boot filesystem read/write
+bootrw() {
+  mount -o remount,rw /boot
+}
+
+# Mount the boot filesystem read-only
+bootro() {
+  mount -o remount,ro /boot
+}
+
 # Extract a file to /boot performing a three-point swap
 #
 # When updating a file in the /boot directory, the update is performed using
@@ -56,13 +68,16 @@ find_mtd() {
 # fail (i.e., partial mv is not possible).
 extract_to_bootfs() {
   filename="$1"
-  tgtpath="/boot/$filename"
+  target_name="$2"
+  nobackup="$3"
+  [ -z "$target_name" ] && target_name="$filename"
+  tgtpath="/boot/$target_name"
 
   $LOG "Installing $filename to $tgtpath"
-  mount -o remount,rw /boot || fail "Could not unlock boot partition"
+  bootrw || fail "Could not unlock boot partition"
 
   # Back up existing copy
-  if [ -f "$tgtpath" ]; then
+  if [ -f "$tgtpath" ] && [ -z "$nobackup" ]; then
     mv "$tgtpath" "${tgtpath}.backup" \
       || fail "Could not back up $filename"
     sync
@@ -82,7 +97,7 @@ extract_to_bootfs() {
   mv "${tgtpath}.new" "$tgtpath"
   sync
 
-  mount -o remount,ro /boot
+  bootro
   $LOG "Installed /boot/$filename"
 }
 
@@ -188,13 +203,17 @@ if hasfile "rootfs.ubifs"; then
   $LOG "Installed the root filesystem image"
 fi
 
-if hasfile "rootfs.sqfs"; then
-  extract_to_bootfs "rootfs.sqfs"
-  chbootfsmode
-  cp "/boot/rootfs.sqfs" "/boot/backup.sqfs" \
+if hasfile "rootfs.squashfs"; then
+  $LOG "Installing the root filesystem image"
+  bootrw || fail "Could not unlock boot partition"
+  mv "/boot/root.sqfs" "/boot/backup.sqfs" \
     || fail "Could not create /boot/backup.sqfs"
   sync
-  chbootfsmode
+  "$INSTALLER" --extract "rootfs.squashfs" "/boot/root.sqfs" \
+    || fail "Could not extract rootfs image"
+  sync
+  bootro
+  $LOG "Installed the root filesystem image"
 fi
 
 hasfile "post-install.sh" && exec_script "post-install.sh"
