@@ -12,9 +12,10 @@
 
 set -e
 
+BOARD=${BOARD:=chip}
 SCRIPTDIR=$(dirname $0)
 SRCDIR="${SCRIPTDIR}/.."
-OUTDIR="${SRCDIR}/out"
+OUTDIR="${SRCDIR}/out/${BOARD}"
 BINDIR="${OUTDIR}/images"
 HOSTDIR="${OUTDIR}/host"
 TARGETDIR="${OUTDIR}/target"

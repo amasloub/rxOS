@@ -10,10 +10,12 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
+BOARD="${BOARD:=chip}"
 SCRIPT_DIR="$(dirname $0)"
 SRC_DIR="$SCRIPT_DIR/.."
-HOSTBIN_DIR="$SRC_DIR/out/host/usr/bin"
-IMAGES_DIR="$SRC_DIR/out/images"
+OUTDIR="$SRC_DIR/out/${BOARD}"
+HOSTBIN_DIR="$OUTDIR/host/usr/bin"
+IMAGES_DIR="$OUTDIR/images"
 MKPKG="$HOSTBIN_DIR/mkpkg"
 SIGNATURE="$IMAGES_DIR/signature.pem"
 PWFILE="$SRC_DIR/.password"
