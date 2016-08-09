@@ -101,7 +101,7 @@ package_overlay() {
     version="v${TARGET_VERSION}"
   fi
   timestamp="$(date '+%Y%m%d%H%M')"
-  pkgfile="$BINDIR/rxos-${version}_overlay-${overlay_name}-v${overlay_version}-${timestamp}${suffix}.pkg"
+  pkgfile="$BINDIR/rxos-${BOARD}-${version}_overlay-${overlay_name}-v${overlay_version}-${timestamp}${suffix}.pkg"
   chmod +x "$installer_out"
   $MKPKG $MKPKG_ARGS -o "$pkgfile" "${installer_out}:run.sh" "${overlay_file}"
   rm -f "$installer_out"
