@@ -6,6 +6,11 @@ menu "Firmware configuration"
 		help
 		  Name of the platform
 
+	config RXOS_SUBPLATFORM
+		string "Subplatform name"
+		help
+		  Name of the subplatform
+
 	config RXOS_VERSION
 		string "Platform version"
 		default 0.0

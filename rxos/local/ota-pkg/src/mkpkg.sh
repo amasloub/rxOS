@@ -20,7 +20,7 @@ DATE="$(date +%Y%m%d%H%M)"
 [ "$VERSIONED_PKG" = y ] && SUFFIX=nv
 FULL_VERSION="v${VERSION}-${DATE}${SUFFIX}+$GITVER"
 
-PKGFILE="$BINARIES_DIR/${PLATFORM}-${FULL_VERSION}"
+PKGFILE="$BINARIES_DIR/${PLATFORM}-${SUBPLATFORM}-${FULL_VERSION}"
 INSTALLER="$BINARIES_DIR/installer.sh"
 BOOT_PACKAGING_CANDIDATES="
 zImage
@@ -38,13 +38,13 @@ sun5i-r8-chip.dtb
 u-boot-dtb.bin
 uboot-env.bin
 rootfs.ubifs
-rootfs.sqfs
+rootfs.squashfs
 pre-install.sh
 post-install.sh
 "
 MINI_PACKAGING_CANDIDATES="
 rootfs.ubifs
-rootfs.sqfs
+rootfs.squashfs
 pre-install.sh
 post-install.sh
 "
