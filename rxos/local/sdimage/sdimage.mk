@@ -17,4 +17,4 @@ endif
 
 rebuild-sdimage:
 	$(EXTRA_ENV) $(call lpkgdir,sdimage)/src/mksdimage.sh $(BINARIES_DIR) \
-		$(call qstrip,$(BR2_ROOTFS_POST_SCRIPT_ARGS))$(sep))
+		$(call qstrip,$(BR2_ROOTFS_POST_SCRIPT_ARGS))
