@@ -1,3 +1,8 @@
+This patch changes the AXP209 configuration at boot to remove the VBUS limit
+and disable undervoltage protection. This should prevent or reduce instances of
+brown-outs when USB devices are plugged in and allow more current to be drawn
+from the microUSB port.
+
 diff --git a/drivers/power/axp209.c b/drivers/power/axp209.c
 index 71aa000..8c03478 100644
 --- a/drivers/power/axp209.c
