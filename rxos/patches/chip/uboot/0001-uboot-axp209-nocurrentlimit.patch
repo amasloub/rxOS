@@ -1,0 +1,57 @@
+This patch changes the AXP209 configuration at boot to remove the VBUS limit
+and disable undervoltage protection. This should prevent or reduce instances of
+brown-outs when USB devices are plugged in and allow more current to be drawn
+from the microUSB port.
+
+diff --git a/drivers/power/axp209.c b/drivers/power/axp209.c
+index 71aa000..8c03478 100644
+--- a/drivers/power/axp209.c
++++ b/drivers/power/axp209.c
+@@ -166,5 +166,11 @@ int axp_init(void)
+ 			return rc;
+ 	}
+ 
++    /* Set no limit on VBUS power */
++    /* Set no limit on low voltage shutdown */
++    rc = pmic_bus_write(AXP209_VBUS_IPSOUT, AXP_VBUS_CURRENT_LIMIT_NONE | AXP_VBUS_VHOLD_4_0 | AXP_VBUS_VHOLD_LIMIT_DISABLE);
++    if (rc)
++        return rc;
++
+ 	return 0;
+ }
+diff --git a/include/axp209.h b/include/axp209.h
+index e1b22e3..c822dd8 100644
+--- a/include/axp209.h
++++ b/include/axp209.h
+@@ -19,6 +19,7 @@ enum axp209_reg {
+ 	AXP209_IRQ_ENABLE5 = 0x44,
+ 	AXP209_IRQ_STATUS5 = 0x4c,
+ 	AXP209_SHUTDOWN = 0x32,
++    AXP209_VBUS_IPSOUT = 0x30,
+ };
+ 
+ #define AXP209_POWER_STATUS_ON_BY_DC	(1 << 0)
+@@ -47,3 +48,23 @@ enum axp209_reg {
+ #define AXP_GPIO_CTRL_INPUT			0x02 /* Input */
+ #define AXP_GPIO_STATE			0x94
+ #define AXP_GPIO_STATE_OFFSET			4
++
++
++/* for VBUS power control */
++#define AXP_VBUS_CURRENT_LIMIT_NONE 0x3
++#define AXP_VBUS_CURRENT_LIMIT_900  0x0
++#define AXP_VBUS_CURRENT_LIMIT_500  0x1
++#define AXP_VBUS_CURRENT_LIMIT_100  0x2
++
++#define AXP_VBUS_VHOLD_4_0 (0x0 << 3)
++#define AXP_VBUS_VHOLD_4_1 (0x1 << 3)
++#define AXP_VBUS_VHOLD_4_2 (0x2 << 3)
++#define AXP_VBUS_VHOLD_4_3 (0x3 << 3)
++#define AXP_VBUS_VHOLD_4_4 (0x4 << 3)
++#define AXP_VBUS_VHOLD_4_5 (0x5 << 3)
++#define AXP_VBUS_VHOLD_4_6 (0x6 << 3)
++#define AXP_VBUS_VHOLD_4_7 (0x7 << 3)
++
++#define AXP_VBUS_VHOLD_LIMIT_ENABLE (1 << 6)
++#define AXP_VBUS_VHOLD_LIMIT_DISABLE (0 << 6)
++
