@@ -11,4 +11,5 @@ image.
     requirements
     build
     boot_hooks
-    rootfs_overlay
+    rootfs_overlays
+    setup_scripts

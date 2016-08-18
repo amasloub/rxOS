@@ -86,7 +86,7 @@ Restarting the receiver may also help in some cases.
 
 The system logs at ``/var/log/messages`` contain messages with more information
 about the nature of failure. To get the storage hotplug logs, log in using SSH
-(see :doc:`remote_access`) and execute the following command::
+(see :doc:`../how_it_works/remote_access`) and execute the following command::
 
     $ grep hotplug.sd /var/log/messages
     Jan  1 00:21:21 rxos user.notice hotplug.sda: Handling hotplug even for /dev/sda
