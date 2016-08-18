@@ -15,7 +15,7 @@ In order to build a CHIP-based receiver, you will need the following:
 
 You will also need a CHIP image, which can be downloaded from
 `archive.outernet.is/images/rxOS-Raspberry-Pi
-<https://archive.outernet.is/images/CHIP/>`_.
+<https://archive.outernet.is/images/rxOS-CHIP/>`_.
 
 Flashing the image
 -------------------
