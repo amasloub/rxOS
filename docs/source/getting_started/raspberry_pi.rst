@@ -4,7 +4,7 @@ Raspberry Pi
 In order to build a Raspberry Pi receiver, you will need the following:
 
 - Raspberry Pi 3
-- 4GB (or larger) SD card (8GB and larger is recommended)
+- 4GB (or larger) microSD card (8GB and larger is recommended)
 - RTL-SDR USB dongle
 - LNA
 - patch antenna
@@ -75,8 +75,8 @@ Finally you can write the image::
 Connecting the hardware
 -----------------------
 
-Connect the antenna to the LNA, and then connect the LNA to the RTL-SDR dongle.
-Finally, plug the RTL-SDR dongle into one of the available ports on the
-Raspberry Pi.
+Once the image is done, put the SD card into the SD card slot. Connect the
+antenna to the LNA, and then connect the LNA to the RTL-SDR dongle. Finally,
+plug the RTL-SDR dongle into one of the available ports on the Raspberry Pi.
 
 Power the Raspberry Pi on and continue to :doc:`first_steps`.
