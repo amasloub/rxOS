@@ -81,8 +81,8 @@ parenthesis):
 We will need to clone a few Git repositories which contain non-standard tools
 that are not commonly available as packages (yet)::
 
-    $ git clone https://github.com/NextThingCo/CHIP-tools.git
-    $ git clone https://github.com/linux-sunxi/sunxi-tools.git
+    $ git clone https://github.com/Outernet-Project/CHIP-tools.git
+    $ git clone https://github.com/Outernet-Project/sunxi-tools.git
 
 We need to compile these tools so run a few more commands::
 
