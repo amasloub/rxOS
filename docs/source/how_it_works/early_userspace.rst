@@ -29,7 +29,7 @@ Hooks are looked up by ``hook-*.sh`` name pattern and are executed in a
 subshell every time rxOS boots. It is the hook script's job to determine wither
 they need to take action or not.
 
-You can read more about boot hooks in :doc:`boot_hooks.rst`.
+You can read more about boot hooks in :doc:`boot_hooks`.
 
 Mounting the rootfs
 -------------------
