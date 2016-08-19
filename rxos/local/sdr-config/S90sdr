@@ -69,7 +69,7 @@ reset() {
   has_session || exit 0
   stop
   sleep "$RESET_PAUSE"
-  sart
+  start
 }
 
 case "$1" in
