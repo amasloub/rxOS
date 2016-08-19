@@ -55,6 +55,11 @@ SSH access
 For SSH access, use port 22 and username ``outernet``. The default password for
 the ``outernet`` user is ``outernet``.
 
+.. note::
+    Once you go through the setup wizard in the web inteface, the SSH user will
+    change to the superuser credentials that you set up during the wizard.
+    Please adjust accordingly.
+
 Root login is not enabled, but ``sudo`` can be used to gain full root access::
 
     [rxOS][outernet@rxos ~]$ sudo su

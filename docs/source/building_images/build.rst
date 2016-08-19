@@ -48,8 +48,9 @@ For example, to bring up the configuration menu for Raspberry Pi 3::
 
     $ ./rpi3 menuconfig
 
-In the rest of the documentation, you can replace ``make`` with the board
-script (e.g., ``./rpi3``) depending on the board you wish to build for.
+.. note::
+    In the rest of the documentation, you can replace ``make`` with the board
+    script (e.g., ``./rpi3``) depending on the board you wish to build for.
 
 Starting the build
 ------------------

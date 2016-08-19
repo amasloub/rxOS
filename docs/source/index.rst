@@ -20,6 +20,7 @@ Documentation
 .. toctree::
     :maxdepth: 1
 
+    getting_started/index
     how_it_works/index
     building_images/index
     troubleshooting/index

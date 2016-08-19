@@ -18,7 +18,24 @@ You will need to have the following packages installed:
 - mercurial (hg)
 
 .. note::
-    Right now, the build will not work with gcc 6 and later.
+    Here are some commands for installing build tools on different distros:
+
+    Ubuntu/Debian and derivatives::
+
+        $ sudo apt-get install build-essential
+
+    Fedora::
+
+        $ sudo yum groupinstall "Development Tools" "Development Libraries"
+
+    Arch Linux::
+
+        $ sudo pacman -Sy base-devel
+
+    Opensuse::
+
+        $ sudo zypper install --type pattern devel_basis
+
 
 .. [1] The build tools include compilers (e.g., gcc), standard libraries, and 
        build automation tools (make, automake, autoconf, etc). In some Linux
