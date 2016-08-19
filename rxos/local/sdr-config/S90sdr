@@ -21,7 +21,7 @@ SDR_ARGS="$(/usr/sbin/sdrargs "$JSON_PATH")"
 SCREEN="/usr/bin/screen"
 SCREEN_NAME="sdr"
 SCREEN_ARGS="-T vt100 -dmS $SCREEN_NAME $WRAPPER_SCRIPT"
-RESET_PAUSE=900  # seconds
+RESET_PAUSE=200  # seconds
 
 [ -x "$SDR" ] || exit 0
 [ -z "$SDR_ARGS" ] && exit 0
