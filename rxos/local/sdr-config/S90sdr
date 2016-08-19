@@ -9,18 +9,27 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-DAEMON="/usr/bin/screen"
+# Wrapper script params
+WRAPPER_SCRIPT="/usr/sbin/demod"
 SDR="%BINPATH%"
 LIBRARY_PATH="$(dirname "$SDR")"
 JSON_PATH="%JSON_PATH%"
 PID_FILE=/var/run/sdr.pid
-WRAPPER_SCRIPT="/usr/sbin/demod"
 SDR_ARGS="$(/usr/sbin/sdrargs "$JSON_PATH")"
-DAEMON_ARGS="-T vt100 -dmS sdr $WRAPPER_SCRIPT"
+
+# Daemon params
+SCREEN="/usr/bin/screen"
+SCREEN_NAME="sdr"
+SCREEN_ARGS="-T vt100 -dmS $SCREEN_NAME $WRAPPER_SCRIPT"
 RESET_PAUSE=900  # seconds
 
 [ -x "$SDR" ] || exit 0
 [ -z "$SDR_ARGS" ] && exit 0
+
+has_session() {
+  $SCREEN -list | tail -n +2 | head -n -2 | awk '{print $1}' | cut -d. -f2 \
+    grep -q "$SCREEN_NAME"
+}
 
 start() {
   printf "Preparing to start SDR demodulator: "
@@ -32,7 +41,7 @@ EOF
   echo "OK"
 
   printf "Starting SDR demodulator: "
-  start-stop-daemon -Sqmp "$PID_FILE" -x "$DAEMON" -- $DAEMON_ARGS
+  $SCREEN $SCREEN_ARGS
   if [ $?  ]; then
     echo "OK"
   else
@@ -42,13 +51,12 @@ EOF
 
 stop() {
   printf "Stopping SDR demodulator: "
-  start-stop-daemon -Kqp "$PID_FILE" -x "$DAEMON"
+  $SCREEN -XS "$SCREEN_NAME" quit
   if [ $?  ]; then
     echo "OK"
   else
     echo "FAILED"
   fi
-  [ -f "$PID_FILE"  ] && rm "$PID_FILE"
 }
 
 restart() {
@@ -58,11 +66,10 @@ restart() {
 }
 
 reset() {
-  [ -f "$PID_FILE" ] || exit 0
-  kill -9 "$(cat "$PID_FILE")"
-  rm "$PID_FILE"
+  has_session || exit 0
+  stop
   sleep "$RESET_PAUSE"
-  start
+  sart
 }
 
 case "$1" in
