@@ -13,6 +13,9 @@ In order to build a CHIP-based receiver, you will need the following:
 - (optional) UARD USB adapter, if you wish to monitor the boot loader output
 - (optional) USB Ethernet adapter for wired network connection
 
+The RTL-SDR radio dongle, LNA, and antenna, can be purchased `through Outernet
+<https://outernet.is/products>`_ either individually or as a kit.
+
 You will also need a CHIP image, which can be downloaded from
 `archive.outernet.is/images/rxOS-Raspberry-Pi
 <https://archive.outernet.is/images/rxOS-CHIP/>`_.

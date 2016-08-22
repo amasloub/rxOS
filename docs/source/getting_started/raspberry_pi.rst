@@ -9,6 +9,9 @@ In order to build a Raspberry Pi receiver, you will need the following:
 - LNA
 - patch antenna
 
+The RTL-SDR radio dongle, LNA, and antenna, can be purchased `through Outernet
+<https://outernet.is/products>`_ either individually or as a kit.
+
 You will also need a Raspberry Pi image, which can be downloaded from
 `archive.outernet.is/images/rxOS-Raspberry-Pi
 <https://archive.outernet.is/images/rxOS-Raspberry-Pi/>`_.
