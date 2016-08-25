@@ -23,7 +23,9 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-CONF_FILE="/mnt/external/REMOTE"
+CONF_FILE_EXT="/mnt/external/REMOTE"
+CONF_FILE_EXT_DISABLE="/mnt/external/REMOTE_DISABLE"
+CONF_FILE="/mnt/conf/REMOTE"
 AP_PROFILE="/etc/network/profiles.d/wlan0"
 STA_PROFILE="/etc/network/profiles.d/wlan0-client"
 WLAN_CFG="/etc/network/interfaces.d/wlan0"
@@ -89,7 +91,36 @@ disable() {
   use_profile "$AP_PROFILE"
 }
 
+# import external REMOTE config to onboard storage
+import_ext() {
+  printf "Looking for new configuration: "
+  if [ -f "$CONF_FILE_EXT" ]; then
+    cp "$CONF_FILE_EXT"  "$CONF_FILE"
+    echo "FOUND"
+  else
+    echo "NONE"
+  fi
+}
+
+# if $CONF_FILE_EXT_DISABLE file exists, remove CONF_FILE from
+# onboard storage to disable STA  mode.
+check_disable_ext() {
+  printf "Looking for external disable: "
+  if [ -f "$CONF_FILE_EXT_DISABLE" ]; then
+    rm -f "$CONF_FILE"
+    echo "FOUND"
+    # exit early as REMOTE_DISABLE overrides REMOTE
+    exit 0
+  else
+    echo "NONE"
+  fi
+}
+
 start() {
+  # check for external disable
+  check_disable_ext
+  # import if new external STA config file exists
+  import_ext
   printf "Start remote session configuration: "
   if [ -f "$CONF_FILE" ]; then
     setup
