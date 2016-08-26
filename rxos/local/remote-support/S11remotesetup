@@ -26,6 +26,7 @@
 CONF_FILE_EXT="/mnt/external/REMOTE"
 CONF_FILE_EXT_DISABLE="/mnt/external/REMOTE_DISABLE"
 CONF_FILE="/mnt/conf/REMOTE"
+CONF_FILE_DISABLE="/mnt/conf/REMOTE.disabled"
 AP_PROFILE="/etc/network/profiles.d/wlan0"
 STA_PROFILE="/etc/network/profiles.d/wlan0-client"
 WLAN_CFG="/etc/network/interfaces.d/wlan0"
@@ -107,7 +108,7 @@ import_ext() {
 check_disable_ext() {
   printf "Looking for external disable: "
   if [ -f "$CONF_FILE_EXT_DISABLE" ]; then
-    rm -f "$CONF_FILE"
+    mv "$CONF_FILE" "$CONF_FILE_DISABLE"
     echo "FOUND"
     # exit early as REMOTE_DISABLE overrides REMOTE
     exit 0
