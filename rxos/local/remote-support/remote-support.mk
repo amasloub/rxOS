@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-REMOTE_SUPPORT_VERSION = 1.0
+REMOTE_SUPPORT_VERSION = 1.1
 REMOTE_SUPPORT_LICENSE = GPL
 REMOTE_SUPPORT_SITE = $(BR2_EXTERNAL)/local/remote-support/src
 REMOTE_SUPPORT_SITE_METHOD = local
