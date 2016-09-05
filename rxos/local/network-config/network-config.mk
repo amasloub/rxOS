@@ -25,12 +25,15 @@ NETWORK_CONFIG_HOSTNAME = $(call qstrip,$(BR2_TARGET_GENERIC_HOSTNAME))
 NETWORK_CONFIG_PROFILES_PATH = /etc/network/profiles.d
 NETWORK_CONFIG_PROFILES = $(TARGET_DIR)$(NETWORK_CONFIG_PROFILES_PATH)
 NETWORK_CONFIG_IFDIR = $(TARGET_DIR)/etc/network/interfaces.d
+NETWORK_CONFIG_DNSMASQ_PROFILES_PATH = /etc/conf.d/dnsmasq
+NETWORK_CONFIG_DNSMASQ_PROFILES = $(TARGET_DIR)$(NETWORK_CONFIG_DNSMASQ_PROFILES_PATH)
 
 ifeq ($(BR2_PACKAGE_NETWORK_CONFIG),y)
 PERSISTENT_CONF_LIST += /etc/hostname
 PERSISTENT_CONF_LIST += /etc/dropbear
 PERSISTENT_CONF_LIST += /etc/network/interfaces.d
 PERSISTENT_CONF_LIST += /etc/hostapd.conf
+PERSISTENT_CONF_LIST += /etc/dnsmasq.conf
 PERSISTENT_CONF_LIST += /etc/wpa_supplicant.conf
 PERSISTENT_CONF_LIST += /run/dnsmasq.leases
 endif
@@ -116,12 +119,19 @@ NETWORK_CONFIG_SUBS += s|%ALIASES%|$(NETWORK_CONFIG_ALIAS_CFG)|;
 NETWORK_CONFIG_SUBS += s|%RANGES%|$(NETWORK_CONFIG_RANGE_CFG)|;
 NETWORK_CONFIG_SUBS += s|%HOSTNAME%|$(NETWORK_CONFIG_HOSTNAME)|;
 
+NETWORK_CONFIG_DNSMASQ_STA_SUB = s|^.*$(NETWORK_CONFIG_AP_IF).*$|||;
+
 define NETWORK_CONFIG_INSTALL_TARGET_CMDS
 	mkdir -p $(NETWORK_CONFIG_PROFILES)
 	mkdir -p $(NETWORK_CONFIG_IFDIR)
+	mkdir -p $(NETWORK_CONFIG_DNSMASQ_PROFILES)
 	$(SED) '$(NETWORK_CONFIG_SUBS)' $(@D)/hostapd.conf $(@D)/dnsmasq.conf
+	cp $(@D)/dnsmasq.conf $(@D)/dnsmasq_sta.conf
+	$(SED) '$(NETWORK_CONFIG_DNSMASQ_STA_SUB)' $(@D)/dnsmasq_sta.conf
+	$(INSTALL) -Dm644 $(@D)/dnsmasq.conf $(NETWORK_CONFIG_DNSMASQ_PROFILES)/ap.conf
+	$(INSTALL) -Dm644 $(@D)/dnsmasq_sta.conf $(NETWORK_CONFIG_DNSMASQ_PROFILES)/sta.conf
+	ln -sf $(NETWORK_CONFIG_DNSMASQ_PROFILES_PATH)/ap.conf $(TARGET_DIR)/etc/dnsmasq.conf
 	$(INSTALL) -Dm644 $(@D)/hostapd.conf $(TARGET_DIR)/etc/hostapd.conf
-	$(INSTALL) -Dm644 $(@D)/dnsmasq.conf $(TARGET_DIR)/etc/dnsmasq.conf
 	$(foreach ifacecmds,$(NETWORK_CONFIG_INSTALL_IFACES),$(call $(ifacecmds)))
 endef
 
