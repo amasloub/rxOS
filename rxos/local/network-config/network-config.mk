@@ -28,13 +28,16 @@ NETWORK_CONFIG_IFDIR = $(TARGET_DIR)/etc/network/interfaces.d
 NETWORK_CONFIG_DNSMASQ_PROFILES_PATH = /etc/conf.d/dnsmasq
 NETWORK_CONFIG_DNSMASQ_PROFILES = $(TARGET_DIR)$(NETWORK_CONFIG_DNSMASQ_PROFILES_PATH)
 
+NETWORK_CONFIG_WIRELESS_DEFAULT_MODE = AP
+NETWORK_CONFIG_WIRELESS_MODE_FILE = $(TARGET_DIR)/etc/conf.d/wireless
+
 ifeq ($(BR2_PACKAGE_NETWORK_CONFIG),y)
 PERSISTENT_CONF_LIST += /etc/hostname
 PERSISTENT_CONF_LIST += /etc/dropbear
 PERSISTENT_CONF_LIST += /etc/network/interfaces.d
 PERSISTENT_CONF_LIST += /etc/hostapd.conf
-PERSISTENT_CONF_LIST += /etc/dnsmasq.conf
 PERSISTENT_CONF_LIST += /etc/wpa_supplicant.conf
+PERSISTENT_CONF_LIST += /etc/conf.d/wireless
 PERSISTENT_CONF_LIST += /run/dnsmasq.leases
 endif
 
@@ -130,9 +133,10 @@ define NETWORK_CONFIG_INSTALL_TARGET_CMDS
 	$(SED) '$(NETWORK_CONFIG_DNSMASQ_STA_SUB)' $(@D)/dnsmasq_sta.conf
 	$(INSTALL) -Dm644 $(@D)/dnsmasq.conf $(NETWORK_CONFIG_DNSMASQ_PROFILES)/ap.conf
 	$(INSTALL) -Dm644 $(@D)/dnsmasq_sta.conf $(NETWORK_CONFIG_DNSMASQ_PROFILES)/sta.conf
-	ln -sf $(NETWORK_CONFIG_DNSMASQ_PROFILES_PATH)/ap.conf $(TARGET_DIR)/etc/dnsmasq.conf
+	echo $(NETWORK_CONFIG_WIRELESS_DEFAULT_MODE) > $(NETWORK_CONFIG_WIRELESS_MODE_FILE)
 	$(INSTALL) -Dm644 $(@D)/hostapd.conf $(TARGET_DIR)/etc/hostapd.conf
 	$(foreach ifacecmds,$(NETWORK_CONFIG_INSTALL_IFACES),$(call $(ifacecmds)))
+	$(INSTALL) -Dm755 $(@D)/network.sh $(TARGET_DIR)/etc/setup.d/network.sh
 endef
 
 $(eval $(generic-package))
