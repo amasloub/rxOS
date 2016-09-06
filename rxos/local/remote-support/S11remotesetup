@@ -13,8 +13,6 @@
 #     PORT='revssh port'
 #     NAME='hostname'
 #     HOST='revssh server hostname'
-#     SSID='access point name'
-#     PASSCODE='access point passcode'
 #
 # This file is part of rxOS.
 # rxOS is free software licensed under the
@@ -27,44 +25,8 @@ CONF_FILE_EXT="/mnt/external/REMOTE"
 CONF_FILE_EXT_DISABLE="/mnt/external/REMOTE_DISABLE"
 CONF_FILE="/mnt/conf/REMOTE"
 CONF_FILE_DISABLE="/mnt/conf/REMOTE.disabled"
-AP_PROFILE="/etc/network/profiles.d/wlan0"
-STA_PROFILE="/etc/network/profiles.d/wlan0-client"
-WLAN_CFG="/etc/network/interfaces.d/wlan0"
-WPA_DEFAULTS="
-# wpa_supplicant configuration file
-#
-# This file is part of rxOS.
-# rxOS is free software licensed under the
-# GNU GPL version 3 or any later version.
-#
-# (c) 2016 Outernet Inc
-# Some rights reserved.
-
-ctrl_interface=/var/run/wpa_supplicant
-update_config=1
-fast_reauth=1
-ap_scan=1
-
-# -----> Place your configuration below this line <-----
-"
-WPA_REMOTE_MARKER="# REMOTE-CONNECTION"
-WPA_CONF="/etc/wpa_supplicant.conf"
 IFACE="eth0"
 
-use_profile() {
-  target_cfg="$1"
-  rm "$WLAN_CFG"
-  ln -s "$target_cfg" "$WLAN_CFG"
-}
-
-configure_sta() {
-  echo "$WPA_DEFAULTS" > "$WPA_CONF"
-  echo "$WPA_REMOTE_MARKER" >> "$WPA_CONF"
-  echo "$PASSCODE" | wpa_passphrase "$SSID" >> "$WPA_CONF"
-  use_profile "$STA_PROFILE"
-  sed -i "s/^.*wlan0.*$//" /etc/dnsmasq.conf
-  IFACE="wlan0"
-}
 
 configure_hostname() {
   echo "$NAME" > /etc/hostname
@@ -74,7 +36,6 @@ configure_hostname() {
 setup() {
   . "$CONF_FILE"
   [ -n "$NAME" ] && configure_hostname
-  [ -n "$SSID" ] && configure_sta
   [ -z "$KEY" ] && return 1
   echo "$KEY" | base64 -d > /etc/remote_key
   HOST="${HOST:=hub.outernet.is}"
@@ -83,13 +44,6 @@ setup() {
   echo "REVSSH_PORT=\"$PORT\"" >> /etc/conf.d/remote
   echo "REVSSH_IFACE=\"$IFACE\"" >> /etc/conf.d/remote
   return 0
-}
-
-disable() {
-  if grep -q "$WPA_REMOTE_MARKER" "$WPA_CONF"; then
-    echo "$WPA_DEFAULTS" > "$WPA_CONF"
-  fi
-  use_profile "$AP_PROFILE"
 }
 
 # import external REMOTE config to onboard storage
@@ -104,7 +58,7 @@ import_ext() {
 }
 
 # if $CONF_FILE_EXT_DISABLE file exists, remove CONF_FILE from
-# onboard storage to disable STA  mode.
+# onboard storage to disable remote mode.
 check_disable_ext() {
   printf "Looking for external disable: "
   if [ -f "$CONF_FILE_EXT_DISABLE" ]; then
@@ -127,7 +81,6 @@ start() {
     setup
     echo "OK"
   else
-    disable
     echo "DISABLED"
     exit 0
   fi
