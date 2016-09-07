@@ -45,7 +45,7 @@ guard() {
   done
   # If it reaches this point, the wait period is reached and no IP
   # was assigned by dhcp, so revert back to AP mode
-  echo "$STA_MODE" > "$WIRELESS_MODE_FILE"
+  echo "$AP_MODE" > "$WIRELESS_MODE_FILE"
   restart_net_stack
 }
 
