@@ -11,7 +11,7 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-IP_ASSIGNMENT_FILE=/var/run/ip_assign_method
+IP_ASSIGNMENT_FILE=/var/run/ip_assign_method.wlan0
 WIRELESS_MODE_FILE=/etc/conf.d/wireless
 DELAY=1
 ITERATIONS=0
