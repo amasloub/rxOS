@@ -122,6 +122,8 @@ define NETWORK_CONFIG_INSTALL_TARGET_CMDS
 	$(SED) '$(NETWORK_CONFIG_SUBS)' $(@D)/hostapd.conf $(@D)/dnsmasq.conf
 	$(INSTALL) -Dm644 $(@D)/hostapd.conf $(TARGET_DIR)/etc/hostapd.conf
 	$(INSTALL) -Dm644 $(@D)/dnsmasq.conf $(TARGET_DIR)/etc/dnsmasq.conf
+	$(INSTALL) -Dm755 $(@D)/check_ip_assigned \
+		$(TARGET_DIR)/etc/network/if-up.d/check_ip_assigned
 	$(foreach ifacecmds,$(NETWORK_CONFIG_INSTALL_IFACES),$(call $(ifacecmds)))
 endef
 
