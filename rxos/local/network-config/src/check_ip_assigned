@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo "$METHOD" > "/var/run/ip_assign_method.$LOGICAL"
