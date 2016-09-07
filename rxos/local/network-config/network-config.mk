@@ -137,6 +137,7 @@ define NETWORK_CONFIG_INSTALL_TARGET_CMDS
 	$(INSTALL) -Dm644 $(@D)/hostapd.conf $(TARGET_DIR)/etc/hostapd.conf
 	$(foreach ifacecmds,$(NETWORK_CONFIG_INSTALL_IFACES),$(call $(ifacecmds)))
 	$(INSTALL) -Dm755 $(@D)/wireless.sh $(TARGET_DIR)/etc/setup.d/wireless.sh
+	$(INSTALL) -Dm755 $(@D)/S99netguard $(TARGET_DIR)/etc/init.d/S99netguard
 endef
 
 $(eval $(generic-package))
