@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIGHTTPD_CONFIG_VERSION = 1.1
+LIGHTTPD_CONFIG_VERSION = 1.2
 LIGHTTPD_CONFIG_LICENSE = GPL
 LIGHTTPD_CONFIG_SITE = $(BR2_EXTERNAL)/local/lighttpd-config/src
 LIGHTTPD_CONFIG_SITE_METHOD = local
