@@ -17,7 +17,7 @@ def stringify_args(args):
     """ Create the text used by sdr100 as an argument string """
     settings_text = ('-f {frequency} -u {uncertainty} -r {symbolrate} '
                      '-s {sample_rate} -b {rf_filter}').format(**args)
-    if args['descrambler']:
+    if not args['descrambler']:
         settings_text += ' -w'
     return settings_text
 
