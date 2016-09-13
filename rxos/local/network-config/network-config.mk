@@ -25,6 +25,11 @@ NETWORK_CONFIG_HOSTNAME = $(call qstrip,$(BR2_TARGET_GENERIC_HOSTNAME))
 NETWORK_CONFIG_PROFILES_PATH = /etc/network/profiles.d
 NETWORK_CONFIG_PROFILES = $(TARGET_DIR)$(NETWORK_CONFIG_PROFILES_PATH)
 NETWORK_CONFIG_IFDIR = $(TARGET_DIR)/etc/network/interfaces.d
+NETWORK_CONFIG_DNSMASQ_PROFILES_PATH = /etc/conf.d/dnsmasq
+NETWORK_CONFIG_DNSMASQ_PROFILES = $(TARGET_DIR)$(NETWORK_CONFIG_DNSMASQ_PROFILES_PATH)
+
+NETWORK_CONFIG_WIRELESS_DEFAULT_MODE = AP
+NETWORK_CONFIG_WIRELESS_MODE_FILE = $(TARGET_DIR)/etc/conf.d/wireless
 
 ifeq ($(BR2_PACKAGE_NETWORK_CONFIG),y)
 PERSISTENT_CONF_LIST += /etc/hostname
@@ -32,6 +37,7 @@ PERSISTENT_CONF_LIST += /etc/dropbear
 PERSISTENT_CONF_LIST += /etc/network/interfaces.d
 PERSISTENT_CONF_LIST += /etc/hostapd.conf
 PERSISTENT_CONF_LIST += /etc/wpa_supplicant.conf
+PERSISTENT_CONF_LIST += /etc/conf.d/wireless
 PERSISTENT_CONF_LIST += /run/dnsmasq.leases
 endif
 
@@ -116,13 +122,24 @@ NETWORK_CONFIG_SUBS += s|%ALIASES%|$(NETWORK_CONFIG_ALIAS_CFG)|;
 NETWORK_CONFIG_SUBS += s|%RANGES%|$(NETWORK_CONFIG_RANGE_CFG)|;
 NETWORK_CONFIG_SUBS += s|%HOSTNAME%|$(NETWORK_CONFIG_HOSTNAME)|;
 
+NETWORK_CONFIG_DNSMASQ_STA_SUB = s|^.*$(NETWORK_CONFIG_AP_IF).*$|||;
+
 define NETWORK_CONFIG_INSTALL_TARGET_CMDS
 	mkdir -p $(NETWORK_CONFIG_PROFILES)
 	mkdir -p $(NETWORK_CONFIG_IFDIR)
+	mkdir -p $(NETWORK_CONFIG_DNSMASQ_PROFILES)
 	$(SED) '$(NETWORK_CONFIG_SUBS)' $(@D)/hostapd.conf $(@D)/dnsmasq.conf
+	cp $(@D)/dnsmasq.conf $(@D)/dnsmasq_sta.conf
+	$(SED) '$(NETWORK_CONFIG_DNSMASQ_STA_SUB)' $(@D)/dnsmasq_sta.conf
+	$(INSTALL) -Dm644 $(@D)/dnsmasq.conf $(NETWORK_CONFIG_DNSMASQ_PROFILES)/ap.conf
+	$(INSTALL) -Dm644 $(@D)/dnsmasq_sta.conf $(NETWORK_CONFIG_DNSMASQ_PROFILES)/sta.conf
+	echo $(NETWORK_CONFIG_WIRELESS_DEFAULT_MODE) > $(NETWORK_CONFIG_WIRELESS_MODE_FILE)
 	$(INSTALL) -Dm644 $(@D)/hostapd.conf $(TARGET_DIR)/etc/hostapd.conf
-	$(INSTALL) -Dm644 $(@D)/dnsmasq.conf $(TARGET_DIR)/etc/dnsmasq.conf
+	$(INSTALL) -Dm755 $(@D)/check_ip_assigned \
+		$(TARGET_DIR)/etc/network/if-up.d/check_ip_assigned
 	$(foreach ifacecmds,$(NETWORK_CONFIG_INSTALL_IFACES),$(call $(ifacecmds)))
+	$(INSTALL) -Dm755 $(@D)/wireless.sh $(TARGET_DIR)/etc/setup.d/wireless.sh
+	$(INSTALL) -Dm755 $(@D)/S99netguard $(TARGET_DIR)/etc/init.d/S99netguard
 endef
 
 $(eval $(generic-package))

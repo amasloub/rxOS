@@ -1,0 +1,72 @@
+#!/bin/sh
+#
+# If station mode configuration is used for the wireless device, wait some
+# time to check whether DHCP IP assignment succeeds, and if it doesn't,
+# revert back to AP mode.
+#
+# This file is part of rxOS.
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+#
+# (c) 2016 Outernet Inc
+# Some rights reserved.
+
+IP_ASSIGNMENT_FILE=/var/run/ip_assign_method.wlan0
+WIRELESS_MODE_FILE=/etc/conf.d/wireless
+DELAY=1
+ITERATIONS=0
+MAX_ITERATIONS=120
+AP_MODE=AP
+STA_MODE=STA
+DHCP=dhcp
+
+# Execute necessary commands to restart the network stack
+restart_net_stack() {
+  /etc/setup.d/wireless.sh
+  ap stop
+  wpa wlan0 stop
+  service network restart
+  service dnsmasq restart
+}
+
+# Run a loop with 1 second delays, checking if IP assignment was done via
+# dhcp or not
+guard() {
+  WIRELESS_MODE="$(cat $WIRELESS_MODE_FILE 2>/dev/null)"
+  # AP mode doesn't need checking, return early
+  [ "$WIRELESS_MODE" = "$AP_MODE" ] && exit 0
+  # STA mode is active, check the ip assignment file for ~MAX_ITERATIONS seconds,
+  # and if no assignment occurs, or it's static, revert to AP mode
+  while [ $ITERATIONS -le "$MAX_ITERATIONS" ]; do
+    ASSIGNED_BY="$(cat $IP_ASSIGNMENT_FILE 2>/dev/null)"
+    [ "$ASSIGNED_BY" = "$DHCP" ] && exit 0
+    sleep $DELAY
+    ITERATIONS=$((ITERATIONS+1))
+  done
+  # If it reaches this point, the wait period is reached and no IP
+  # was assigned by dhcp, so revert back to AP mode
+  echo "$AP_MODE" > "$WIRELESS_MODE_FILE"
+  restart_net_stack
+}
+
+start() {
+  printf "Starting network guard: "
+  guard &
+  echo "OK"
+}
+
+stop() {
+  echo "Nothing to stop."
+}
+
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+esac
+
+exit $?
