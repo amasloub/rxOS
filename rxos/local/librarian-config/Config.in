@@ -79,4 +79,12 @@ config BR2_LIBRARIAN_TMPDIR
 	help
 	  Directory to store temporary files.
 
+config BR2_LIBRARIAN_DISKSPACE_THRESHOLD
+	string "Required minimum amount of free disk space"
+	default "600MB"
+	help
+	  When the amount of free disk space drops below the
+	  specified threshold, a warning will be displayed in
+	  librarian.
+
 endif # BR2_PACKAGE_LIBRARIAN_CONFIG
