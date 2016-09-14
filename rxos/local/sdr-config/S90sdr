@@ -15,8 +15,9 @@ SDR="%BINPATH%"
 LIBRARY_PATH="$(dirname "$SDR")"
 JSON_PATH="%JSON_PATH%"
 PID_FILE=/var/run/sdr.pid
+SDR_SOCKET_PATH=/var/run/ondd.data
 SDR_ARGS="$(/usr/sbin/sdrargs "$JSON_PATH")"
-
+SDR_ARGS="$SDR_ARGS -o $SDR_SOCKET_PATH"
 # Daemon params
 SCREEN="/usr/bin/screen"
 SCREEN_NAME="sdr"

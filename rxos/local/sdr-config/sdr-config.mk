@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SDR_CONFIG_VERSION = 1.0
+SDR_CONFIG_VERSION = 1.1
 SDR_CONFIG_LICENSE = GPLv3+
 SDR_CONFIG_SITE = $(BR2_EXTERNAL)/local/sdr-config/src
 SDR_CONFIG_SITE_METHOD = local
