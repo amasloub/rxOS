@@ -31,9 +31,9 @@ fail() {
 ###############################################################################
 
 SFXMAJ_FAC=100        # suffix factor
-PAT_FAC=1000          # patch version factor
-MIN_FAC=1000000       # minor release factor
-MAJ_FAC=1000000000    # major release factor
+PAT_FAC=100           # patch version factor
+MIN_FAC=10000         # minor release factor
+MAJ_FAC=1000000       # major release factor
 
 # Fnd the suffix portion of the version string
 suffix() {
