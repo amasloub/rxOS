@@ -25,7 +25,7 @@ CONF_FILE_EXT="/mnt/external/REMOTE"
 CONF_FILE_EXT_DISABLE="/mnt/external/REMOTE_DISABLE"
 CONF_FILE="/mnt/conf/REMOTE"
 CONF_FILE_DISABLE="/mnt/conf/REMOTE.disabled"
-IFACE="eth0"
+
 
 
 configure_hostname() {
@@ -42,7 +42,6 @@ setup() {
   PORT="${PORT:=$(( RANDOM % 10000 + 20000  ))}"
   echo "REVSSH_HOST=\"$HOST\"" > /etc/conf.d/remote
   echo "REVSSH_PORT=\"$PORT\"" >> /etc/conf.d/remote
-  echo "REVSSH_IFACE=\"$IFACE\"" >> /etc/conf.d/remote
   return 0
 }
 

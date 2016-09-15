@@ -20,21 +20,12 @@ REMOTE_USER="nologin"
 REMOTE_LOGIN="${REMOTE_USER}@$REVSSH_HOST"
 LOGFILE="/tmp/revssh-start.log"
 
-getip() {
-  ip addr show "$REVSSH_IFACE" | grep "inet " | awk '{print $2}' \
-    | cut -d/ -f1
-}
 
 # This function will run the SSH rev tunnel in an infinite loop and keep
 # starting it whenever it quits with a 5s delay between each start.
 revtunnel() {
   while true; do
-    ip=$(getip)
-    while [ -z "$ip" ]; do
-        sleep 2
-        ip=$(getip)
-    done
-    $DAEMON -y -i "$SSH_KEY" -R "$REVSSH_PORT:$ip:$LOCAL_PORT" -N -T \
+    $DAEMON -y -i "$SSH_KEY" -R "$REVSSH_PORT:127.0.0.1:$LOCAL_PORT" -N -T \
       "$REMOTE_LOGIN" -K 30 -I 150 >"$LOGFILE" 2>&1
     sleep $RESTART_DELAY
   done
