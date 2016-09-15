@@ -19,9 +19,24 @@ RESTART_DELAY="5"
 REMOTE_USER="nologin"
 REMOTE_LOGIN="${REMOTE_USER}@$REVSSH_HOST"
 LOGFILE="/tmp/revssh-start.log"
+WIRELESS_MODE_FILE="/etc/conf.d/wireless"
+AP_MODE="ap"
+WLAN="wlan0"
+ETH="eth0"
+
+getiface() {
+  WIRELESS_MODE="$(cat $WIRELESS_MODE_FILE 2>/dev/null)"
+  # AP mode doesn't need checking, return early
+  if [ "$WIRELESS_MODE" = "$AP_MODE" ]; then
+    echo $ETH
+  else
+    echo $WLAN
+  fi
+}
 
 getip() {
-  ip addr show "$REVSSH_IFACE" | grep "inet " | awk '{print $2}' \
+  iface=$(getiface)
+  ip addr show "$iface" | grep "inet " | awk '{print $2}' \
     | cut -d/ -f1
 }
 
