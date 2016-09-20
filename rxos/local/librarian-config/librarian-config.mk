@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRARIAN_CONFIG_VERSION = 1.0
+LIBRARIAN_CONFIG_VERSION = 1.1
 LIBRARIAN_CONFIG_LICENSE = GPL
 LIBRARIAN_CONFIG_SITE = $(BR2_EXTERNAL)/local/librarian-config/src
 LIBRARIAN_CONFIG_SITE_METHOD = local
