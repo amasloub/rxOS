@@ -20,15 +20,6 @@ AP_MODE=AP
 STA_MODE=STA
 DHCP=dhcp
 
-# Execute necessary commands to restart the network stack
-restart_net_stack() {
-  /etc/setup.d/wireless.sh
-  ap stop
-  wpa wlan0 stop
-  service network restart
-  service dnsmasq restart
-}
-
 # Run a loop with 1 second delays, checking if IP assignment was done via
 # dhcp or not
 guard() {
@@ -46,7 +37,8 @@ guard() {
   # If it reaches this point, the wait period is reached and no IP
   # was assigned by dhcp, so revert back to AP mode
   echo "$AP_MODE" > "$WIRELESS_MODE_FILE"
-  restart_net_stack
+  # Execute script that restarts the network stack
+  /usr/sbin/netrestart
 }
 
 start() {
