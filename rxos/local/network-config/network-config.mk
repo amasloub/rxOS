@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NETWORK_CONFIG_VERSION = 1.0
+NETWORK_CONFIG_VERSION = 1.1
 NETWORK_CONFIG_LICENSE = GPL
 NETWORK_CONFIG_SITE = $(BR2_EXTERNAL)/local/network-config/src
 NETWORK_CONFIG_SITE_METHOD = local
