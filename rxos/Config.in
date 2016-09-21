@@ -129,6 +129,7 @@ menu "Servers"
     source "$BR2_EXTERNAL/local/postgres-config/Config.in"
     source "$BR2_EXTERNAL/package/lighttpd-custom/Config.in"
     source "$BR2_EXTERNAL/package/postgresql-95/Config.in"
+    source "$BR2_EXTERNAL/package/multifs/Config.in"
 endmenu
 
 menu "Utilities"
