@@ -140,6 +140,7 @@ define NETWORK_CONFIG_INSTALL_TARGET_CMDS
 	$(foreach ifacecmds,$(NETWORK_CONFIG_INSTALL_IFACES),$(call $(ifacecmds)))
 	$(INSTALL) -Dm755 $(@D)/wireless.sh $(TARGET_DIR)/etc/setup.d/wireless.sh
 	$(INSTALL) -Dm755 $(@D)/netrestart.sh $(TARGET_DIR)/usr/sbin/netrestart
+	$(INSTALL) -Dm755 $(@D)/wep_passphrase.sh $(TARGET_DIR)/usr/sbin/wep_passphrase
 	$(INSTALL) -Dm755 $(@D)/S99netguard $(TARGET_DIR)/etc/init.d/S99netguard
 endef
 
