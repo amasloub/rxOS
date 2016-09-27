@@ -1,6 +1,6 @@
 menuconfig BR2_PACKAGE_LIGHTTPD_CONFIG
 	bool "lighttpd.conf"
-	select BR2_PACKAGE_LIGHTTPD_CUSTOM
+	select BR2_PACKAGE_LIGHTTPD
 	help
 	  Install lighttpd configuration files in
 	  /etc/lighttpd.
