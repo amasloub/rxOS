@@ -30,7 +30,6 @@
 # Set PATH
 PATH="/bin:/usr/bin:/sbin:/usr/sbin"
 
-PRIMARY_MPOINT="/mnt/downloads"
 EXTERNAL_MPOINT="/mnt/external"
 NODENAME="${DEVNAME##/dev/}"
 TMPMOUNT="/mnt/$NODENAME"
@@ -71,13 +70,6 @@ do_fsck() {
 # If the device has not been mounted, empty string is returned.
 get_mpoint() {
   egrep "^$DEVNAME" /proc/mounts | awk '{print $2;}'
-}
-
-# Set the ONDD's output path to specified one
-set_ondd_path() {
-  path="$1"
-  printf '<put uri="/output"><path>%s</path></put>\0' "$path" \
-    | nc "local:$ONDD_SOCKET"
 }
 
 # Request FSAL index refresh
@@ -156,6 +148,10 @@ reset_led() {
   led_on
 }
 
+revert_internal() {
+  mount -o bind /mnt/internal /mnt/external
+}
+
 # Handle the 'add' event
 add() {
   log "Attempting to use $ID_FS_TYPE disk $DEVNAME"
@@ -187,14 +183,15 @@ add() {
   # Now we start the real-deal mounting
 
   umountf "$TMPMOUNT"
-  set_ondd_path "$PRIMARY_MPOINT"
   umount_ext
 
   log "Final mount to $EXTERNAL_MPOINT"
-  mount_at "$EXTERNAL_MPOINT" "$opts" || fail "Unable to mount"
+  if ! mount_at "$EXTERNAL_MPOINT" "$opts"; then
+    revert_internal
+    fail "Unable to mount"
+  fi
 
   log "Redirecting ONDD to external storage"
-  set_ondd_path "$EXTERNAL_MPOINT"
   log "Refreshing file index"
   fsal_refresh
 
@@ -211,15 +208,11 @@ remove() {
 
   led_slow_blink
 
-  if [ "$mpoint" = "$EXTERNAL_MPOINT" ]; then
-    log "Redirecting ONDD to internal storage"
-    set_ondd_path "$PRIMARY_MPOINT"
-  fi
-
   log "Attempting to unmount from '$mpoint'"
   # We cannot umount $DEVNAME here because the device node is already gone, so
   # we must unmount the mount point instead.
   umountf "$mpoint" || fail "Could not unmount the device"
+  revert_internal
 
   log "Refreshing file index"
   fsal_refresh

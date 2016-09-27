@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-FSAL_CONFIG_VERSION = 1.0
+FSAL_CONFIG_VERSION = 1.1
 FSAL_CONFIG_LICENSE = GPL
 FSAL_CONFIG_SITE = $(BR2_EXTERNAL)/local/fsal-config/src
 FSAL_CONFIG_SITE_METHOD = local
