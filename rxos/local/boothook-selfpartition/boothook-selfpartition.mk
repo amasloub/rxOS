@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BOOTHOOK_SELFPARTITION_VERSION = 1.1
+BOOTHOOK_SELFPARTITION_VERSION = 1.2
 BOOTHOOK_SELFPARTITION_LICENSE = GPLv3+
 BOOTHOOK_SELFPARTITION_SITE = $(BR2_EXTERNAL)/local/boothook-selfpartition/src
 BOOTHOOK_SELFPARTITION_SITE_METHOD = local
@@ -22,14 +22,15 @@ BOOTHOOK_SELFPARTITION_FSTABL_SED_CMDS += s|%PRIMARY%|$(call qstrip,$(BR2_STORAG
 
 BOOTHOOK_SELFPARTITION_STORAGE = $(call qstrip,$(BR2_RAMFSINIT_INIT_TYPE))
 
+BOOTHOOK_SELFPARTITION_MPOINTS = conf,cache,data,external,internal,downloads
+
 ifeq ($(BOOTHOOK_SELFPARTITION_STORAGE),nand)
 
 define BOOTHOOK_SELFPARTITION_INSTALL_TARGET_CMDS
 	$(SED) '$(BOOTHOOK_SELFPARTITION_FSTABL_SED_CMDS)' \
 		$(@D)/fstab.nand
 	$(INSTALL) -Dm644 $(@D)/fstab.nand $(TARGET_DIR)/etc/fstab
-	$(INSTALL) -dm755 $(TARGET_DIR)/mnt/{conf,cache,data,external,internal,downloads}
-	$(INSTALL) -Dm755 $(@D)/multimount.sh $(TARGET_DIR)/etc/setup.d/multimount.sh
+	$(INSTALL) -dm755 $(TARGET_DIR)/mnt/{$(BOOTHOOK_SELFPARTITION_MPOINTS)}
 endef
 
 else
