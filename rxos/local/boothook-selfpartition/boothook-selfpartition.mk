@@ -53,7 +53,7 @@ define BOOTHOOK_SELFPARTITION_INSTALL_TARGET_CMDS
 		$(BINARIES_DIR)/initramfs/selfpartition.cpio.in
 	$(INSTALL) -Dm644 $(@D)/fstab.sdcard $(TARGET_DIR)/etc/fstab
 
-	$(INSTALL) -dm755 $(TARGET_DIR)/mnt/{conf,cache,data,downloads}
+	$(INSTALL) -dm755 $(TARGET_DIR)/mnt/{$(BOOTHOOK_SELFPARTITION_MPOINTS)}
 endef
 
 endif # BOOTHOOK_SELFPARTITION_STORAGE == nand
