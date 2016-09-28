@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BOOTHOOK_SELFPARTITION_VERSION = 1.3
+BOOTHOOK_SELFPARTITION_VERSION = 1.4
 BOOTHOOK_SELFPARTITION_LICENSE = GPLv3+
 BOOTHOOK_SELFPARTITION_SITE = $(BR2_EXTERNAL)/local/boothook-selfpartition/src
 BOOTHOOK_SELFPARTITION_SITE_METHOD = local
@@ -31,6 +31,8 @@ define BOOTHOOK_SELFPARTITION_INSTALL_TARGET_CMDS
 		$(@D)/fstab.nand
 	$(INSTALL) -Dm644 $(@D)/fstab.nand $(TARGET_DIR)/etc/fstab
 	$(INSTALL) -dm755 $(TARGET_DIR)/mnt/{$(BOOTHOOK_SELFPARTITION_MPOINTS)}
+	$(INSTALL) -Dm755 $(@D)/attachmultifs.sh \
+		$(TARGET_DIR)/etc/setup.d/attachmultifs.sh
 endef
 
 else
@@ -54,6 +56,8 @@ define BOOTHOOK_SELFPARTITION_INSTALL_TARGET_CMDS
 	$(INSTALL) -Dm644 $(@D)/fstab.sdcard $(TARGET_DIR)/etc/fstab
 
 	$(INSTALL) -dm755 $(TARGET_DIR)/mnt/{$(BOOTHOOK_SELFPARTITION_MPOINTS)}
+	$(INSTALL) -Dm755 $(@D)/attachmultifs.sh \
+		$(TARGET_DIR)/etc/setup.d/attachmultifs.sh
 endef
 
 endif # BOOTHOOK_SELFPARTITION_STORAGE == nand
