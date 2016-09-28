@@ -18,5 +18,5 @@ sysfs           /sys            sysfs       defaults                    0   0
 
 # Multifs support
 /dev/mmcblk0p8  /mnt/internal   ext4        defaults                    0   1
-multifs#/mnt/external,/mnt/internal  /mnt/downloads  fuse  nonemtpy,allowother  0  1
+multifs#/mnt/external,/mnt/internal  /mnt/downloads  fuse  nonempty,allow_other  0  1
 /mnt/internal   /mnt/external   none        bind                        0   1

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BOOTHOOK_SELFPARTITION_VERSION = 1.2
+BOOTHOOK_SELFPARTITION_VERSION = 1.3
 BOOTHOOK_SELFPARTITION_LICENSE = GPLv3+
 BOOTHOOK_SELFPARTITION_SITE = $(BR2_EXTERNAL)/local/boothook-selfpartition/src
 BOOTHOOK_SELFPARTITION_SITE_METHOD = local
