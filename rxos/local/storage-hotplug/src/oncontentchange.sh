@@ -13,7 +13,7 @@
 FSAL_SOCKET="/var/run/fsal.ctrl"
 
 # Noop if fsal is not available
-[ -f $FSAL_SOCKET ] || exit 0
+[ -S $FSAL_SOCKET ] || exit 0
 
 # Request FSAL index refresh
 printf '<request><command><type>refresh</type></command></request>\0' \

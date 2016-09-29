@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-STORAGE_HOTPLUG_VERSION = 1.1
+STORAGE_HOTPLUG_VERSION = 1.2
 STORAGE_HOTPLUG_LICENSE = GPLv3+
 STORAGE_HOTPLUG_SITE = $(BR2_EXTERNAL)/local/storage-hotplug/src
 STORAGE_HOTPLUG_SITE_METHOD = local
