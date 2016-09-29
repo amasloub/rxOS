@@ -1,0 +1,45 @@
+#!/bin/sh
+
+PIDFILE="/var/run/cleanup.pid"
+CLEANUP_INTERVAL=$(( 60 * 60 ))  # 1 hour
+
+runcleanup() {
+  while true; do
+    /usr/sbin/cleanup
+    sleep $CLEANUP_INTERVAL
+  done
+}
+
+
+start() {
+  printf "Starting cleanup daemon: "
+  runcleanup &
+  if [ $? = 0 ]; then
+    echo "$!" > "$PIDFILE"
+    echo "OK"
+  else
+    echo "FAIL"
+  fi
+}
+
+stop() {
+  pid="$(cat "$PIDFILE")"
+  kill "$pid"
+}
+
+case $1 in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    stop
+    start
+    ;;
+  *)
+    echo "Usage $0 {start|stop|restart}"
+esac
+
+exit $?

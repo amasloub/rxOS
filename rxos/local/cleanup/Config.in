@@ -1,0 +1,6 @@
+config BR2_PACKAGE_CLEANUP
+	bool "cleanup.sh"
+	help
+	  Script to clean up the content and free up space
+
+	  https://outernet.is/
