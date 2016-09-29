@@ -11,6 +11,7 @@
 # Some rights reserved.
 USAGE='opakwatch SOURCE DESTINATION'
 TAR='/bin/tar'
+ONFSCHANGE='/usr/bin/oncontentchange'
 
 if [ $# != 2 ]
 then
@@ -25,4 +26,5 @@ inotifywait -m "$SOURCE" --format '%w%f' -e create |
   while read -r filename; do
     echo "Discovered '$filename', attempting extraction..."
     $TAR xf "$filename" --directory "$DESTINATION"
+    $ONFSCHANGE
   done
