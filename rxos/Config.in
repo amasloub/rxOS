@@ -71,6 +71,7 @@ menu "Network configuration"
 endmenu
 
 menu "Data services"
+	source "$BR2_EXTERNAL/local/cleanup/Config.in"
 	source "$BR2_EXTERNAL/local/sdr-config/Config.in"
 	source "$BR2_EXTERNAL/package/ondd/Config.in"
 	source "$BR2_EXTERNAL/package/python-fsal/Config.in"
