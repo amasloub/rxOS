@@ -22,9 +22,9 @@ fi
 SOURCE="$1"
 DESTINATION="$2"
 
-inotifywait -m "$SOURCE" --format '%w%f' -e create |
+inotifywait -m "$SOURCE" --format '%w%f' -e close_write -e moved_to |
   while read -r filename; do
     echo "Discovered '$filename', attempting extraction..."
-    $TAR xf "$filename" --directory "$DESTINATION"
+    $TAR xf "$filename" --directory "$DESTINATION" && rm "$filename"
     $ONFSCHANGE
   done
