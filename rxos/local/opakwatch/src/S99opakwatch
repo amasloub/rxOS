@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# Start opakwatcher over the prespecified directories
+#
+# This file is part of rxOS.
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+#
+# (c) 2016 Outernet Inc
+# Some rights reserved.
+
+SOURCE="%OPAKSOURCE%"
+DESTINATION="%OPAKDESTINATION%"
+DAEMON="/usr/bin/opakwatch"
+RESTART_DELAY="2"
+
+start() {
+  printf "Starting opakwatcher: "
+  $DAEMON $SOURCE $DESTINATION &
+  echo "OK"
+}
+
+stop() {
+  printf "Stopping opakwatcher: "
+  # There's no known PID, so we kill them by process list
+  for proc in $(ps ax | grep $DAEMON | grep -v grep | awk '{print $1}'); do
+    kill "$proc"
+  done
+  echo "OK"
+}
+
+status() {
+  ps ax | grep $DAEMON | grep -q -v grep && echo "Running" || echo "Stopped"
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status
+        ;;
+    restart)
+        stop
+        sleep $RESTART_DELAY
+        start
+        ;;
+esac
+
+exit $?
