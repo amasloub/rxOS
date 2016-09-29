@@ -29,6 +29,7 @@
 
 # Set PATH
 PATH="/bin:/usr/bin:/sbin:/usr/sbin"
+REFRESH_CMD="/usr/bin/oncontentchange"
 
 EXTERNAL_MPOINT="/mnt/external"
 NODENAME="${DEVNAME##/dev/}"
@@ -50,7 +51,6 @@ case "$ID_FS_TYPE" in
 esac
 
 ONDD_SOCKET="/var/run/ondd.ctrl"
-FSAL_SOCKET="/var/run/fsal.ctrl"
 
 # Log debug messages
 log() {
@@ -70,12 +70,6 @@ do_fsck() {
 # If the device has not been mounted, empty string is returned.
 get_mpoint() {
   egrep "^$DEVNAME" /proc/mounts | awk '{print $2;}'
-}
-
-# Request FSAL index refresh
-fsal_refresh() {
-  printf '<request><command><type>refresh</type></command></request>\0' \
-    | nc "local:$FSAL_SOCKET"
 }
 
 # Return true if filesystem is supported
@@ -193,7 +187,7 @@ add() {
 
   log "Redirecting ONDD to external storage"
   log "Refreshing file index"
-  fsal_refresh
+  $REFRESH_CMD
 
   reset_led
 }
@@ -215,7 +209,7 @@ remove() {
   revert_internal
 
   log "Refreshing file index"
-  fsal_refresh
+  $REFRESH_CMD
 
   reset_led
 }

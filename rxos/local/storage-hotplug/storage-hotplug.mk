@@ -15,6 +15,8 @@ define STORAGE_HOTPLUG_INSTALL_TARGET_CMDS
 	sed -i '$(STORAGE_HOTPLUG_SED_CMDS)' $(@D)/hotplug.storage.sh
 	$(INSTALL) -Dm755 $(@D)/hotplug.storage.sh \
 		$(TARGET_DIR)/usr/sbin/hotplug.storage
+	$(INSTALL) -Dm755 $(@D)/oncontentchange.sh \
+		$(TARGET_DIR)/usr/bin/oncontentchange
 	$(INSTALL) -Dm644 $(@D)/99-storage.rules \
 		$(TARGET_DIR)/etc/udev/rules.d/99-storage.rules
 endef
