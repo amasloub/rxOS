@@ -8,11 +8,13 @@ if BR2_PACKAGE_OPAKWATCH
 
 config BR2_OPAKWATCH_SOURCE
 	string "Source directory path to watch"
+	default "/mnt/downloads/opaks"
 	help
 	  Absolute path to a directory to be watched for new files.
 
 config BR2_OPAKWATCH_DESTINATION
 	string "Destination directory path where to extract opak archives"
+	default "/mnt/downloads"
 	help
 	  Absolute path to a directory where the archives will be extracted.
 
