@@ -22,17 +22,19 @@ fi
 SOURCE="$1"
 DESTINATION="$2"
 
-# if watched directory doesn't exist, inotifywatch doesn't start
-[ -d "$SOURCE" ] || mkdir "$SOURCE"
-
 # inotify wait exits if there is an error in the called scrips,
 # run it in a loop
 while true
 do
-inotifywait -m "$SOURCE" --format '%w%f' -e close_write -e moved_to |
-  while read -r filename; do
-    echo "Discovered '$filename', attempting extraction..."
-    $TAR xf "$filename" --directory "$DESTINATION" && rm "$filename"
-    $ONFSCHANGE
-  done
+  # if watched directory doesn't exist, inotifywatch doesn't start
+  [ -d "$SOURCE" ] || mkdir "$SOURCE"
+
+  inotifywait -m "$SOURCE" --format '%w%f' -e close_write -e moved_to |
+    while read -r filename
+    do
+      echo "Discovered '$filename', attempting extraction..."
+      $TAR xf "$filename" --directory "$DESTINATION" && rm "$filename"
+      $ONFSCHANGE
+    done
+    sleep 2
 done
