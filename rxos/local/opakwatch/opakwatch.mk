@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-OPAKWATCH_VERSION = 1.1
+OPAKWATCH_VERSION = 1.2
 OPAKWATCH_LICENSE = GPLv3+
 OPAKWATCH_SITE = $(BR2_EXTERNAL)/local/opakwatch/src
 OPAKWATCH_SITE_METHOD = local
