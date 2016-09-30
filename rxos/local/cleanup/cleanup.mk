@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CLEANUP_VERSION = 1.0
+CLEANUP_VERSION = 1.1
 CLEANUP_LICENSE = GPLv3+
 CLEANUP_SITE = $(BR2_EXTERNAL)/local/cleanup/src
 CLEANUP_SITE_METHOD = local

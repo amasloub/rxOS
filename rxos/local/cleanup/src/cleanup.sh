@@ -8,7 +8,7 @@ DLDIR=/mnt/internal
 AVAIL="$(df -P "$DLDIR" | tail -n1 | awk '{print $4}')"  # KiB
 MINFREE=$(( 200 * MiB ))  # OTA update 100 MiB + data 100 MiB
 NEEDS="$(( MINFREE - AVAIL ))"  # KiB
-CALLBACK="/usr/bin/oncontentchange.sh"
+CALLBACK="/usr/bin/oncontentchange"
 LOG="logger -t cleanup"
 
 if [ "$NEEDS" -le 0 ]; then
