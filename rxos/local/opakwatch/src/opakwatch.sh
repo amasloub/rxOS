@@ -22,19 +22,43 @@ fi
 SOURCE="$1"
 DESTINATION="$2"
 
+
+fn_exists()
+{
+    type $1 | grep -q 'shell function'
+}
+
+
+tgz_handler() {
+    filename="$1"
+    destination="$2"
+    $TAR xf "$filename" --directory "$destination" && rm "$filename"
+}
+
 # inotify wait exits if there is an error in the called scrips,
 # run it in a loop
 while true
 do
-  # if watched directory doesn't exist, inotifywatch doesn't start
-  [ -d "$SOURCE" ] || mkdir "$SOURCE"
+    # if watched directory doesn't exist, inotifywatch doesn't start
+    [ -d "$SOURCE" ] || mkdir "$SOURCE"
 
-  inotifywait -m "$SOURCE" --format '%w%f' -e close_write -e moved_to |
+    inotifywait -m -r "$SOURCE" --format '%w%f' -e close_write -e moved_to |
     while read -r filename
     do
-      echo "Discovered '$filename', attempting extraction..."
-      $TAR xf "$filename" --directory "$DESTINATION" && rm "$filename"
-      $ONFSCHANGE
-    done
-    sleep 2
+        if [ -f $filename ]
+        then
+            # get extension
+            pak_type="${filename##*.}"
+            handler="${pak_type}_handler"
+            if fn_exists ${handler}
+            then
+                echo "Discovered '$filename', calling ${handler}..."
+                ${handler} "$filename" "$DESTINATION"
+                $ONFSCHANGE
+            else
+                echo "Ignoring '$filename', as there is no ${handler}"
+            fi
+        fi
+   done
+ sleep 2
 done
