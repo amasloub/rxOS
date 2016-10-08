@@ -1,0 +1,5 @@
+menuconfig BR2_PACKAGE_WGRIB2BIN
+	bool "wgrib2 grib2 file processor binary"
+	help
+	  Install wgrib2 file processor binary
+
