@@ -35,6 +35,13 @@ tgz_handler() {
     $TAR xf "$filename" --directory "$destination" && rm "$filename"
 }
 
+txz_handler() {
+    filename="$1"
+    destination="$2"
+    $TAR xf "$filename" --directory "$destination" && rm "$filename"
+}
+
+
 # inotify wait exits if there is an error in the called scrips,
 # run it in a loop
 while true
