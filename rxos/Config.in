@@ -79,6 +79,7 @@ endmenu
 
 menu "Applications"
 	source "$BR2_EXTERNAL/local/opakwatch/Config.in"
+	source "$BR2_EXTERNAL/local/opakwatch2/Config.in"
 	source "$BR2_EXTERNAL/local/incron-service/Config.in"
 	source "$BR2_EXTERNAL/local/wgrib2bin/Config.in"
 	source "$BR2_EXTERNAL/local/librarian-config/Config.in"
