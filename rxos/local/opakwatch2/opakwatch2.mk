@@ -14,8 +14,8 @@ OPAKWATCH2_SED_CMDS += s|%OPAKDESTINATION%|$(call qstrip,$(BR2_OPAKWATCH2_DESTIN
 
 define OPAKWATCH2_INSTALL_TARGET_CMDS
 	$(INSTALL) -Dm755 $(@D)/opakhandler $(TARGET_DIR)/usr/bin/opakhandler
-	$(INSTALL) -Dm0644 $(@D)/opaks.incron $(TARGET_DIR)(call qstrip,$(BR2_INCRON_CONFDIR))/opaks.incron
-	$(SED) '$(OPAKWATCH2_SED_CMDS)' $(TARGET_DIR)(call qstrip,$(BR2_INCRON_CONFDIR))/opaks.incron
+	$(INSTALL) -Dm0644 $(@D)/opaks.incron $(TARGET_DIR)$(call qstrip,$(BR2_INCRON_CONFDIR))/opaks.incron
+	$(SED) '$(OPAKWATCH2_SED_CMDS)' $(TARGET_DIR)$(call qstrip,$(BR2_INCRON_CONFDIR))/opaks.incron
 endef
 
 $(eval $(generic-package))
