@@ -1,0 +1,39 @@
+#!/bin/sh
+
+PID_FILE=/var/run/incrond.pid
+
+start() {
+  printf "Starting incrond: "
+  start-stop-daemon -S -q -p $PID_FILE --exec /sbin/incrond
+  if [ $? ]; then
+    echo "OK"
+  else
+    echo "FAILED"
+  fi
+}
+
+stop() {
+  printf "Stopping incrond: "
+  start-stop-daemon -K -q -p $PID_FILE
+  [ -f $PID_FILE ] && rm $PID_FILE
+  echo "OK"
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart|reload)
+    stop
+    sleep 1
+    start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|reload}"
+    exit 1
+esac
+
+exit $?
