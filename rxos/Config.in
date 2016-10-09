@@ -133,6 +133,7 @@ menu "Servers"
     source "$BR2_EXTERNAL/package/lighttpd-custom/Config.in"
     source "$BR2_EXTERNAL/package/postgresql-95/Config.in"
     source "$BR2_EXTERNAL/package/multifs/Config.in"
+    source "$BR2_EXTERNAL/package/incron/Config.in"
 endmenu
 
 menu "Utilities"
