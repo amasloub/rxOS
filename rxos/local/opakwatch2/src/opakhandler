@@ -24,7 +24,7 @@ SOURCEDIR="$3"
 
 if [ -f "$SOURCEFILE" ]
 then
-    echo "Discovered '$SOURCEFILE', extracting..."
+    echo Discovered "$SOURCEFILE", extracting...
     $TAR xf "$SOURCEFILE" --directory "$DESTINATION" && rm "$SOURCEFILE"
     $ONFSCHANGE
 fi
