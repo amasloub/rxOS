@@ -1,1 +1,3 @@
-%OPAKSOURCE% IN_CLOSE_WRITE,IN_MOVED_TO opakhandler "$@/$#" "%OPAKDESTINATION%" "$@"
+# watch for files in opaks folder and extract them
+%OPAKSOURCE% close_write,moved_to opakhandler "$filename" "%OPAKDESTINATION%" "$watch_dir"
+

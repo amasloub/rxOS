@@ -1,39 +1,31 @@
 #!/bin/sh
 
-PID_FILE=/var/run/incrond.pid
 
-start() {
-  printf "Starting incrond: "
-  start-stop-daemon -S -q -p $PID_FILE --exec /sbin/incrond
-  if [ $? ]; then
-    echo "OK"
-  else
-    echo "FAILED"
-  fi
-}
+# if config dir doesn't exist, we are done
+[ -d /etc/incron.d ] || exit 0
 
-stop() {
-  printf "Stopping incrond: "
-  start-stop-daemon -K -q -p $PID_FILE
-  [ -f $PID_FILE ] && rm $PID_FILE
-  echo "OK"
-}
-
-case "$1" in
-  start)
-    start
-    ;;
-  stop)
-    stop
-    ;;
-  restart|reload)
-    stop
-    sleep 1
-    start
-    ;;
-  *)
-    echo "Usage: $0 {start|stop|restart|reload}"
-    exit 1
-esac
-
-exit $?
+for cfile in /etc/incron.d/*
+do
+    if [ -f "$cfile" ]
+    then
+        while read watch_dir watch_events cmd
+        do
+		if echo "$watch_dir" | grep -q '^#'
+		then
+			continue
+		else
+            # if directory to watch doesn't exist, make it
+            [ -d "$watch_dir" ] || mkdir -p "$watch_dir"
+            ev=$(echo "$watch_events" | sed 's/^/-e /' | sed 's/,/ -e /g')
+            (
+                inotifywait -m -r "$watch_dir" --format '%w%f' $ev |
+                while read -r filename
+                do
+                    #echo $filename $ev $watch_dir $watch_events $cmd >> /tmp/incrond.log
+                    eval $cmd
+                done
+            ) &
+        fi
+        done < "$cfile"
+    fi
+done

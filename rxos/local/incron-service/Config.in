@@ -1,5 +1,5 @@
 menuconfig BR2_PACKAGE_INCRON_SERVICE
-	bool "inotify cron service"
-	select BR2_PACKAGE_INCRON
-	help
-	  incron service manager
+    bool "inotify cron service"
+    select BR2_PACKAGE_INOTIFY_TOOLS
+    help
+        incron service
