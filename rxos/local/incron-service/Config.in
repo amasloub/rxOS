@@ -1,4 +1,4 @@
-menuconfig BR2_PACKAGE_INCRONSERVICE
+menuconfig BR2_PACKAGE_INCRON_SERVICE
 	bool "inotify cron service"
 	select BR2_PACKAGE_INCRON
 	help
