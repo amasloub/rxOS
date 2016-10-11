@@ -17,8 +17,8 @@ WEATHERGEN_SED_CMDS += s|%GRIBDESTINATION%|$(call qstrip,$(BR2_WEATHERGEN_GRIB_D
 define WEATHERGEN_INSTALL_TARGET_CMDS
 	$(INSTALL) -Dm755 $(@D)/grib2json $(TARGET_DIR)/usr/bin/grib2json
 	$(SED) '$(WEATHERGEN_SED_CMDS)' $(TARGET_DIR)/usr/bin/grib2json
-	$(INSTALL) -Dm0644 $(@D)/weather.incron $(TARGET_DIR)$(call qstrip,$(BR2_INCRON_CONFDIR))/weather.incron
-	$(SED) '$(WEATHERGEN_SED_CMDS)' $(TARGET_DIR)$(call qstrip,$(BR2_INCRON_CONFDIR))/weather.incron
+	$(INSTALL) -Dm0644 $(@D)/weather.incron $(TARGET_DIR)$(call qstrip,$(BR2_INCRON_SERVICE_CONFDIR))/weather.incron
+	$(SED) '$(WEATHERGEN_SED_CMDS)' $(TARGET_DIR)$(call qstrip,$(BR2_INCRON_SERVICE_CONFDIR))/weather.incron
 endef
 
 $(eval $(generic-package))
