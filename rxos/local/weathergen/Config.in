@@ -1,0 +1,27 @@
+menuconfig BR2_PACKAGE_WEATHERGEN
+	bool "generates weather json files from grib files"
+	select BR2_PACKAGE_WGRIB2BIN
+	help
+	  watches for grib files and generates json data from them
+
+if BR2_PACKAGE_WEATHERGEN
+
+config BR2_WEATHERGEN_SOURCE
+	string "Source directory path to watch"
+	default "/mnt/downloads/grib2"
+	help
+	  Absolute path to a directory to be watched for new files.
+
+config BR2_WEATHERGEN_JSON_DESTINATION
+	string "Destination directory path where json will be saved"
+	default "/mnt/downloads/Weather/data/weather"
+	help
+	  Absolute path to a directory where weather files will be saved
+
+config BR2_WEATHERGEN_GRIB_DESTINATION
+	string "Destination directory path where processed gribs will be saved"
+	default "/mnt/downloads/Weather/grib2"
+	help
+	  Absolute path to a directory where grib2 will be saved
+
+endif
