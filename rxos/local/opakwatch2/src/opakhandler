@@ -22,9 +22,19 @@ SOURCEFILE="$1"
 DESTINATION="$2"
 SOURCEDIR="$3"
 
+
 if [ -f "$SOURCEFILE" ]
 then
     echo Discovered "$SOURCEFILE", extracting...
-    $TAR xf "$SOURCEFILE" --directory "$DESTINATION" && rm "$SOURCEFILE"
-    $ONFSCHANGE
+    $TAR xf "$SOURCEFILE" --directory "$DESTINATION" && rm "$SOURCEFILE" && $ONFSCHANGE
 fi
+
+# handle older remnant files as well, just in case
+for fname in "$SOURCEDIR/*"
+do
+    if [ -f "$fname" ]
+    then
+        echo Discovered "$fname", extracting...
+        $TAR xf "$fname" --directory "$DESTINATION" && rm "fname" && $ONFSCHANGE
+    fi
+done
