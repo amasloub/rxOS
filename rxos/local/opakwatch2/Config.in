@@ -1,5 +1,5 @@
 menuconfig BR2_PACKAGE_OPAKWATCH2
-	bool "opak file handler - based on incrond"
+	bool "opak file handler - based on incron service"
 	select BR2_PACKAGE_INCRON_SERVICE
 	help
 	  Install opakwatch2 incron config and script.

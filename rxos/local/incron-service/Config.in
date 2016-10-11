@@ -3,3 +3,14 @@ menuconfig BR2_PACKAGE_INCRON_SERVICE
     select BR2_PACKAGE_INOTIFY_TOOLS
     help
         incron service
+
+if BR2_PACKAGE_INCRON_SERVICE
+
+config BR2_INCRON_SERVICE_CONFDIR
+    string "incron config dir"
+    default "/etc/incron.d"
+    help
+      Absolute path to a directory to be watched for watch config.
+
+endif
+
