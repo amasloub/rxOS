@@ -49,8 +49,6 @@ isCurrent() {
 }
 
 
-
-
 to_json() {
 INFILE="$1"
 INV="$2"
@@ -70,7 +68,7 @@ echo -n '            "centerName":'
 echo '"'$(wgrib_parse -center -v2 | cut1 "=" 2-)'"' ','
 echo '            "subcenter":0,'
 echo -n '            "refTime":'
-echo '"'$(date -Iseconds -u --date=@$(wgrib_parse -unix_time | cut2 = 2 : 1))'"' ','
+echo '"'$(date -Iseconds -u --date=@$(wgrib_parse -unix_time | cut2 = 2 : 1) | sed 's/UTC/Z/' )'"' ','
 echo -n '            "significanceOfRT":'
 echo $(wgrib_parse -code_table_1.2 | cut2 = 2 " " 1) ','
 echo -n '            "significanceOfRTName":'
