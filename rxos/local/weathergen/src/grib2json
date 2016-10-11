@@ -260,8 +260,8 @@ then
 fi
 
 # put the grib file in the correct folder
-latest=$(echo "$grib" | cut1 _ 1)
-grib_fname=$(echo "$grib" | cut1 _ 2)
+latest=$(basename "$grib" | cut1 _ 1)
+grib_fname=$(basename "$grib" | cut1 _ 2)
 [ -d "${grib_dir}/${latest}" ] || mkdir -p "${grib_dir}/${latest}"
 mv "$grib" "${grib_dir}/${latest}/${grib_fname}"
 
