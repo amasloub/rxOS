@@ -1,0 +1,5 @@
+menuconfig BR2_PACKAGE_WGRIB2
+	bool "wgrib2 grib2 file processor binary"
+	help
+	  wgrib2 file processor, built from source
+
