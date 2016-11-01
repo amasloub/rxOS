@@ -1,0 +1,5 @@
+config BR2_PACKAGE_UI2SERVICE
+	bool "UI2 service"
+	select BR2_PACKAGE_UI2
+	help
+	  Install UI2 init script.

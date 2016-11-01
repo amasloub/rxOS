@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# Start UI2 at boot
+
+DAEMON="/usr/bin/node"
+DIST="www"
+ASSETS="/usr/share"
+SERVER="/usr/lib/node_modules/ui2/server/server.js"
+
+RESTART_DELAY="2"
+
+node target/usr/lib/node_modules/ui2/server/server.js www --root  $PWD/target/usr/share/
+
+start() {
+  printf "Starting ui2: "
+  $DAEMON "$SERVER" "$DIST" --root "$ASSETS" &
+  echo "OK"
+}
+
+stop() {
+  printf "Stopping ui2: "
+  # There's no known PID, so we kill them by process list
+  for proc in $(ps ax | grep $DAEMON | grep -v grep | awk '{print $1}'); do
+    kill "$proc"
+  done
+  echo "OK"
+}
+
+status() {
+  ps ax | grep $DAEMON | grep -q -v grep && echo "Running" || echo "Stopped"
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status
+        ;;
+    restart)
+        stop
+        sleep $RESTART_DELAY
+        start
+        ;;
+esac
+
+exit $?

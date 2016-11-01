@@ -1,0 +1,6 @@
+config BR2_PACKAGE_UI2
+	bool "Install RxOS UI2 package"
+	select BR2_PACKAGE_NODEJS
+	help
+	  UI2 is the main UI for RxOS
+
