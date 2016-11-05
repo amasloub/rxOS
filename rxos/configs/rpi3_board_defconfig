@@ -41,7 +41,7 @@ BR2_PACKAGE_MTD=y
 BR2_PACKAGE_RPI_FIRMWARE=y
 # BR2_PACKAGE_RPI_FIRMWARE_INSTALL_DTB_OVERLAYS is not set
 BR2_PACKAGE_NODEJS_NPM=y
-BR2_PACKAGE_NODEJS_MODULES_ADDITIONAL="bcryptjs child_process colors diskspace exif findit formidable fs http http-proxy mysql net node-fs-extra passwd-linux path querystring request simple-session unzip url userid util ws xml2js"
+BR2_PACKAGE_NODEJS_MODULES_ADDITIONAL="bcryptjs child_process colors diskspace exif findit formidable fs http http-proxy mysql net node-fs-extra passwd-linux path querystring request simple-session unzip url userid util ws x2js"
 BR2_PACKAGE_PYTHON=y
 BR2_PACKAGE_PYTHON_PY_ONLY=y
 BR2_PACKAGE_PYTHON_READLINE=y
