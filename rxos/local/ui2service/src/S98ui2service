@@ -2,14 +2,13 @@
 #
 # Start UI2 at boot
 
+export NODE_PATH=/usr/lib/node_modules
 DAEMON="/usr/bin/node"
 DIST="www"
 ASSETS="/usr/share"
 SERVER="/usr/lib/node_modules/ui2/server/server.js"
 
 RESTART_DELAY="2"
-
-node target/usr/lib/node_modules/ui2/server/server.js www --root  $PWD/target/usr/share/
 
 start() {
   printf "Starting ui2: "
