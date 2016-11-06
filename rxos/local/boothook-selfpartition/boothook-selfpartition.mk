@@ -33,6 +33,8 @@ define BOOTHOOK_SELFPARTITION_INSTALL_TARGET_CMDS
 	$(INSTALL) -dm755 $(TARGET_DIR)/mnt/{$(BOOTHOOK_SELFPARTITION_MPOINTS)}
 	$(INSTALL) -Dm755 $(@D)/attachmultifs.sh \
 		$(TARGET_DIR)/etc/setup.d/attachmultifs.sh
+	$(INSTALL) -Dm755 $(@D)/attachswap.sh \
+		$(TARGET_DIR)/etc/setup.d/attachswap.sh
 endef
 
 else
