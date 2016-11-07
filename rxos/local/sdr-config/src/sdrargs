@@ -1,0 +1,11 @@
+#!/bin/sh
+# (C) 2016 Outernet Inc
+
+selectedBeam=$(getconf .tunerConf.selectedBeam)
+
+freq=$(getconf .tunerConf.beams.${selectedBeam}.freq)
+symbolrate=$(getconf .tunerConf.beams.${selectedBeam}.symbolrate)
+
+sdrargs="-f $freq -r $symbolrate"
+echo $sdrargs
+
