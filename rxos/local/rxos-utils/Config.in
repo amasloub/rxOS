@@ -30,7 +30,7 @@ config BR2_RXOS_UTILS_BOOTDEV
 
 config BR2_RXOS_UTILS_PROCS
 	string "Processes"
-	default "hostapd dnsmasq dropbear postgres lighttpd fsal-daemon librarian ondd sdr100"
+	default "hostapd dnsmasq dropbear ondd sdr100"
 	help
 	  The processes whose status is checked.
 

@@ -10,7 +10,6 @@
 # Some rights reserved.
 USAGE='opakhandler SOURCEFILE DESTINATION [SOURCEDIR]'
 TAR='/bin/tar'
-ONFSCHANGE='/usr/bin/oncontentchange'
 
 if [ $# -lt 2 ]
 then
@@ -26,7 +25,7 @@ SOURCEDIR="$3"
 if [ -f "$SOURCEFILE" ]
 then
     echo Discovered "$SOURCEFILE", extracting...
-    $TAR xf "$SOURCEFILE" --directory "$DESTINATION" && rm "$SOURCEFILE" && $ONFSCHANGE
+    $TAR xf "$SOURCEFILE" --directory "$DESTINATION" && rm "$SOURCEFILE"
 fi
 
 # handle older remnant files as well, just in case
@@ -35,6 +34,6 @@ do
     if [ -f "$fname" ]
     then
         echo Discovered "$fname", extracting...
-        $TAR xf "$fname" --directory "$DESTINATION" && rm "fname" && $ONFSCHANGE
+        $TAR xf "$fname" --directory "$DESTINATION" && rm "fname"
     fi
 done

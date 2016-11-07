@@ -265,7 +265,4 @@ grib_fname=$(basename "$grib" | cut1 _ 2)
 [ -d "${grib_dir}/${latest}" ] || mkdir -p "${grib_dir}/${latest}"
 mv "$grib" "${grib_dir}/${latest}/${grib_fname}"
 
-# make librarian happy
-ONFSCHANGE='/usr/bin/oncontentchange'
-$ONFSCHANGE
 
