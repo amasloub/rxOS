@@ -43,6 +43,7 @@ endef
 
 $(eval $(generic-package))
 
+ifneq ($(BR2_LIBRARIAN_CONFIG),y)
 # We patch the config last thing during the build because we need to wait for 
 # any components that may provide additional $LIBRARIAN_SED_COMMANDS for the 
 # configuration patch.
@@ -61,3 +62,6 @@ print-librarian-sed-commands:
 
 print-librarian-components:
 	@echo $(call qstrip,$(LIBRARIAN_COMPONENTS))
+
+endif
+

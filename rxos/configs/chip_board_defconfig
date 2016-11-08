@@ -52,14 +52,7 @@ BR2_PACKAGE_JQ=y
 # BR2_PACKAGE_MTD_NANDTEST is not set
 # BR2_PACKAGE_MTD_NANDWRITE is not set
 # BR2_PACKAGE_MTD_MTDINFO is not set
-# BR2_PACKAGE_MTD_UBICRC32 is not set
-# BR2_PACKAGE_MTD_UBIFORMAT is not set
 # BR2_PACKAGE_MTD_UBINIZE is not set
-# BR2_PACKAGE_MTD_UBIRENAME is not set
-# BR2_PACKAGE_MTD_UBIRMVOL is not set
-# BR2_PACKAGE_MTD_UBIRSVOL is not set
-# BR2_PACKAGE_MTD_UBIUPDATEVOL is not set
-# BR2_PACKAGE_MTD_UBIBLOCK is not set
 BR2_PACKAGE_NODEJS_NPM=y
 BR2_PACKAGE_NODEJS_MODULES_ADDITIONAL="bcryptjs child_process colors diskspace exif findit formidable fs http http-proxy mysql net node-fs-extra passwd-linux path querystring request simple-session unzip url userid util ws x2js"
 BR2_PACKAGE_OPENSSL_BIN=y
@@ -125,7 +118,6 @@ BR2_ONDD_CONFIGFILE="/mnt/data/ondd.conf"
 BR2_ONDD_INSTALL_TARBALL=y
 BR2_PACKAGE_OPAKWATCH2=y
 BR2_PACKAGE_WEATHERGEN=y
-BR2_PACKAGE_POSTGRES_CONFIG=y
 BR2_PACKAGE_UI2SERVICE=y
 BR2_PACKAGE_MULTIFS=y
 BR2_LED_CONTROL_I2C=y
