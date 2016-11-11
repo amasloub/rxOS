@@ -42,6 +42,7 @@ slink /bin/fdisk /bin/busybox 777 0 0
 slink /bin/fsck /bin/busybox 777 0 0
 slink /bin/sleep /bin/busybox 777 0 0
 slink /bin/readlink /bin/busybox 777 0 0
+slink /bin/tr /bin/busybox 777 0 0
 slink /bin/clear /bin/busybox 777 0 0
 slink /bin/reset /bin/busybox 777 0 0
 slink /bin/vi /bin/busybox 777 0 0

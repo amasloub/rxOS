@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-INCRON_SERVICE_VERSION = 1.1
+INCRON_SERVICE_VERSION = 1.2
 INCRON_SERVICE_LICENSE = GPLv3+
 INCRON_SERVICE_SITE = $(BR2_EXTERNAL)/local/incron-service/src
 INCRON_SERVICE_SITE_METHOD = local

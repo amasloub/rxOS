@@ -9,23 +9,27 @@ do
     if [ -f "$cfile" ]
     then
         while read watch_dir watch_events cmd
-        do
-		if echo "$watch_dir" | grep -q '^#'
-		then
+          do
+		  if echo "$watch_dir" | grep -q '^#'
+		  then
 			continue
-		else
-            # if directory to watch doesn't exist, make it
-            [ -d "$watch_dir" ] || mkdir -p "$watch_dir"
-            ev=$(echo "$watch_events" | sed 's/^/-e /' | sed 's/,/ -e /g')
-            (
-                inotifywait -m -r "$watch_dir" --format '%w%f' $ev |
-                while read -r filename
-                do
-                    #echo $filename $ev $watch_dir $watch_events $cmd >> /tmp/incrond.log
-                    eval $cmd
-                done
-            ) &
-        fi
+		  fi
+		  if [ -z "$watch_events" ]
+		  then
+			continue
+		  fi
+
+          # if directory to watch doesn't exist, make it
+          [ -d "$watch_dir" ] || mkdir -p "$watch_dir"
+          ev=$(echo "$watch_events" | sed 's/^/-e /' | sed 's/,/ -e /g')
+          (
+            inotifywait -m -r "$watch_dir" --format '%w%f' $ev |
+            while read -r filename
+            do
+              #echo $filename $ev $watch_dir $watch_events $cmd >> /tmp/incrond.log
+              eval $cmd
+            done
+          ) &
         done < "$cfile"
     fi
 done

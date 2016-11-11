@@ -102,7 +102,7 @@ mount_overlay() {
 # Mount the root filesystem
 #
 # The tmpfs is mounted with size specified by $TMPFS_SIZE, and overlaid over 
-# the read-only rootfs image using OverlayFS to provide a volatile write 
+# the read-only rootfs image using OverlayFS to provide a volatile write
 # layer.
 mount_root() {
   volname="$1"
@@ -160,7 +160,7 @@ doboot() {
 ###############################################################################
 
 # Set the date to a sane value
-date "2015-01-01 0:00:00"
+date -u "2016-01-01 0:00:00"
 
 # Populate the /dev, /proc, and /sys directories
 mkdir -p /sys
@@ -175,9 +175,9 @@ exec 2>$CONSOLE
 
 echo "++++ Starting rxOS v$VERSION ++++"
 
-# Before the script can do its job, it needs to set up the mount points and 
-# mount the root partition on the SD card. These mount points exist strictly 
-# within the initial RAM filesystem and will be preserved after switch_root is 
+# Before the script can do its job, it needs to set up the mount points and
+# mount the root partition on the SD card. These mount points exist strictly
+# within the initial RAM filesystem and will be preserved after switch_root is
 # performed.
 mkdir -p /rootfs /tmpfs /root /linux /omnt
 
@@ -210,7 +210,7 @@ done
 # Mount the tmpfs (RAM disk) to be used as a writable overlay, and set up
 # directories that will be used for the overlays.
 mount -t tmpfs tmpfs -o "size=$TMPFS_SIZE" /tmpfs || return 1
-mkdir -p /tmpfs/upper /tmpfs/work 
+mkdir -p /tmpfs/upper /tmpfs/work
 
 # Mount overlay images if any
 mount -t ubifs -o ro ubi0:linux /linux
@@ -220,12 +220,39 @@ if [ "$SAFE_MODE" != y ]; then
   done
 fi
 
+# check if a newer rootfs image exists than the one already flashed
+rootfs_volname=$(ubinfo -d 0 -n 2 | grep Name | tr -d " " | cut -d ":" -f 2)
+flashed_rootfs_ver=$(echo ${rootfs_volname} | tr "." "_" | cut -d "_" -f 2)
+echo "Flashed rootfs is ${flashed_rootfs_ver}"
+latest_avl_rootfs=$(cd /linux ; ls rootfs_* | sort | tail -n 1)
+latest_avl_rootfs_ver=$(echo ${latest_avl_rootfs} | tr "." "_" | cut -d "_" -f 2)
+echo "Latest available rootfs is ${latest_avl_rootfs_ver}"
+
+if [ "${latest_avl_rootfs_ver}" -gt "${flashed_rootfs_ver}" ]
+then
+    echo "newer rootfs available. flashing..."
+    mkdir /f_rootfs
+    mount -t ubifs ubi0:${rootfs_volname} /f_rootfs
+    rm -rf /f_rootfs/*
+    unxz -c /linux/${latest_avl_rootfs} | tar xf - -C /f_rootfs/
+    sync
+    sync
+    sync
+    umount /f_rootfs
+    rmdir /f_rootfs
+    ubirename /dev/ubi0 "${rootfs_volname}" "root_${latest_avl_rootfs_ver}"
+    rootfs_volname="root_${latest_avl_rootfs_ver}"
+    echo "done"
+fi
+
+ROOT_PARTS=${rootfs_volname}
+
 # The userspace is contained on one of two MTD partitions. These are:
 #
 # - root
 # - root-backup
 #
-# The following block of code will attempt to boot each of the partitions in 
+# The following block of code will attempt to boot each of the partitions in
 # turn, and fall back on the factory.sqfs as last resort.
 for rootfs_image in $ROOT_PARTS; do
   if mount_root "$rootfs_image"; then

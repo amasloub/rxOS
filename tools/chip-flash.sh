@@ -4,12 +4,9 @@
 # and U-Boot itself. The U-Boot must support fastboot. The following tools must 
 # be present on the system:
 #
-# - dd (coreutils)
 # - lsusb (usbutils)
 # - fel (sunxi-tools)
-# - mkimage (uboot-tools)
 # - fastboot (android-tools or android-tools-fastboot)
-# - img2simg (android-tools, simg2img, or android-tools-fsutils)
 #
 # The end result is the following flash layout:
 #
@@ -65,60 +62,16 @@ BINARIES_DIR="$(pwd)"
 TMPDIR=
 
 # Execution parameters
-TMPDIR_TEMPLATE="/tmp/chip-flash-XXXXXXX"
 CHIP_DEVID="0525:a4a7"
 FASTBOOT_ID="0x1f3a"
 START="$(date '+%s.%N')"
 KEEP_TMPDIR=n
-PREPARE_ONLY=n
-
-# UBI settings
-PAGE_SIZE=16384
-PAGE_SIZE_HEX=0x4000
-OOB_SIZE=1664
-PEB_SIZE=$(( 2 * 1024 * 1024 ))
 
 # Memory locations
 SPL_ADDR=0x43000000
 UBOOT_ADDR=0x4a000000
 #UBOOT_ENV_ADDR=0x4b000000
 UBOOT_SCRIPT_ADDR=0x43100000
-
-# Env settings
-#
-# NOTE: When modifying the script below, keep in mind the following.
-#
-# - Just in case: this is a U-Boot script, not a shell script
-# - Use single quote for the script, but if you need to interpolate a bash
-#   variable, make sure to escape all $ characters in U-Boot variables
-# - The whitespace is insignificant: two or more spaces will always end up as a
-#   single space in the final script, and line breaks will be stripped
-# - You *must not* use line continuation with backslash, and all lines will be
-#   concatenated anyway, but be sure to leave at least one space on the next
-#   line when continuing the previous one (it's best to indent the next line)
-# - You cannot use a line break instead of a semi-colon
-#
-# More useful information about U-Boot scripts:
-#
-#   http://compulab.co.il/utilite-computer/wiki/index.php/U-Boot_Scripts
-#
-MTDPARTS="sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),400m(swap),-(UBI)"
-BOOTARGS='
-consoleblank=0 
-earlyprintk 
-console=ttyS0,115200 
-ubi.mtd=5'
-BOOTCMDS='
-source ${scriptaddr};
-mtdparts;
-ubi part UBI;
-ubifsmount ubi0:linux;
-ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb ||
-  ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb.backup;
-for krnl in zImage zImage.backup; do
-  ubifsload ${kernel_addr_r} /${krnl} &&
-    bootz ${kernel_addr_r} - ${fdt_addr_r};
-done;'
 
 # Command aliases
 FEL="fel"
@@ -128,7 +81,6 @@ FASTBOOT="fastboot -i $FASTBOOT_ID"
 abort() {
   local msg="$*"
   echo "ERROR: $msg"
-  [ "$KEEP_TMPDIR" == n ] && rm -rf "$TMPDIR"
   exit 1
 }
 
@@ -139,14 +91,9 @@ Usage: $0 [-htkp] [-b PATH] [-D DEVID]
 
 Options:
   -h  Show this message and exit
-  -k  Keep temporary directory
   -b  Location of the directory containing the images
       (defaults to current directory)
-  -p  Only prepare the payload and quit (this option 
-      also selects -k)
-  -N  Do not boot CHIP after flashing
   -D  Select a particular device instead of auto-detecting
-  -E  Print the U-Boot environment and quit
 
 Parameters:
   PATH    Path containing the binaries and images
@@ -226,121 +173,6 @@ wait_for_fastboot() {
   with_timeout 6 "[$(timestamp)] .... Waiting for fastboot" "has_fastboot"
 }
 
-# Print a number in hex format
-hex() {
-  local num="$1"
-  printf "0x%X" "$num"
-}
-
-# Return the size of a file in bytes
-filesize() {
-  local path="$1"
-  stat -c%s "$path"
-}
-
-# Return the size of a file in hex
-hexsize() {
-  local path="$1"
-  hex "$(filesize "$path")"
-}
-
-# Return the size of a file in pages
-pagesize() {
-  local path="$1"
-  local fsize
-  fsize="$(filesize "$path")"
-  hex "$((fsize / PAGE_SIZE))"
-}
-
-# Return the size of a padded SPL file with EEC in hex
-splsize() {
-  local path="$1"
-  local fsize
-  fsize="$(filesize "$path")"
-  hex "$(( fsize / (PAGE_SIZE + OOB_SIZE) ))"
-}
-
-# Align a file to page boundary
-#
-# Arguments:
-#
-#   in:   input file path
-#   out:  output file path
-page_align() {
-  local in="$1"
-  local out="$2"
-  dd if="$in" of="$out" bs=$PAGE_SIZE conv=sync status=none
-}
-
-# Pad a file to specified size
-#
-# Arguments:
-# 
-#   size: target size (in hex notiation)
-#   path: path of the file to pad
-#
-# This function modifies the original file by appending the padding. Padding is
-# a stream of random bytes sources from /dev/urandom. 
-#
-# It is the caller's responsibility to ensure that the target size is larger
-# than the current size.
-pad_to() {
-  local padded_size="$1"
-  local path="$2"
-  local source_size_hex
-  local dpages
-  source_size_hex="$(hexsize "$path")"
-  source_pages="$(( source_size_hex / PAGE_SIZE_HEX ))"
-  dpages="$(( (padded_size - source_size_hex) / PAGE_SIZE_HEX ))"
-  dd if=/dev/urandom of="$path" seek="$source_pages" bs=16k \
-    count="$dpages" status=none
-}
-
-# Create padded SPL with EEC (error correction code)
-#
-# Arguments:
-#
-#   in:   path to the source SPL binary
-#   out:  output path
-#
-# This is a thin wrapper around `spl-image-builder` too provided by NTC. The
-# arguments are as follows:
-#
-#   -d    disable scrambler
-#   -r    repeat count
-#   -u    usable page size
-#   -o    OOB size
-#   -p    page size
-#   -c    ECC step size
-#   -s    ECC strength
-add_ecc() {
-  local in="$1"
-  local out="$2"
-  spl-image-builder -d -r 3 -u 4096 -o "$OOB_SIZE" -o "$PAGE_SIZE" -c 1024 \
-    -s 64 "$in" "$out"
-}
-
-# Generate the environment and echo it
-genenv() {
-  cat <<EOF
-timestamp=$(TZ=UTC date '+%Y-%m-%d %H:%M:%S %Z')
-console=ttyS0,115200
-dfu_alt_info_ram=kernel ram 0x42000000 0x1000000;fdt ram 0x43000000 0x100000;ramdisk ram 0x43300000 0x4000000
-fdt_addr_r=0x43000000
-fdtfile=sun5i-r8-chip.dtb
-kernel_addr_r=0x42000000
-mtdids=nand0=sunxi-nand.0
-scriptaddr=0x43100000
-stderr=serial,vga
-stdin=serial,usbkbd
-stdout=serial,vga
-mtdids=nand0=sunxi-nand.0
-mtdparts=mtdparts=$MTDPARTS
-bootargs=$(echo $BOOTARGS)
-bootcmd=$(echo $BOOTCMDS)
-EOF
-}
-
 # Print the amount of time elapsed since script was started
 timestamp() {
   local current
@@ -371,17 +203,8 @@ while getopts "htkb:pND:E" opt; do
       usage
       exit 0
       ;;
-    k)
-      KEEP_TMPDIR=y
-      ;;
     b)
       BINARIES_DIR="$OPTARG"
-      ;;
-    p)
-      PREPARE_ONLY=y
-      ;;
-    N)
-      NOBOOT=y
       ;;
     D)
       has_command udevadm || abort "-D option requires udev"
@@ -398,10 +221,6 @@ while getopts "htkb:pND:E" opt; do
       FASTBOOT="$FASTBOOT -s $PORT"
       echo "Using device $DEVNAME on port $PORT"
       ;;
-    E)
-      genenv
-      exit 0
-      ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       echo
@@ -414,128 +233,31 @@ done
 # Source files
 SPL="$BINARIES_DIR/sunxi-spl.bin"
 SPL_ECC="$BINARIES_DIR/sunxi-spl-with-ecc.bin"
-UBOOT="$BINARIES_DIR/u-boot-dtb.bin"
-#UBOOT_ENV="$BINARIES_DIR/uboot-env.bin"
+UBOOT="$BINARIES_DIR/uboot.bin"
+UBOOT_SCR="$BINARIES_DIR/uboot.scr"
 UBI_IMAGE="$BINARIES_DIR/board.ubi"
 
 # Check prereqisites
 has_command fel || abort "Missing command 'fel'
 Please install https://github.com/NextThingCo/sunxi-tools"
-has_command spl-image-builder || abort "Missing command 'spl-image-builder'
-Please install from https://github.com/NextThingCo/CHIP-tools @210f269"
-has_command mkimage || abort "Missing command 'mkimage'
-Please install uboot-tools"
-has_command dd || abort "Missing command 'dd'
-Please install coreutils"
 has_command lsusb || abort "Missing command 'lsusb'
 Please install usbutils"
 has_command fastboot || abort "Missing 'fastboot'
 Please install android-tools[-fastboot]"
-has_command img2simg || abort "Missing 'img2simg'
-Please install android-toos[-fsutils] or simg2img"
 
 # Check that sources exist
 check_file "$SPL"
 check_file "$SPL_ECC"
 check_file "$UBOOT"
-#check_file "$UBOOT_ENV"
+check_file "$UBOOT_SCR"
 check_file "$UBI_IMAGE"
 
-# Create and set tempdir
-TMPDIR="$(mktemp -d "$TMPDIR_TEMPLATE")"
-
-###############################################################################
-# Prepare files
-###############################################################################
-
-msg "Preparing the payloads"
-
-submsg "Preparing the SPL binary"
-SPL_SIZE=$(splsize "$SPL_ECC")
-
-submsg "Preparing the U-Boot binary"
-page_align "$UBOOT" "$TMPDIR/uboot.bin"
-UBOOT_SIZE=0x400000
-pad_to "$UBOOT_SIZE" "$TMPDIR/uboot.bin"
-
-#submsg "Preparing the U-Boot env file"
-#UBOOT_ENV_SIZE=0x400000
-
-submsg "Preparing sparse UBI image"
-img2simg "$UBI_IMAGE" "$TMPDIR/board.ubi" $PEB_SIZE
-UBI_IMAGE="$TMPDIR/board.ubi"
-
-###############################################################################
-# Create script
-###############################################################################
-
-msg "Creating U-Boot script"
-submsg "Writing script source"
-
-if [ "$NOBOOT" = y ]; then
-  BOOTSCR="while true; do sleep 10; done"
-else
-  BOOTSCR="boot"
-fi
-
-cat <<EOF > "$TMPDIR/uboot.cmds"
-echo "==> Resetting environment"
-env default mtdparts
-env default bootargs
-env default bootcmd
-saveenv
-echo "==> Setting up MTD partitions"
-setenv mtdparts 'mtdparts=$MTDPARTS'
-saveenv
-mtdparts
-echo
-echo "==> Erasing NAND"
-nand erase.chip
-echo
-echo "==> Writing SPL"
-nand write.raw.noverify ${SPL_ADDR} spl ${SPL_SIZE}
-echo
-echo "==> Writing SPL backup"
-nand write.raw.noverify ${SPL_ADDR} spl-backup ${SPL_SIZE}
-echo
-echo "==> Writing U-Boot"
-nand write ${UBOOT_ADDR} uboot ${UBOOT_SIZE}
-#echo
-#echo "==> Writing U-Boot env"
-#nand write ${UBOOT_ENV_ADDR} env ${UBOOT_ENV_SIZE}
-echo
-echo "==> Setting up boot environment"
-echo
-# The kerne image is usually smaller than the kernel partition. We therefore
-# save the kernel image size as kernel_size environment variable.
-setenv kernel_size ${LINUX_SIZE}
-setenv bootargs '$(echo $BOOTARGS)'
-setenv bootcmd '$(echo $BOOTCMDS)'
-saveenv
-echo
-echo "==> Disabling U-Boot script (this script)"
-echo
-mw \${scriptaddr} 0x0
-echo
-echo "==> Going into fastboot mode"
-echo
-fastboot 0
-echo
-echo "**** PRAY! ****"
-echo
-$BOOTSCR
-EOF
-submsg "Writing script image"
-mkimage -A arm -T script -C none -n "flash CHIP" -d "$TMPDIR/uboot.cmds" \
-  "$TMPDIR/uboot.scr" > /dev/null
-
-[ "$PREPARE_ONLY" = "y" ] && exit 0
 
 ###############################################################################
 # Uploading
 ###############################################################################
 
-msg "Uploading payloads"
+msg "Uploading "
 
 # Wait for chip in FEL mode to become available
 wait_for_fel || abort "Unable to find CHIP in FEL mode"
@@ -549,13 +271,10 @@ submsg "Uploading SPL"
 $FEL write "$SPL_ADDR" "$SPL_ECC"
 
 submsg "Uploading U-Boot"
-$FEL write "$UBOOT_ADDR" "$TMPDIR/uboot.bin"
-
-#submsg "Uploading U-Boot env"
-#fel write "$UBOOT_ENV_ADDR" "$UBOOT_ENV"
+$FEL write "$UBOOT_ADDR" "$UBOOT"
 
 submsg "Uploading U-Boot script"
-$FEL write "$UBOOT_SCRIPT_ADDR" "$TMPDIR/uboot.scr"
+$FEL write "$UBOOT_SCRIPT_ADDR" "$UBOOT_SCR"
 
 ###############################################################################
 # Executing flash
@@ -567,23 +286,7 @@ wait_for_fastboot || abort "Unable to find CHIP in fastboot mode"
 $FASTBOOT -u flash UBI "$UBI_IMAGE" || abort "Failed to flash board image"
 $FASTBOOT continue || abort "Unable to continue with the boot"
 
-# Finish up
-msg "Cleaning up"
-[ "$KEEP_TMPDIR" == n ] && rm -rf "$TMPDIR"
-
-msg "Done"
-
-if [ "$NOBOOT" = y ]; then
-  cat <<EOF
-
-Your CHIP is now flashed. You may disconnect it, remove the FEL ground, and
-power it back up.
-
-EOF
-
-else
-
-  cat <<EOF
+cat <<EOF
 
 !!! DO NOT DISCONNECT JUST YET. !!!
 
@@ -591,5 +294,3 @@ Your CHIP is now flashed. It will now boot and prepare the system.
 Status LED will start blinking when it's ready.
 
 EOF
-
-fi
