@@ -1,3 +1,13 @@
 #!/bin/bash
 
+# reproducible kernel build (including rootfs)
+export KBUILD_BUILD_TIMESTAMP="2016-01-01"
+export KBUILD_BUILD_VERSION=1
+
+# for busybox config
+export KCONFIG_NOTIMESTAMP=1
+
+# for uboot
+export SOURCE_DATE_EPOCH=$(date -u +"%s" -d "${KBUILD_BUILD_TIMESTAMP}")
+
 make BOARD=chip $@
