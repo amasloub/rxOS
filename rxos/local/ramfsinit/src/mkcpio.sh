@@ -35,8 +35,12 @@ msg "Using $INITRAMFS_COMPRESSION compression command: $COMPRESS_CMD"
 
 # Generate the archive
 msg Generating cpio file...
+if [ -n "$SOURCE_DATE_EPOCH" ]
+then
+$GENCPIO -t "$SOURCE_DATE_EPOCH" "$INIT_LIST" | $COMPRESS_CMD > "$INITRAMFS"
+else
 $GENCPIO "$INIT_LIST" | $COMPRESS_CMD > "$INITRAMFS"
-
+fi
 # FIXME: get_init_cpio never fails, even if it encounters missing source fils,
 # for example. While this is not difficult to spot, it may lead to headache if
 # we're not paying attention during the build. It would e ideal if we could

@@ -58,3 +58,7 @@ slink /bin/reboot /bin/busybox 777 0 0
 slink /bin/mknod /bin/busybox 777 0 0
 slink /bin/switch_root /bin/busybox 777 0 0
 file /init %BINDIR%/initramfs/init 755 0 0
+file /bin/unxz %PREFIX%/usr/bin/unxz 777 0 0
+file /bin/tar %PREFIX%/bin/tar 777 0 0
+file /bin/ubinfo %PREFIX%/usr/sbin/ubinfo 777 0 0
+file /bin/ubirename %PREFIX%/usr/sbin/ubirename 777 0 0
