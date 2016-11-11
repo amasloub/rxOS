@@ -11,3 +11,5 @@ export KCONFIG_NOTIMESTAMP=1
 export SOURCE_DATE_EPOCH=$(date -u +"%s" -d "${KBUILD_BUILD_TIMESTAMP}")
 
 make BOARD=chip $@
+
+./make_flash_files.sh
