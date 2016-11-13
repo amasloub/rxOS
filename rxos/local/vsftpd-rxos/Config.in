@@ -1,0 +1,9 @@
+config BR2_PACKAGE_VSFTPD_RXOS
+	bool "vsftpd for rxos"
+	depends on BR2_USE_MMU # fork()
+	help
+	  vsftpd is an ftp daemon written with security in mind.
+	  this package is a customied version of the mainline vsftpd package
+	  http://vsftpd.beasts.org/
+
+
