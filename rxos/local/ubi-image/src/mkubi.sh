@@ -115,6 +115,8 @@ SPL_ADDR=0x43000000
 UBOOT_ADDR=0x4a000000
 #UBOOT_ENV_ADDR=0x4b000000
 UBOOT_SCRIPT_ADDR=0x43100000
+UBI_MEM_ADDR=0x4b000000
+
 
 # Env settings
 #
@@ -318,6 +320,32 @@ UBOOT_SIZE=0x400000
 pad_to "$UBOOT_SIZE" "$BINARIES_DIR/uboot.bin"
 
 
+# create board.ubi
+
+msg "Tools info"
+submsg "Using ubinize: $(which ubinize)"
+submsg "Using mkfs.ubifs: $(which mkfs.ubifs)"
+
+msg "Creating Linux UBIFS image"
+timestamp="$(date -u +'%y%m%d%H%M')"
+tmpdir="$BINARIES_DIR/rxos-flash-package-$timestamp"
+mkdir -p "$tmpdir"
+cp "$LINUX" "$tmpdir/zImage"
+cp "$DTB" "$tmpdir/sun5i-r8-chip.dtb"
+cp "$ROOTFS" "$tmpdir/rootfs_${timestamp}.tar"
+mv "$ROOTFS" "$BINARIES_DIR/rootfs_${timestamp}.tar"
+xz -9 "$tmpdir/rootfs_${timestamp}.tar"
+
+cp -v "$BINARIES_DIR/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
+  || echo "WARN: Overlays not copied"  # but it's ok
+mkubifs "$tmpdir" "$BINARIES_DIR/linux.ubifs"
+rm -rf "$tmpdir"
+
+msg "Creating board UBI image"
+mkubiimg "$UBINIZE_CFG" "$BINARIES_DIR/board.ubi"
+
+UBI_SIZE=`filesize "$BINARIES_DIR/board.ubi" | xargs printf "0x%08x"`
+
 ###############################################################################
 # Create script
 ###############################################################################
@@ -351,9 +379,9 @@ nand write.raw.noverify ${SPL_ADDR} spl-backup ${SPL_SIZE}
 echo
 echo "==> Writing U-Boot"
 nand write ${UBOOT_ADDR} uboot ${UBOOT_SIZE}
-#echo
-#echo "==> Writing U-Boot env"
-#nand write ${UBOOT_ENV_ADDR} env ${UBOOT_ENV_SIZE}
+echo
+echo "==> Writing UBI"
+nand write.slc-mode.trimffs $UBI_MEM_ADDR UBI $UBI_SIZE
 echo
 echo "==> Setting up boot environment"
 echo
@@ -368,10 +396,6 @@ echo "==> Disabling U-Boot script (this script)"
 echo
 mw \${scriptaddr} 0x0
 echo
-echo "==> Going into fastboot mode"
-echo
-fastboot 0
-echo
 echo "**** PRAY! ****"
 echo
 $BOOTSCR
@@ -382,28 +406,4 @@ mkimage -A arm -T script -C none -n "flash CHIP" -d "$BINARIES_DIR/uboot.cmds" \
 
 rm "$BINARIES_DIR/uboot.cmds"
 
-msg "Tools info"
-submsg "Using ubinize: $(which ubinize)"
-submsg "Using mkfs.ubifs: $(which mkfs.ubifs)"
-
-msg "Creating Linux UBIFS image"
-timestamp="$(date -u +'%y%m%d%H%M')"
-tmpdir="$BINARIES_DIR/rxos-flash-package-$timestamp"
-mkdir -p "$tmpdir"
-cp "$LINUX" "$tmpdir/zImage"
-cp "$DTB" "$tmpdir/sun5i-r8-chip.dtb"
-cp "$ROOTFS" "$tmpdir/rootfs_${timestamp}.tar"
-mv "$ROOTFS" "$BINARIES_DIR/rootfs_${timestamp}.tar"
-xz -9 "$tmpdir/rootfs_${timestamp}.tar"
-
-cp -v "$BINARIES_DIR/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
-  || echo "WARN: Overlays not copied"  # but it's ok
-mkubifs "$tmpdir" "$BINARIES_DIR/linux.ubifs"
-rm -rf "$tmpdir"
-
-msg "Creating board UBI image"
-mkubiimg "$UBINIZE_CFG" "$BINARIES_DIR/board_unsparse.ubi"
-
-img2simg "$BINARIES_DIR/board_unsparse.ubi" "$BINARIES_DIR/board.ubi" $PEB_SIZE
-rm "$BINARIES_DIR/board_unsparse.ubi"
 
