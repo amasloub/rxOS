@@ -2,6 +2,17 @@
 # boards can be listed with `make -s boards`.
 BOARD := chip
 
+# reproducible build for kernel
+KBUILD_BUILD_TIMESTAMP := "2016-01-01"
+KBUILD_BUILD_VERSION := 1
+
+# for busybox config
+KCONFIG_NOTIMESTAMP := 1
+
+# for uboot
+# 1451606400 = date -u +"%s" -d "2016-01-01"
+SOURCE_DATE_EPOCH := 1451606400
+
 # Build configuration
 BOARDS_DIR = rxos
 CONFIGS_DIR = $(BOARDS_DIR)/configs

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Persists system configuration and state according to the list of files and
-# directories in /etc/persist.conf. 
+# directories in /etc/persist.conf.
 #
 # The files and rerectories are first copied to the configured persistent
 # configuration directory if they are not already present there, and then the
@@ -56,6 +56,13 @@ persist_path() {
     mkdir -p "$target_dir" || return 1
     cp -Ra "$path" "$target_path" || return 1
   fi
+  # merge UI2 config
+  rxos_conf="/etc/rxos_config.json"
+  if [ "$path" = "$rxos_conf" ]
+  then
+    jq -s '.[0] * .[1]' "$path" "$target_path" > /tmp/rxos_config.json
+    mv /tmp/rxos_config.json "$target_path"
+  fi
   rm -rf "$path" || return 1
   ln -s "$target_path" "$path" || return 1
 }
@@ -69,8 +76,8 @@ while read -r conf_path; do
   persist_path "$conf_path" || errors=1
 done < "$CONFLIST"
 
-# Make sure there's no shadow+ file in the persistent storage as this can 
-# sometimes happen when power is lost right after setting a password and 
+# Make sure there's no shadow+ file in the persistent storage as this can
+# sometimes happen when power is lost right after setting a password and
 # subsequently disable setting passwords.
 rm "${CONFDIR}/etc/shadow+" 2>/dev/null || true
 

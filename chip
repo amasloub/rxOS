@@ -1,13 +1,11 @@
 #!/bin/bash
 
-# reproducible kernel build (including rootfs)
-export KBUILD_BUILD_TIMESTAMP="2016-01-01"
-export KBUILD_BUILD_VERSION=1
+make clean
 
-# for busybox config
-export KCONFIG_NOTIMESTAMP=1
+make BOARD=chip
 
-# for uboot
-export SOURCE_DATE_EPOCH=$(date -u +"%s" -d "${KBUILD_BUILD_TIMESTAMP}")
+mkdir out/chip/images/overlays/
+cp ../overlay-starsdr/overlay-starsdr-3.0.sqfs out/chip/images/overlays/
 
-make BOARD=chip $@
+make rebuild release-flash
+
