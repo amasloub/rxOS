@@ -18,7 +18,7 @@ SDCARD_MD5NAME = $(SDCARD_BASENAME).md5
 FLASH_BASENAME = $(BINARIES_DIR)/$(PLATFORM)-$(SUBPLATFORM)-flash-$(FULL_VERSION)
 FLASH_ZIPNAME = $(FLASH_BASENAME).zip
 FLASH_MD5NAME = $(FLASH_BASENAME).md5
-SAVE_ARCHIVE_BASE= $(OUTPUT_DIR)/../../../rxos_builds
+SAVE_ARCHIVE_BASE = $(BINARIES_DIR)/../../../../rxos_builds
 SAVE_ARCHIVE_DIR = $(SAVE_ARCHIVE_BASE)/$(PLATFORM)-$(SUBPLATFORM)-build-$(FULL_VERSION)
 
 .PHONY: release-sdcard release-flash
@@ -53,14 +53,13 @@ $(FLASH_ZIPNAME): $(BINARIES_DIR)/board.ubi $(BINARIES_DIR)/README.txt $(BINARIE
 $(FLASH_MD5NAME): $(FLASH_ZIPNAME)
 	md5sum "$<" > "$@"
 	sed -i 's|$(BINARIES_DIR)/||' "$@"
-	if [ -d $(SAVE_ARCHIVE_BASE) ]
-	then
-		cp -a $(BINARIES_DIR) $(SAVE_ARCHIVE_DIR)
-	else
-		echo archive base $(SAVE_ARCHIVE_BASE) - does not exist. mkdir it to start saving builds.
+	if [ -d $(SAVE_ARCHIVE_BASE) ] ;\
+	then \
+		cp -a $(BINARIES_DIR) $(SAVE_ARCHIVE_DIR) ;\
+	else \
+		echo archive base $(SAVE_ARCHIVE_BASE) - does not exist. mkdir it to start saving builds. ;\
 	fi
 
 release-sdcard: $(SDCARD_MD5NAME)
 
 release-flash: $(FLASH_MD5NAME)
-
