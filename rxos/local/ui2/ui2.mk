@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-UI2_VERSION = 0.47
+UI2_VERSION = 0.48
 UI2_SITE = https://github.com/Outernet-Project/RxOS-UI2
 UI2_SITE_METHOD = git
 
