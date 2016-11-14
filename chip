@@ -1,7 +1,5 @@
 #!/bin/bash
 
-make clean
-
 make BOARD=chip
 
 mkdir out/chip/images/overlays/
