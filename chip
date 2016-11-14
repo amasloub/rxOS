@@ -1,9 +1,9 @@
 #!/bin/bash
 
+[ -f out/chip/.config] && touch out/chip/.config
 make BOARD=chip
 
 mkdir out/chip/images/overlays/
 cp ../overlay-starsdr/overlay-starsdr-3.0.sqfs out/chip/images/overlays/
 
 make rebuild release-flash
-

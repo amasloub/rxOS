@@ -90,6 +90,7 @@ clean-rootfs:
 	@-rm $(IMAGES_DIR)/*.pkg
 	@-rm $(IMAGES_DIR)/*.zip
 	@-rm $(IMAGES_DIR)/*.md5
+	@-rm $(IMAGES_DIR)/*.tar
 	@-rm $(IMG_FILE)
 
 clean-linux: clean-rootfs
