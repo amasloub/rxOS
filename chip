@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ -f out/chip/.config] && touch out/chip/.config
+[ -f out/chip/.config ] && touch out/chip/.config
 make BOARD=chip
 
 mkdir out/chip/images/overlays/
