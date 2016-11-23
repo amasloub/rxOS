@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# for uboot and ramfsinit
+export SOURCE_DATE_EPOCH=1451606400
+
+# for kernel and gen_initramfs
+export KBUILD_BUILD_TIMESTAMP=2016-01-01
+export KBUILD_BUILD_VERSION=1
+
+# for busybox config
+export KCONFIG_NOTIMESTAMP=1
+
+
+
 [ -f out/chip/.config ] && touch out/chip/.config
 make BOARD=chip
 
