@@ -8,7 +8,7 @@ if BR2_PACKAGE_WEATHERGEN
 
 config BR2_WEATHERGEN_SOURCE
 	string "Source directory path to watch"
-	default "/mnt/downloads/grib2"
+	default "/mnt/downloads/.grib2"
 	help
 	  Absolute path to a directory to be watched for new files.
 
