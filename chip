@@ -10,7 +10,8 @@ export KBUILD_BUILD_VERSION=1
 # for busybox config
 export KCONFIG_NOTIMESTAMP=1
 
-
+# for mkuser
+export MKPASSWD_SALT=mgfYRgrU
 
 [ -f out/chip/.config ] && touch out/chip/.config
 make BOARD=chip
