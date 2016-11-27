@@ -1,0 +1,5 @@
+config BR2_PACKAGE_TWEETNACL_TOOLS
+	bool "Install Tweetnacl tools"
+	help
+	  Tweetnacl tools are command line tools for ECC crypto
+
