@@ -19,7 +19,7 @@ set -e
 INIT_DIR=${BINARIES_DIR}/initramfs
 INIT_LIST=${INIT_DIR}/init.cpio
 INITRAMFS=${BINARIES_DIR}/$INITRAMFS_FILE
-GENCPIO="${BUILD_DIR}/linux-${LINUX_VERSION}/usr/gen_init_cpio"
+GENCPIO="${BUILD_DIR}/linux-${LINUX_VERSION//\//_}/usr/gen_init_cpio"
 
 if [ "$INITRAMFS_COMPRESSION" == "gzip" ]; then
   COMPRESS_CMD="gzip -n -9 -f"
