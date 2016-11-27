@@ -23,7 +23,12 @@ RAMFSINIT_VERSION = $(call qstrip,$(RXOS_VERSION))
 RAMFSINIT_INIT_SED_CMDS = s|%TMPFS_SIZE%|$(RAMFSINIT_TMPFS_SIZE)|g;
 RAMFSINIT_INIT_SED_CMDS += s|%VERSION%|$(RAMFSINIT_VERSION)|g;
 
+define RAMFSINIT_BUILD_CMDS
+	$(HOSTCC) -o $(@D)/gen_init_cpio -O3 $(@D)/gen_init_cpio.c
+endef
+
 define RAMFSINIT_INSTALL_TARGET_CMDS
+	$(INSTALL) -Dm755 $(@D)/gen_init_cpio $(HOST_DIR)/usr/bin/gen_init_cpio
 	$(INSTALL) -Dm644 $(@D)/init.cpio.in \
 		$(BINARIES_DIR)/initramfs/default.cpio.in
 	sed -i '$(RAMFSINIT_CPIO_SED_CMDS)' \

@@ -264,7 +264,7 @@ pad_to() {
 add_ecc() {
   local in="$1"
   local out="$2"
-  spl-image-builder -d -r 3 -u 4096 -o "$OOB_SIZE" -o "$PAGE_SIZE" -c 1024 \
+  ${BINARIES_DIR}/spl-image-builder -d -r 3 -u 4096 -o "$OOB_SIZE" -p "$PAGE_SIZE" -c 1024 \
     -s 64 "$in" "$out"
 }
 
@@ -296,8 +296,8 @@ UBOOT="$BINARIES_DIR/u-boot-dtb.bin"
 UBI_IMAGE="$BINARIES_DIR/board.ubi"
 
 # Check prereqisites
-has_command spl-image-builder || abort "Missing command 'spl-image-builder'
-Please install from https://github.com/NextThingCo/CHIP-tools @210f269"
+#has_command spl-image-builder || abort "Missing command 'spl-image-builder'
+#Please install from https://github.com/NextThingCo/CHIP-tools @210f269"
 has_command mkimage || abort "Missing command 'mkimage'
 Please install u-boot-tools"
 has_command dd || abort "Missing command 'dd'
@@ -309,6 +309,10 @@ Please install xz"
 
 # Check that sources exist
 check_file "$SPL"
+
+# create spl-with-ecc reproducibly
+add_ecc "$SPL" "$SPL_ECC"
+
 check_file "$SPL_ECC"
 check_file "$UBOOT"
 #check_file "$UBI_IMAGE"
@@ -318,7 +322,6 @@ SPL_SIZE=$(splsize "$SPL_ECC")
 page_align "$UBOOT" "$BINARIES_DIR/uboot.bin"
 UBOOT_SIZE=0x400000
 pad_to "$UBOOT_SIZE" "$BINARIES_DIR/uboot.bin"
-
 
 # create board.ubi
 
