@@ -53,7 +53,7 @@ $(FLASH_ZIPNAME): $(BINARIES_DIR)/board.ubi $(BINARIES_DIR)/README.txt $(BINARIE
 $(FLASH_MD5NAME): $(FLASH_ZIPNAME)
 	md5sum "$<" > "$@"
 	sed -i 's|$(BINARIES_DIR)/||' "$@"
-	if [ -d $(SAVE_ARCHIVE_BASE) ] ;\
+	@if [ -d $(SAVE_ARCHIVE_BASE) ] ;\
 	then \
 		cp -a $(BINARIES_DIR) $(SAVE_ARCHIVE_DIR) ;\
 	else \

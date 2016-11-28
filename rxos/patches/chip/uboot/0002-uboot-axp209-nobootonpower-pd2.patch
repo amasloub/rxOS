@@ -40,16 +40,16 @@ index b04c2f6..1990c8a 100644
 +    // set as input
 +    sunxi_gpio_set_cfgpin(pd2, SUNXI_GPIO_INPUT);
 +    // enable pullup
-+    sunxi_gpio_set_pull(pd2, SUNXI_GPIO_PULL_UP);
++    sunxi_gpio_set_pull(pd2, SUNXI_GPIO_PULL_DOWN);
 +    // read value
 +    unsigned int v = gpio_get_value(pd2);
 +    // disable pullup
 +    sunxi_gpio_set_pull(pd2, 0);
 +
-+    if (v==0) {
++    if (v==1) {
 +        printf("AUTOBOOT enabled: jumper on PD2\n");
 +    } else {
-+        printf("AUTOBOOT on power application disabled: no jumper on PD2\n");
++        printf("AUTOBOOT disabled: no jumper on PD2\n");
 +        rc = pmic_bus_read(AXP209_POWER_STATUS, &val);
 +        if (rc) {
 +           printf("ERROR cannot read from AXP209!\n");
