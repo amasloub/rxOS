@@ -152,6 +152,7 @@ endmenu
 menu "Host utilities"
 	source "$BR2_EXTERNAL/package/dir2fat32/Config.in.host"
     source "$BR2_EXTERNAL/package/pkgtool/Config.in.host"
+    source "$BR2_EXTERNAL/package/mtd-mlc/Config.in.host"
 endmenu
 
 menu "Hardware support"
@@ -161,4 +162,5 @@ menu "Hardware support"
     source "$BR2_EXTERNAL/package/rtl8723bs/Config.in"
     source "$BR2_EXTERNAL/package/rtl8723ds-ntc/Config.in"
     source "$BR2_EXTERNAL/package/rtl8723bs_bt/Config.in"
+    source "$BR2_EXTERNAL/package/mtd-mlc/Config.in"
 endmenu
