@@ -40,11 +40,11 @@ index b04c2f6..1990c8a 100644
 +    // set as input
 +    sunxi_gpio_set_cfgpin(pd2, SUNXI_GPIO_INPUT);
 +    // enable pullup
-+    sunxi_gpio_set_pull(pd2, SUNXI_GPIO_PULL_DOWN);
++    //sunxi_gpio_set_pull(pd2, SUNXI_GPIO_PULL_DOWN);
 +    // read value
 +    unsigned int v = gpio_get_value(pd2);
 +    // disable pullup
-+    sunxi_gpio_set_pull(pd2, 0);
++    //sunxi_gpio_set_pull(pd2, 0);
 +
 +    if (v==1) {
 +        printf("AUTOBOOT enabled: jumper on PD2\n");
