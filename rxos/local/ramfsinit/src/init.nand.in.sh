@@ -221,7 +221,7 @@ if [ "$SAFE_MODE" != y ]; then
 fi
 
 # check if a newer rootfs image exists than the one already flashed
-rootfs_volname=$(ubinfo -d 0 -n 2 | grep Name | tr -d " " | cut -d ":" -f 2)
+rootfs_volname=$(ubinfo -a | grep Name | grep root | tr -d " " | cut -d ":" -f 2)
 flashed_rootfs_ver=$(echo ${rootfs_volname} | tr "." "_" | cut -d "_" -f 2)
 echo "Flashed rootfs is ${flashed_rootfs_ver}"
 latest_avl_rootfs=$(cd /linux ; ls rootfs_* | sort | tail -n 1)

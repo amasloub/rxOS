@@ -163,4 +163,5 @@ menu "Hardware support"
     source "$BR2_EXTERNAL/package/rtl8723ds-ntc/Config.in"
     source "$BR2_EXTERNAL/package/rtl8723bs_bt/Config.in"
     source "$BR2_EXTERNAL/package/mtd-mlc/Config.in"
+    source "$BR2_EXTERNAL/local/ubihealthd/Config.in"
 endmenu

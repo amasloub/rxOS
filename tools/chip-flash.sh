@@ -64,7 +64,8 @@ SPL_ADDR=0x43000000
 UBOOT_ADDR=0x4a000000
 #UBOOT_ENV_ADDR=0x4b000000
 UBOOT_SCRIPT_ADDR=0x43100000
-UBI_MEM_ADDR=0x4b000000
+EMPTY_UBIFS_MEM_ADDR=0x4b000000
+LINUX_UBIFS_MEM_ADDR=0x4e000000
 
 # Command aliases
 FEL="fel"
@@ -212,7 +213,8 @@ SPL="$BINARIES_DIR/sunxi-spl.bin"
 SPL_ECC="$BINARIES_DIR/sunxi-spl-with-ecc.bin"
 UBOOT="$BINARIES_DIR/uboot.bin"
 UBOOT_SCR="$BINARIES_DIR/uboot.scr"
-UBI_IMAGE="$BINARIES_DIR/board.ubi"
+LINUX_UBIFS="$BINARIES_DIR/linux.ubifs"
+EMPTY_UBIFS="$BINARIES_DIR/empty.ubifs"
 
 # Check prereqisites
 has_command fel || abort "Missing command 'fel'
@@ -223,7 +225,8 @@ check_file "$SPL"
 check_file "$SPL_ECC"
 check_file "$UBOOT"
 check_file "$UBOOT_SCR"
-check_file "$UBI_IMAGE"
+check_file "$LINUX_UBIFS"
+check_file "$EMPTY_UBIFS"
 
 
 ###############################################################################
@@ -247,8 +250,9 @@ $FEL write "$UBOOT_ADDR" "$UBOOT"
 submsg "Uploading U-Boot script"
 $FEL write "$UBOOT_SCRIPT_ADDR" "$UBOOT_SCR"
 
-submsg "Uploading UBI"
-$FEL write "$UBI_MEM_ADDR" "$UBI_IMAGE"
+submsg "Uploading linux ubifs"
+$FEL write "$EMPTY_UBIFS_MEM_ADDR" "$EMPTY_UBIFS"
+$FEL write "$LINUX_UBIFS_MEM_ADDR" "$LINUX_UBIFS"
 
 ###############################################################################
 # Executing flash

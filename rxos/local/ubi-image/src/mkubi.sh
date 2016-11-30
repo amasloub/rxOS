@@ -32,9 +32,9 @@ export PATH="${HOST_DIR}/usr/bin/:${HOST_DIR}/usr/sbin:${PATH}"
 # UBI configuration
 PAGE_SIZE=0x4000
 SUB_SIZE=16384
-PEB_SIZE=0x200000
+PEB_SIZE=0x400000
 LEB_SIZE=0x1F8000
-MAX_LEBS=200
+MAX_LEBS=4000
 UBI_COMPR=lzo
 UBINIZE_CFG="$BINARIES_DIR/ubinize.cfg"
 
@@ -108,14 +108,16 @@ mkubiimg() {
 PAGE_SIZE=16384
 PAGE_SIZE_HEX=0x4000
 OOB_SIZE=1664
-PEB_SIZE=$(( 2 * 1024 * 1024 ))
+PEB_SIZE=$(( 4 * 1024 * 1024 ))
 
 # Memory locations
 SPL_ADDR=0x43000000
 UBOOT_ADDR=0x4a000000
 #UBOOT_ENV_ADDR=0x4b000000
 UBOOT_SCRIPT_ADDR=0x43100000
-UBI_MEM_ADDR=0x4b000000
+#UBI_MEM_ADDR=0x4b000000
+EMPTY_UBIFS_MEM_ADDR=0x4b000000
+LINUX_UBIFS_MEM_ADDR=0x4e000000
 
 
 # Env settings
@@ -344,11 +346,16 @@ cp -v "$BINARIES_DIR/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
   || echo "WARN: Overlays not copied"  # but it's ok
 mkubifs "$tmpdir" "$BINARIES_DIR/linux.ubifs"
 rm -rf "$tmpdir"
+mkdir "$tmpdir"
+mkubifs "$tmpdir" "$BINARIES_DIR/empty.ubifs"
+rm -rf "$tmpdir"
 
-msg "Creating board UBI image"
-mkubiimg "$UBINIZE_CFG" "$BINARIES_DIR/board.ubi"
+#msg "Creating board UBI image"
+#mkubiimg "$UBINIZE_CFG" "$BINARIES_DIR/board.ubi"
 
-UBI_SIZE=`filesize "$BINARIES_DIR/board.ubi" | xargs printf "0x%08x"`
+#UBI_SIZE=`filesize "$BINARIES_DIR/board.ubi" | xargs printf "0x%08x"`
+LINUX_UBIFS_SIZE=`filesize "$BINARIES_DIR/linux.ubifs" | xargs printf "0x%08x"`
+EMPTY_UBIFS_SIZE=`filesize "$BINARIES_DIR/empty.ubifs" | xargs printf "0x%08x"`
 
 ###############################################################################
 # Create script
@@ -384,8 +391,23 @@ echo
 echo "==> Writing U-Boot"
 nand write ${UBOOT_ADDR} uboot ${UBOOT_SIZE}
 echo
-echo "==> Writing UBI"
-nand write.slc-mode.trimffs $UBI_MEM_ADDR UBI $UBI_SIZE
+echo "==> Make filesystems"
+echo
+ubi part UBI
+ubi create "linux" 0x10000000
+ubi create "root_0000000000" 0x10000000
+ubi create "conf" 0x4000000
+ubi create "cache" 0x10000000
+ubi create "appdata" 0x26000000
+ubi create "data"
+echo
+echo "==> Writing filesystems"
+ubi writevol $LINUX_UBIFS_MEM_ADDR "linux" $LINUX_UBIFS_SIZE
+ubi writevol $EMPTY_UBIFS_MEM_ADDR "root_0000000000" $EMPTY_UBIFS_SIZE
+ubi writevol $EMPTY_UBIFS_MEM_ADDR "conf" $EMPTY_UBIFS_SIZE
+ubi writevol $EMPTY_UBIFS_MEM_ADDR "cache" $EMPTY_UBIFS_SIZE
+ubi writevol $EMPTY_UBIFS_MEM_ADDR "appdata" $EMPTY_UBIFS_SIZE
+ubi writevol $EMPTY_UBIFS_MEM_ADDR "data" $EMPTY_UBIFS_SIZE
 echo
 echo "==> Setting up boot environment"
 echo

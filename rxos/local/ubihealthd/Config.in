@@ -1,0 +1,5 @@
+config BR2_PACKAGE_UBIHEALTHD
+	bool "ubihealthd service for MLC nand"
+	depends on BR2_PACKAGE_MTD_MLC_UBIHEALTHD
+	help
+	  Install ubihealthd service

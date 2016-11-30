@@ -43,9 +43,9 @@ $(SDCARD_MD5NAME): $(SDCARD_ZIPNAME)
 	md5sum "$<" > "$@"
 	sed -i 's|$(BINARIES_DIR)/||' "$@"
 
-$(FLASH_ZIPNAME): $(BINARIES_DIR)/board.ubi $(BINARIES_DIR)/README.txt $(BINARIES_DIR)/99-chip.rules
+$(FLASH_ZIPNAME): $(BINARIES_DIR)/linux.ubifs $(BINARIES_DIR)/empty.ubifs $(BINARIES_DIR)/README.txt $(BINARIES_DIR)/99-chip.rules
 	zip -j "$@" \
-		$(BINARIES_DIR)/{board.ubi,sunxi-spl.bin,sunxi-spl-with-ecc.bin,uboot.bin,uboot.scr,README.txt,99-chip.rules} \
+		$(BINARIES_DIR)/{linux.ubifs,empty.ubifs,sunxi-spl.bin,sunxi-spl-with-ecc.bin,uboot.bin,uboot.scr,README.txt,99-chip.rules} \
 		$(TARGET_DIR)/etc/platform-release \
 		$(BR2_EXTERNAL)/../tools/chip-flash.sh \
 		$(BR2_EXTERNAL)/../COPYING
