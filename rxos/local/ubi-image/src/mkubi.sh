@@ -340,6 +340,10 @@ mv "$ROOTFS" "$BINARIES_DIR/rootfs_${timestamp}.tar"
 xz -9 "$tmpdir/rootfs_${timestamp}.tar"
 cp "$tmpdir/rootfs_${timestamp}.tar.xz" "$BINARIES_DIR"
 
+tar cf "$BINARIES_DIR/skylark-chip-${timestamp}.sop" --mtime="2016-01-01" --owner=0 --group=0 --transform 's?.*/??g' \
+    "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS"
+xz -9 -c "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.sop.xz"
+
 cp -v "$BINARIES_DIR/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
   || echo "WARN: Overlays not copied"  # but it's ok
 mkubifs "$tmpdir" "$BINARIES_DIR/linux.ubifs"
