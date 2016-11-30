@@ -338,7 +338,7 @@ mkdir -p "$tmpdir"
 cp "$LINUX" "$tmpdir/zImage"
 cp "$DTB" "$tmpdir/sun5i-r8-chip.dtb"
 cp "$ROOTFS" "$tmpdir/rootfs_${timestamp}.tar"
-mv "$ROOTFS" "$BINARIES_DIR/rootfs_${timestamp}.tar"
+cp "$ROOTFS" "$BINARIES_DIR/rootfs_${timestamp}.tar"
 xz -9 "$tmpdir/rootfs_${timestamp}.tar"
 cp "$tmpdir/rootfs_${timestamp}.tar.xz" "$BINARIES_DIR"
 
