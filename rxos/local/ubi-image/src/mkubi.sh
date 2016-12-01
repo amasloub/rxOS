@@ -337,13 +337,31 @@ tmpdir="$BINARIES_DIR/rxos-flash-package-$timestamp"
 mkdir -p "$tmpdir"
 cp "$LINUX" "$tmpdir/zImage"
 cp "$DTB" "$tmpdir/sun5i-r8-chip.dtb"
-cp "$ROOTFS" "$tmpdir/rootfs_${timestamp}.tar"
-cp "$ROOTFS" "$BINARIES_DIR/rootfs_${timestamp}.tar"
-xz -9 "$tmpdir/rootfs_${timestamp}.tar"
-cp "$tmpdir/rootfs_${timestamp}.tar.xz" "$BINARIES_DIR"
+cp "$ROOTFS" "$tmpdir/rootfs.tar"
+xz -9 "$tmpdir/rootfs.tar"
+cp "$tmpdir/rootfs.tar.xz" "$BINARIES_DIR"
 
-tar cf "$BINARIES_DIR/skylark-chip-${timestamp}.sop" --mtime="2016-01-01" --owner=0 --group=0 --transform 's?.*/??g' \
-    "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS"
+
+cat <<EOF > "$BINARIES_DIR/manifest"
+# (c) 2016 Outernet Inc
+# Skylark OTA update package
+# Manifest file
+
+# install_method filename installparam1 installparam2 ...
+# supported install methods are: part_cp, mtd_dd
+
+part_cp rootfs.tar /boot with_xz
+part_cp sun5i-r8-chip.dtb /boot
+part_cp zImage /boot
+mtd_dd uboot.bin uboot
+mtd_dd sunxi-spl-with-ecc.bin spl
+mtd_dd sunxi-spl-with-ecc.bin spl-backup
+
+EOF
+
+tar cf "$BINARIES_DIR/skylark-chip-${timestamp}.sop.unsigned" --mtime="2016-01-01" --owner=0 --group=0 --transform 's?.*/??g' \
+    "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS"
+tweetnacl-sign "$BR2_EXTERNAL/sop.privkey" "$BINARIES_DIR/skylark-chip-${timestamp}.sop.unsigned" "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
 xz -9 -c "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.sop.xz"
 
 cp -v "$BINARIES_DIR/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
