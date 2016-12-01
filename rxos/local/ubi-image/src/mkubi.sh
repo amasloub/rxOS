@@ -399,7 +399,7 @@ echo "==> Make filesystems"
 echo
 ubi part UBI
 ubi create "linux" 0x10000000
-ubi create "root_0000000000" 0x10000000
+ubi create "root" 0x10000000
 ubi create "conf" 0x4000000
 ubi create "cache" 0x10000000
 ubi create "appdata" 0x26000000
@@ -407,7 +407,7 @@ ubi create "data"
 echo
 echo "==> Writing filesystems"
 ubi writevol $LINUX_UBIFS_MEM_ADDR "linux" $LINUX_UBIFS_SIZE
-ubi writevol $EMPTY_UBIFS_MEM_ADDR "root_0000000000" $EMPTY_UBIFS_SIZE
+ubi writevol $EMPTY_UBIFS_MEM_ADDR "root" $EMPTY_UBIFS_SIZE
 ubi writevol $EMPTY_UBIFS_MEM_ADDR "conf" $EMPTY_UBIFS_SIZE
 ubi writevol $EMPTY_UBIFS_MEM_ADDR "cache" $EMPTY_UBIFS_SIZE
 ubi writevol $EMPTY_UBIFS_MEM_ADDR "appdata" $EMPTY_UBIFS_SIZE

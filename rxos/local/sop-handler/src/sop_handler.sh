@@ -86,16 +86,6 @@ sop_store() {
     [ "$partmode" = "ro" ] && mount -o remount,ro "$loc"
 }
 
-rootfs_clean() {
-    loc="/boot"
-    partmode=$(mount | grep "$loc" | tr '(' , | cut -d , -f 2)
-    [ "$partmode" = "ro" ] && mount -o remount,rw "$loc"
-    # keep latest two rootfs
-    ls "$loc/rootfs_*.tar.xz" |  sort | head -n -2 | xargs rm -f
-    sync; sync; sync;
-    [ "$partmode" = "ro" ] && mount -o remount,ro "$loc"
-}
-
 psop_apply() {
     loc="/boot"
     tmploc="/mnt/data"
@@ -125,7 +115,6 @@ psop_apply() {
 
 sop_apply() {
     sop_validate
-    rootfs_clean
     eval "$(sop_extract manifest)"
     sop_store "$ORIG_SOP_FILE"
 }

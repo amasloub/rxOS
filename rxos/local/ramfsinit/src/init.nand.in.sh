@@ -220,32 +220,26 @@ if [ "$SAFE_MODE" != y ]; then
   done
 fi
 
-# check if a newer rootfs image exists than the one already flashed
-rootfs_volname=$(ubinfo -a | grep Name | grep root | tr -d " " | cut -d ":" -f 2)
-flashed_rootfs_ver=$(echo ${rootfs_volname} | tr "." "_" | cut -d "_" -f 2)
-echo "Flashed rootfs is ${flashed_rootfs_ver}"
-latest_avl_rootfs=$(cd /linux ; ls rootfs_* | sort | tail -n 1)
-latest_avl_rootfs_ver=$(echo ${latest_avl_rootfs} | tr "." "_" | cut -d "_" -f 2)
-echo "Latest available rootfs is ${latest_avl_rootfs_ver}"
-
-if [ "${latest_avl_rootfs_ver}" -gt "${flashed_rootfs_ver}" ]
+# check if a rootfs image exists in /boot
+# if it exists, flash it and remove it
+if [ -f /linux/rootfs.tar.xz ]
 then
-    echo "newer rootfs available. flashing..."
+    echo "new rootfs available. flashing..."
     mkdir /f_rootfs
-    mount -t ubifs ubi0:${rootfs_volname} /f_rootfs
+    mount -t ubifs ubi0:root /f_rootfs
     rm -rf /f_rootfs/*
-    unxz -c /linux/${latest_avl_rootfs} | tar xf - -C /f_rootfs/
+    unxz -c /linux/rootfs.tar.xz | tar xf - -C /f_rootfs/
     sync
     sync
     sync
     umount /f_rootfs
     rmdir /f_rootfs
-    ubirename /dev/ubi0 "${rootfs_volname}" "root_${latest_avl_rootfs_ver}"
-    rootfs_volname="root_${latest_avl_rootfs_ver}"
+    rm /linux/rootfs.tar.xz
+    sync
     echo "done"
 fi
 
-ROOT_PARTS=${rootfs_volname}
+ROOT_PARTS=root
 
 # The userspace is contained on one of two MTD partitions. These are:
 #
