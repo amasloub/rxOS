@@ -234,8 +234,12 @@ then
     sync
     umount /f_rootfs
     rmdir /f_rootfs
-    rm /linux/rootfs.tar.xz
+    mount -o remount,rw /linux
+    rm -f /linux/rootfs.tar.xz
     sync
+    sync
+    sync
+    mount -o remount,ro /linux
     echo "done"
 fi
 
