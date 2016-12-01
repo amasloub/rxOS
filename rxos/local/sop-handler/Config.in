@@ -1,0 +1,15 @@
+menuconfig BR2_PACKAGE_SOP_HANDLER
+	bool "process Skylark OTA packages"
+	depends on BR2_PACKAGE_TWEETNACL_TOOLS
+	help
+	  watches for sop files and processes them
+
+if BR2_PACKAGE_SOP_HANDLER
+
+config BR2_SOP_HANDLER_SOURCE
+	string "Source directory path to watch"
+	default "/mnt/downloads/.sop"
+	help
+	  Absolute path to a directory to be watched for new sop files.
+
+endif

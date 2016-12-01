@@ -1,0 +1,2 @@
+# watch for files in sop path and install the update
+%SOPSOURCE% close_write,moved_to sop_handler "$filename"
