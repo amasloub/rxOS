@@ -5,4 +5,5 @@
 /user*.mk
 /.password
 rxos/sop.privkey
+rxos/overlays/*
 

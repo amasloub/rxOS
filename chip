@@ -13,10 +13,7 @@ export KCONFIG_NOTIMESTAMP=1
 # for mkuser
 export MKPASSWD_SALT=mgfYRgrU
 
-[ -f out/chip/.config ] && touch out/chip/.config
-make BOARD=chip
+[ -d rxos/overlays ] || mkdir rxos/overlays/
+cp ../overlay-starsdr/overlay-starsdr-3.0.sqfs rxos/overlays/
 
-mkdir out/chip/images/overlays/
-cp ../overlay-starsdr/overlay-starsdr-3.0.sqfs out/chip/images/overlays/
-
-make rebuild release-flash
+make BOARD=chip build release-flash

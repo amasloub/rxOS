@@ -220,6 +220,19 @@ if [ "$SAFE_MODE" != y ]; then
   done
 fi
 
+
+# remove sunxi-spl-with-ecc.bin if found
+if [ -f /linux/sunxi-spl-with-ecc.bin ]
+then
+    mount -o remount,rw /linux
+    echo "removing sunxi-spl-with-ecc.bin"
+    rm -f /linux/sunxi-spl-with-ecc.bin
+    sync
+    sync
+    sync
+    mount -o remount,ro /linux
+fi
+
 # check if a rootfs image exists in /boot
 # if it exists, flash it and remove it
 rootfs=""

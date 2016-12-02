@@ -149,6 +149,12 @@ source ${scriptaddr};
 mtdparts;
 ubi part UBI;
 ubifsmount ubi0:linux;
+ubifsload 0x43000000 sunxi-spl-with-ecc.bin &&
+    nand write.raw.noverify 0x43000000 spl 0xC4 &&
+    echo "Wrote sunxi-spl-with-ecc.bin to spl";
+ubifsload 0x43000000 sunxi-spl-with-ecc.bin &&
+    nand write.raw.noverify 0x43000000 spl-backup 0xC4 &&
+    echo "Wrote sunxi-spl-with-ecc.bin to spl-backup";
 ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb ||
   ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb.backup;
 for krnl in zImage zImage.backup; do
@@ -348,14 +354,13 @@ cat <<EOF > "$BINARIES_DIR/manifest"
 # Manifest file
 
 # install_method filename installparam1 installparam2 ...
-# supported install methods are: part_cp, mtd_dd
+# supported install methods are: part_cp,  mtd_nandwrite
 
 part_cp rootfs.tar /boot post_compress
-part_cp sun5i-r8-chip.dtb /boot
-part_cp zImage /boot
-mtd_dd uboot.bin uboot
-mtd_dd sunxi-spl-with-ecc.bin spl
-mtd_dd sunxi-spl-with-ecc.bin spl-backup
+part_cp sun5i-r8-chip.dtb /boot no_compress
+part_cp zImage /boot no_compress
+mtd_nandwrite uboot.bin uboot
+part_cp sunxi-spl-with-ecc.bin /boot no_compress
 
 EOF
 
@@ -364,7 +369,7 @@ tar cf "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" --mtime="$KBUILD_B
 tweetnacl-sign "$BR2_EXTERNAL/sop.privkey" "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
 xz -9 -c "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.xz.sop"
 
-cp -v "$BINARIES_DIR/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
+cp -v "$BR2_EXTERNAL/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
   || echo "WARN: Overlays not copied"  # but it's ok
 mkubifs "$tmpdir" "$BINARIES_DIR/linux.ubifs"
 rm -rf "$tmpdir"
