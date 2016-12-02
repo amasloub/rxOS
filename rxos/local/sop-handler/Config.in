@@ -12,4 +12,10 @@ config BR2_SOP_HANDLER_SOURCE
 	help
 	  Absolute path to a directory to be watched for new sop files.
 
+config BR2_SOP_SIGN_PUBKEY_PATH
+	string "sop verfication public key path"
+	default "/etc/outernet/sop.pubkey"
+	help
+        directory where the sop verification key is kept
+
 endif

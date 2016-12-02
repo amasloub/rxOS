@@ -16,7 +16,7 @@ define SOP_HANDLER_INSTALL_TARGET_CMDS
 	$(SED) '$(SOP_HANDLER_SED_CMDS)' $(TARGET_DIR)/usr/bin/sop_handler
 	$(INSTALL) -Dm0644 $(@D)/sop.incron $(TARGET_DIR)$(call qstrip,$(BR2_INCRON_SERVICE_CONFDIR))/sop.incron
 	$(SED) '$(SOP_HANDLER_SED_CMDS)' $(TARGET_DIR)$(call qstrip,$(BR2_INCRON_SERVICE_CONFDIR))/sop.incron
-	$(INSTALL) -Dm0644 $(@D)/sop.pubkey $(TARGET_DIR)$(call qstrip,$(BR2_SOP_SIGN_PUBKEY_PATH))/sop.pubkey
+	$(INSTALL) -Dm0644 $(@D)/sop.pubkey $(TARGET_DIR)$(call qstrip,$(BR2_SOP_SIGN_PUBKEY_PATH))
 endef
 
 $(eval $(generic-package))
