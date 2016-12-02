@@ -350,7 +350,7 @@ cat <<EOF > "$BINARIES_DIR/manifest"
 # install_method filename installparam1 installparam2 ...
 # supported install methods are: part_cp, mtd_dd
 
-part_cp rootfs.tar /boot with_xz
+part_cp rootfs.tar /boot post_compress
 part_cp sun5i-r8-chip.dtb /boot
 part_cp zImage /boot
 mtd_dd uboot.bin uboot
@@ -359,7 +359,7 @@ mtd_dd sunxi-spl-with-ecc.bin spl-backup
 
 EOF
 
-tar cf "$BINARIES_DIR/skylark-chip-${timestamp}.sop.unsigned" --mtime="2016-01-01" --owner=0 --group=0 --transform 's?.*/??g' \
+tar cf "$BINARIES_DIR/skylark-chip-${timestamp}.sop.unsigned" --mtime="$KBUILD_BUILD_TIMESTAMP" --owner=0 --group=0 --transform 's?.*/??g' \
     "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS"
 tweetnacl-sign "$BR2_EXTERNAL/sop.privkey" "$BINARIES_DIR/skylark-chip-${timestamp}.sop.unsigned" "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
 xz -9 -c "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.sop.xz"

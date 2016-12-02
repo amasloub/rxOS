@@ -222,20 +222,36 @@ fi
 
 # check if a rootfs image exists in /boot
 # if it exists, flash it and remove it
-if [ -f /linux/rootfs.tar.xz ]
+rootfs=""
+
+[ -f /linux/rootfs.tar  ] && rootfs=/linux/rootfs.tar
+[ -f /linux/rootfs.tar.gz  ] && rootfs=/linux/rootfs.tar.gz
+[ -f /linux/rootfs.tar.xz  ] && rootfs=/linux/rootfs.tar.xz
+if [ -n "$rootfs" ]
 then
     echo "new rootfs available. flashing..."
     mkdir /f_rootfs
     mount -t ubifs ubi0:root /f_rootfs
     rm -rf /f_rootfs/*
-    unxz -c /linux/rootfs.tar.xz | tar xf - -C /f_rootfs/
+    if [ "$rootfs" = "/linux/rootfs.tar" ]
+    then
+        cat /linux/rootfs.tar | tar xf - -C /f_rootfs/
+    elif [ "$rootfs" = "/linux/rootfs.tar.gz" ]
+    then
+        gunzip -c /linux/rootfs.tar.gz | tar xf - -C /f_rootfs/
+    elif [ "$rootfs" = "/linux/rootfs.tar.xz" ]
+    then
+        unxz -c /linux/rootfs.tar.xz | tar xf - -C /f_rootfs/
+    else
+        echo "Don't know how to process $rootfs"
+    fi
     sync
     sync
     sync
     umount /f_rootfs
     rmdir /f_rootfs
     mount -o remount,rw /linux
-    rm -f /linux/rootfs.tar.xz
+    rm -f "$rootfs"
     sync
     sync
     sync

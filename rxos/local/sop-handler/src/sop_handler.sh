@@ -18,7 +18,7 @@ SOP_FILE="$1"
 # mtd_dd uboot.bin uboot
 # mtd_dd sunxi-spl-with-ecc.bin spl
 # mtd_dd sunxi-spl-with-ecc.bin spl-backup
-# part_cp rootfs.tar /boot with_xz
+# part_cp rootfs.tar /boot post_compress
 
 sign_verify() {
     tmploc="/mnt/data"
@@ -46,12 +46,12 @@ sop_extract() {
 part_cp() {
     loc="$2"
     fn="$1"
-    with_xz="$3"
+    post_compress="$3"
     partmode=$(mount | grep "$loc" | tr '(' , | cut -d , -f 2)
     [ "$partmode" = "ro" ] && mount -o remount,rw "$loc"
-    if [ -n "$with_xz" ]
+    if [ -n "$post_compress" ]
     then
-        sop_extract "$fn" | xz -9 -c > "$loc"/"$fn"
+        sop_extract "$fn" | gzip -c > "${loc}/${fn}.gz"
     else
         sop_extract "$fn" > "$loc"/"$fn"
     fi
