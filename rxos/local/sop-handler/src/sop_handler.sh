@@ -9,6 +9,7 @@ ORIG_SOP_FILE="$1"
 # SOP_FILE is post-verification, no signature block
 SOP_FILE="$1"
 
+tmploc=$(mktemp -d -p /mnt/data/)
 # manifest is formatted like this:
 # install_method filename installparam1 installparam2 ...
 
@@ -18,23 +19,27 @@ SOP_FILE="$1"
 # mtd_nandwrite uboot.bin uboot
 # part_cp sunxi-spl-with-ecc.bin /boot no_compress
 # part_cp rootfs.tar /boot post_compress
+clean_exit() {
+    rm -rf $tmploc
+    echo "Exit with errors"
+    exit $1
+}
 
 sign_verify() {
-    tmploc="/mnt/data"
     SOP_FILE="$tmploc/$(basename $ORIG_SOP_FILE)"
     if tweetnacl-verify %SOPSIGNPUBKEY% $ORIG_SOP_FILE $SOP_FILE
     then
         echo SOP verified
     else
         echo SOP failed verification
-        exit 1
+        clean_exit 1
     fi
 }
 
 sop_validate() {
     sign_verify
     # check if has manifest
-    tar tf "$SOP_FILE" "manifest" >/dev/null 2>&1 || exit 1
+    tar tf "$SOP_FILE" "manifest" >/dev/null 2>&1 || clean_exit 1
 }
 
 sop_extract() {
@@ -88,14 +93,19 @@ sop_store() {
 
 psop_apply() {
     loc="/boot"
-    tmploc="/mnt/data"
     #psops are named: prefix.stamp.to.stamp.psop
-    prefix=$( echo "$SOP_FILE"  | cut -d "." -f 1)
-    src_sop_stamp=$( echo "$SOP_FILE"  | cut -d "." -f 2)
-    src_sop="$prefix.$src_sop_stamp.sop"
-    gunzip -c "$loc/$src_sop" > "$tmploc/src_sop"
-    dest_sop_stamp=$( echo "$SOP_FILE"  | cut -d "." -f 4)
-    dest_sop="$prefix.$dest_sop_stamp.sop"
+    prefix=$(basename "$SOP_FILE" | cut -d . -f 1)
+    src_sop_stamp=$(basename "$SOP_FILE" | cut -d . -f 2)
+    src_sop="$prefix$src_sop_stamp.sop"
+    dest_sop_stamp=$(basename "$SOP_FILE" | cut -d . -f 4)
+    dest_sop="$prefix$dest_sop_stamp.sop"
+    if [ -f "$loc/$src_sop" ]
+    then
+        gunzip -c "$loc/$src_sop" > "$tmploc/$src_sop"
+    else
+	    echo "Could not find source SOP $loc/$src_sop to apply partial sop $SOP_FILE"
+	    clean_exit 1
+    fi
     if [ -f "$tmploc/$src_sop" ]
     then
         echo "Applying PSOP to $loc/$src_sop"
@@ -103,16 +113,18 @@ psop_apply() {
         if [ -f "$tmploc/$dest_sop" ]
         then
             echo "Patched. Activating patched SOP"
-            mv "$tmploc/$dest_sop" %SOPSOURCE%
+            mv "$tmploc/$dest_sop" $(dirname "$SOP_FILE")/$dest_sop
         else
             echo "Patching failed"
+	        clean_exit 1
         fi
     else
-        echo "Could not find Source SOP $loc/$src_sop to apply partial sop $SOP_FILE"
+        echo "Could not decompress Source SOP $loc/$src_sop to apply partial sop $SOP_FILE"
+	    clean_exit 1
     fi
     echo "Cleaning up $SOP_FILE"
-    rm "$tmploc/$src_sop"
-    rm "$SOP_FILE"
+    rm -f "$tmploc/$src_sop"
+    rm -f "$SOP_FILE"
 }
 
 sop_apply() {
@@ -123,7 +135,6 @@ sop_apply() {
 }
 
 xzsop_apply() {
-    tmploc="/mnt/data"
     unxz_sop_fn="$tmploc/$(basename ${ORIG_SOP_FILE/.xz})"
     unxz -c "$ORIG_SOP_FILE" > "$unxz_sop_fn"
     rm "$ORIG_SOP_FILE"
@@ -139,3 +150,6 @@ then
 else
     sop_apply
 fi
+
+rm -rf "$tmploc"
+
