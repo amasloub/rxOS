@@ -8,7 +8,6 @@
 # Some rights reserved.
 
 GITVER = $(shell cd $(BR2_EXTERNAL);git rev-parse --short HEAD)
-include $(TARGET_DIR)/etc/platform-release
 DATE = $(shell date -u -d $(RXOS_TIMESTAMP) +%y%m%d%H%M)
 FULL_VERSION = v$(call qstrip,$(RXOS_VERSION))-$(DATE)+$(GITVER)
 PLATFORM = $(call qstrip,$(RXOS_PLATFORM))
