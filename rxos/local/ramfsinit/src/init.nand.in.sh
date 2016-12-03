@@ -202,10 +202,13 @@ fi
 # themselves whether they need to run more than once. Because the hooks need to
 # run as soon as possible (e.g., before any mounting has been performed), they
 # are bundled in the initramfs and therefore cannot be removed or modified.
-for hook in /hook-*.sh; do
-  echo "Executing '$hook' hook"
-  sh "$hook"
-done
+if [ -f /hook-*.sh ]
+then
+  for hook in /hook-*.sh; do
+    echo "Executing '$hook' hook"
+    sh "$hook"
+  done
+fi
 
 # Mount the tmpfs (RAM disk) to be used as a writable overlay, and set up
 # directories that will be used for the overlays.

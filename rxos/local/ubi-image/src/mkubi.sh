@@ -367,8 +367,14 @@ EOF
 
 tar cf "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" --mtime="$KBUILD_BUILD_TIMESTAMP" --owner=0 --group=0 --transform 's?.*/??g' \
     "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS"
+if [ -f "$BR2_EXTERNAL/sop.privkey" ]
+then
 tweetnacl-sign "$BR2_EXTERNAL/sop.privkey" "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
 xz -9 -c "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.xz.sop"
+else
+echo " *** No signing key at $BR2_EXTERNAL/sop.privkey. sop cannot be signed"
+xz -9 -c "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.xz.sop"
+fi
 
 cp -v "$BR2_EXTERNAL/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
   || echo "WARN: Overlays not copied"  # but it's ok

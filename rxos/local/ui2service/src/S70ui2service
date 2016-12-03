@@ -12,7 +12,7 @@ RESTART_DELAY="2"
 
 start() {
   printf "Starting ui2: "
-  $DAEMON "$SERVER" "$DIST" --root "$ASSETS" -p 80 &
+  $DAEMON "$SERVER" "$DIST" --root "$ASSETS" -p 80 >>/var/log/messages 2>&1 &
   echo "OK"
 }
 
