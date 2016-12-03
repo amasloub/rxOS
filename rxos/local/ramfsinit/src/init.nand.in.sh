@@ -208,6 +208,8 @@ then
     echo "Executing '$hook' hook"
     sh "$hook"
   done
+else
+    echo "No hooks"
 fi
 
 # Mount the tmpfs (RAM disk) to be used as a writable overlay, and set up
