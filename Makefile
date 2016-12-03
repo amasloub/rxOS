@@ -9,6 +9,8 @@ export KBUILD_BUILD_VERSION=1
 # for busybox config
 export KCONFIG_NOTIMESTAMP=1
 
+export RXOS_TIMESTAMP="$(shell date -u --rfc-3339=seconds)"
+
 # for uboot
 # 1451606400 = date -u +"%s" -d "2016-01-01"
 export SOURCE_DATE_EPOCH=1451606400
