@@ -150,9 +150,10 @@ mtdparts;
 ubi part UBI;
 ubifsmount ubi0:linux;
 ubifsload 0x43000000 sunxi-spl-with-ecc.bin &&
+    nand erase.part spl &&
     nand write.raw.noverify 0x43000000 spl 0xC4 &&
-    echo "Wrote sunxi-spl-with-ecc.bin to spl";
-ubifsload 0x43000000 sunxi-spl-with-ecc.bin &&
+    echo "Wrote sunxi-spl-with-ecc.bin to spl" &&
+    nand erase.part spl-backup &&
     nand write.raw.noverify 0x43000000 spl-backup 0xC4 &&
     echo "Wrote sunxi-spl-with-ecc.bin to spl-backup";
 ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb ||
