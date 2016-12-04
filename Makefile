@@ -19,7 +19,7 @@ export RXOS_TIMESTAMP
 
 # for uboot
 # 1451606400 = date -u +"%s" -d "2016-01-01"
-SOURCE_DATE_EPOCH = 1451606400
+SOURCE_DATE_EPOCH ?= 1451606400
 export SOURCE_DATE_EPOCH
 
 # Build configuration

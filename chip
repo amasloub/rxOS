@@ -20,7 +20,7 @@ export RXOS_TIMESTAMP="$(date -u --rfc-3339=seconds)"
 cp ../overlay-starsdr/overlay-starsdr-3.0.sqfs rxos/overlays/
 
 make BOARD=chip \
-    RXOS_TIMESTAMP=$RXOS_TIMESTAMP \
+    RXOS_TIMESTAMP="\"$RXOS_TIMESTAMP\"" \
     MKPASSWD_SALT=$MKPASSWD_SALT \
     KCONFIG_NOTIMESTAMP=$KCONFIG_NOTIMESTAMP \
     KBUILD_BUILD_VERSION=$KBUILD_BUILD_VERSION \
