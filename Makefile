@@ -1,19 +1,26 @@
 # This variable defines which of the supported boards are built. Supported 
 # boards can be listed with `make -s boards`.
-export BOARD=chip
+BOARD ?= chip
+export BOARD
 
 # reproducible build for kernel
-export KBUILD_BUILD_TIMESTAMP=2016-01-01
-export KBUILD_BUILD_VERSION=1
+KBUILD_BUILD_TIMESTAMP ?= 2016-01-01
+export KBUILD_BUILD_TIMESTAMP
+
+KBUILD_BUILD_VERSION ?= 1
+export KBUILD_BUILD_VERSION
 
 # for busybox config
-export KCONFIG_NOTIMESTAMP=1
+KCONFIG_NOTIMESTAMP ?= 1
+export KCONFIG_NOTIMESTAMP
 
-export RXOS_TIMESTAMP="$(shell date -u --rfc-3339=seconds)"
+RXOS_TIMESTAMP ?= "$(shell date -u --rfc-3339=seconds)"
+export RXOS_TIMESTAMP
 
 # for uboot
 # 1451606400 = date -u +"%s" -d "2016-01-01"
-export SOURCE_DATE_EPOCH=1451606400
+SOURCE_DATE_EPOCH = 1451606400
+export SOURCE_DATE_EPOCH
 
 # Build configuration
 BOARDS_DIR = rxos

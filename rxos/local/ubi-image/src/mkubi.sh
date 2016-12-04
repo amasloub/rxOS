@@ -339,7 +339,6 @@ submsg "Using ubinize: $(which ubinize)"
 submsg "Using mkfs.ubifs: $(which mkfs.ubifs)"
 
 msg "Creating Linux UBIFS image"
-. ${TARGET_DIR}/etc/platform-release
 timestamp="$(date -u -d "$RXOS_TIMESTAMP" +'%y%m%d%H%M')"
 tmpdir="$BINARIES_DIR/rxos-flash-package-$timestamp"
 mkdir -p "$tmpdir"
