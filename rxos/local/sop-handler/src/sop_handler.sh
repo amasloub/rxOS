@@ -61,6 +61,7 @@ part_cp() {
     fi
     sync; sync; sync;
     [ "$partmode" = "ro" ] && mount -o remount,ro "$loc"
+    echo
 }
 
 free_space() {
@@ -84,11 +85,12 @@ sop_store() {
     fsize=$(stat -c %s "$fn")
     while [  $(free_space $loc)  -lt  $fsize ]
     do
-        rm $(ls "$loc/*.sop" | sort | head -n 1)
+        find $loc | grep -e '.sop$' | sort | head -n 1 | xargs rm -f
     done
     gzip -c "$fn" > "$loc/$(basename $fn)"
     sync; sync; sync;
     [ "$partmode" = "ro" ] && mount -o remount,ro "$loc"
+    echo
 }
 
 psop_apply() {
