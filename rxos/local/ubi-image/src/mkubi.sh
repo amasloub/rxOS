@@ -340,14 +340,12 @@ submsg "Using mkfs.ubifs: $(which mkfs.ubifs)"
 
 msg "Creating Linux UBIFS image"
 timestamp="$(date -u -d "${RXOS_TIMESTAMP//\"/}" +'%y%m%d%H%M')"
-tmpdir="$BINARIES_DIR/rxos-flash-package-$timestamp"
+tmpdir="$BINARIES_DIR/skylark-flash-package-$timestamp"
 mkdir -p "$tmpdir"
 cp "$LINUX" "$tmpdir/zImage"
 cp "$DTB" "$tmpdir/sun5i-r8-chip.dtb"
-cp "$ROOTFS" "$tmpdir/rootfs.tar"
-xz -9 "$tmpdir/rootfs.tar"
-cp "$tmpdir/rootfs.tar.xz" "$BINARIES_DIR"
-
+echo "1" > "$BINARIES_DIR/do_rootfs_flash.tag"
+cp "$BINARIES_DIR/do_rootfs_flash.tag" "$tmpdir"
 
 cat <<EOF > "$BINARIES_DIR/manifest"
 # (c) 2016 Outernet Inc
@@ -357,23 +355,24 @@ cat <<EOF > "$BINARIES_DIR/manifest"
 # install_method filename installparam1 installparam2 ...
 # supported install methods are: part_cp,  mtd_nandwrite
 
-part_cp rootfs.tar /boot post_compress
 part_cp sun5i-r8-chip.dtb /boot no_compress
 part_cp zImage /boot no_compress
 mtd_nandwrite uboot.bin uboot
 part_cp sunxi-spl-with-ecc.bin /boot no_compress
+part_cp do_rootfs_flash.tag /boot no_compress
 
 EOF
 
-tar cf "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" --mtime="$KBUILD_BUILD_TIMESTAMP" --owner=0 --group=0 --transform 's?.*/??g' \
-    "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS"
+tar cf "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.uncompr.sop" --mtime="$KBUILD_BUILD_TIMESTAMP" --owner=0 --group=0 --transform 's?.*/??g' \
+    "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS" "$BINARIES_DIR/do_rootfs_flash.tag"
 if [ -f "$BR2_EXTERNAL/sop.privkey" ]
 then
-tweetnacl-sign "$BR2_EXTERNAL/sop.privkey" "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
-xz -9 -c "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.xz.sop"
+    tweetnacl-sign "$BR2_EXTERNAL/sop.privkey" "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.uncompr.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop"
+    gzip -9 -c "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
+    cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$tmpdir"
 else
-echo " *** No signing key at $BR2_EXTERNAL/sop.privkey. sop cannot be signed"
-xz -9 -c "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.xz.sop"
+    echo " *** No signing key at $BR2_EXTERNAL/sop.privkey. sop cannot be signed"
+    exit 1
 fi
 
 cp -v "$BR2_EXTERNAL/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
@@ -384,10 +383,6 @@ mkdir "$tmpdir"
 mkubifs "$tmpdir" "$BINARIES_DIR/empty.ubifs"
 rm -rf "$tmpdir"
 
-#msg "Creating board UBI image"
-#mkubiimg "$UBINIZE_CFG" "$BINARIES_DIR/board.ubi"
-
-#UBI_SIZE=`filesize "$BINARIES_DIR/board.ubi" | xargs printf "0x%08x"`
 LINUX_UBIFS_SIZE=`filesize "$BINARIES_DIR/linux.ubifs" | xargs printf "0x%08x"`
 EMPTY_UBIFS_SIZE=`filesize "$BINARIES_DIR/empty.ubifs" | xargs printf "0x%08x"`
 

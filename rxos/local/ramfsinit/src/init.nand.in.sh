@@ -20,7 +20,14 @@ CMDLINE="$*"
 OVERLAYS=
 CONSOLE=/dev/console
 ROOT_PARTS="root root-backup"
-SAFE_MODE_PIN=1016
+
+if [ -f /sys/class/gpio/gpiochip408/base ]
+then
+    SAFE_MODE_PIN=408
+elif [ -f /sys/class/gpio/gpiochip1016/base ]
+then
+    SAFE_MODE_PIN=1016
+fi
 
 # Check whether command line has some argument
 hasarg() {
@@ -190,11 +197,14 @@ fi
 
 # Determine whether we are using safe mode or not by checking the SAFE_MODE_PIN
 # value and presence of safemode command line argument
-echo "$SAFE_MODE_PIN" > /sys/class/gpio/export
-is_safe_mode=$(cat "/sys/class/gpio/gpio$SAFE_MODE_PIN/value")
-echo "$SAFE_MODE_PIN" > /sys/class/gpio/unexport
-if hasarg "safemode" || [ "$is_safe_mode" = 0 ]; then
-  SAFE_MODE=y
+if [ -n "$SAFE_MODE_PIN" ]
+then
+    echo "$SAFE_MODE_PIN" > /sys/class/gpio/export
+    is_safe_mode=$(cat "/sys/class/gpio/gpio$SAFE_MODE_PIN/value")
+    echo "$SAFE_MODE_PIN" > /sys/class/gpio/unexport
+    if hasarg "safemode" || [ "$is_safe_mode" = 0 ]; then
+        SAFE_MODE=y
+    fi
 fi
 
 # Run setup hooks. The hooks are shell scripts that named like hook-*.sh. They
@@ -238,63 +248,38 @@ then
     mount -o remount,ro /linux
 fi
 
-# check if a rootfs image exists in /boot
-# if it exists, flash it and remove it
-rootfs=""
-
-[ -f /linux/rootfs.tar  ] && rootfs=/linux/rootfs.tar
-[ -f /linux/rootfs.tar.gz  ] && rootfs=/linux/rootfs.tar.gz
-[ -f /linux/rootfs.tar.xz  ] && rootfs=/linux/rootfs.tar.xz
-if [ -n "$rootfs" ]
+# if booting first time after flashing or after sop update
+if [ -f /linux/do_rootfs_flash.tag ]
 then
+    # latest sop file
     echo "new rootfs available. flashing..."
-    mkdir /f_rootfs
-    mount -t ubifs ubi0:root /f_rootfs
-    rm -rf /f_rootfs/*
-    if [ "$rootfs" = "/linux/rootfs.tar" ]
+    sop_file=$(find | grep -e '\.sop$' | sort | tail -n 1)
+    if [ -n "$sop_file" ]
     then
-        cat /linux/rootfs.tar | tar xf - -C /f_rootfs/
-    elif [ "$rootfs" = "/linux/rootfs.tar.gz" ]
-    then
-        gunzip -c /linux/rootfs.tar.gz | tar xf - -C /f_rootfs/
-    elif [ "$rootfs" = "/linux/rootfs.tar.xz" ]
-    then
-        unxz -c /linux/rootfs.tar.xz | tar xf - -C /f_rootfs/
+        echo found sop "$sop_file"
+        mkdir /f_rootfs
+        mount -t ubifs ubi0:root /f_rootfs
+        rm -rf /f_rootfs/*
+        gunzip -c "$sop_file" | dd bs=64 skip=1 | tar Oxf - rootfs.tar | tar xf - -C /f_rootfs/
+        sync
+        sync
+        sync
+        umount /f_rootfs
+        rmdir /f_rootfs
+        echo "done"
     else
-        echo "Don't know how to process $rootfs"
+        echo "tag exists, but no sop file!"
     fi
-    sync
-    sync
-    sync
-    umount /f_rootfs
-    rmdir /f_rootfs
     mount -o remount,rw /linux
-    rm -f "$rootfs"
+    rm -f /linux/do_rootfs_flash.tag
     sync
     sync
     sync
     mount -o remount,ro /linux
-    echo "done"
 fi
 
-ROOT_PARTS=root
-
-# The userspace is contained on one of two MTD partitions. These are:
-#
-# - root
-# - root-backup
-#
-# The following block of code will attempt to boot each of the partitions in
-# turn, and fall back on the factory.sqfs as last resort.
-for rootfs_image in $ROOT_PARTS; do
-  if mount_root "$rootfs_image"; then
-    doboot "$rootfs_image"
-  fi
-  # If we git this far, it means switch_root failed. We undo the set-up
-  # performed in the preceeding code in order to allow for the next attempt (if
-  # any).
-  undo_root
-done
+# attempt to boot the root partition
+mount_root root && doboot root
 
 # When no bootable root filesystem images are found, we drop into an emergency
 # shell. We will pause a few seconds before we drop into shell, so that shell
