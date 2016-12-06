@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# uncomment one and exactly one of these  to make a key release or point release
+# key releases are stored on target receivers, so partial sops can be diffed from them
+# point releases are not stored on receivers, so psops _MUST NOT_ be diffed from them
+
+export KEY_RELEASE=no
+#export KEY_RELEASE=yes
+
 # for uboot and ramfsinit
 export SOURCE_DATE_EPOCH=1451606400
 

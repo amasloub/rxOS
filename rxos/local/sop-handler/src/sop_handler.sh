@@ -19,6 +19,8 @@ tmploc=$(mktemp -d -p /mnt/data/)
 # mtd_nandwrite uboot.bin uboot
 # part_cp sunxi-spl-with-ecc.bin /boot no_compress
 # part_cp rootfs.tar /boot post_compress
+# sop_store
+
 clean_exit() {
     rm -rf $tmploc
     echo "Exit with errors"
@@ -79,7 +81,7 @@ mtd_nandwrite() {
 
 sop_store() {
     loc="/boot"
-    fn="$1"
+    fn="$ORIG_SOP_FILE"
     partmode=$(mount | grep "$loc" | tr '(' , | cut -d , -f 2)
     [ "$partmode" = "ro" ] && mount -o remount,rw "$loc"
     fsize=$(stat -c %s "$fn")
@@ -132,7 +134,6 @@ psop_apply() {
 sop_apply() {
     sop_validate
     eval "$(sop_extract manifest)"
-    sop_store "$ORIG_SOP_FILE"
     rm "$ORIG_SOP_FILE"
 }
 
