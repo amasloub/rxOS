@@ -26,7 +26,19 @@ export RXOS_TIMESTAMP="$(date -u --rfc-3339=seconds)"
 [ -d rxos/overlays ] || mkdir rxos/overlays/
 cp ../overlay-starsdr/overlay-starsdr-3.0.sqfs rxos/overlays/
 
-make BOARD=chip \
+if [ $# -gt  0 ]
+then
+time make BOARD=chip \
+    RXOS_TIMESTAMP="\"$RXOS_TIMESTAMP\"" \
+    MKPASSWD_SALT=$MKPASSWD_SALT \
+    KCONFIG_NOTIMESTAMP=$KCONFIG_NOTIMESTAMP \
+    KBUILD_BUILD_VERSION=$KBUILD_BUILD_VERSION \
+    KBUILD_BUILD_TIMESTAMP=$KBUILD_BUILD_TIMESTAMP \
+    SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH \
+    "$@"
+echo "$@" done
+else
+time make BOARD=chip \
     RXOS_TIMESTAMP="\"$RXOS_TIMESTAMP\"" \
     MKPASSWD_SALT=$MKPASSWD_SALT \
     KCONFIG_NOTIMESTAMP=$KCONFIG_NOTIMESTAMP \
@@ -34,3 +46,4 @@ make BOARD=chip \
     KBUILD_BUILD_TIMESTAMP=$KBUILD_BUILD_TIMESTAMP \
     SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH \
     build release-flash
+fi

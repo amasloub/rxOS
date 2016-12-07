@@ -58,6 +58,8 @@ export BR2_EXTERNAL=$(EXTERNAL)
 	clean-rootfs \
 	clean-linux \
 	clean-deep \
+	light-clean \
+	light-rebuild \
 	clean \
 	config \
 	boards
@@ -115,6 +117,13 @@ clean-deep: config clean-linux
 
 clean:
 	-rm -rf $(OUTPUT)
+
+light-clean:
+	@-rm -rf $(OUTPUT)/.br-external $(OUTPUT)/.config $(OUTPUT)/..config.tmp $(OUTPUT)/images/ $(OUTPUT)/Makefile $(OUTPUT)/.stamp_built $(OUTPUT)/target/
+	@-rm -rf $(OUTPUT)/build/*/.stamp_target_installed  $(OUTPUT)/build/*/.stamp_images_installed
+
+light-rebuild: light-clean build release-flash
+
 
 config:
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) $(DEFCONFIG)
