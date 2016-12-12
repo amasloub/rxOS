@@ -17,8 +17,8 @@ WLAN_CFG="/etc/network/interfaces.d/wlan0"
 DNSMASQ_AP="/etc/conf.d/dnsmasq/ap.conf"
 DNSMASQ_STA="/etc/conf.d/dnsmasq/sta.conf"
 DNSMASQ_CONF="/etc/dnsmasq.conf"
-STA_MODE="STA"
-AP_MODE="AP"
+STA_MODE="sta"
+AP_MODE="ap"
 
 
 symlink() {
@@ -41,7 +41,7 @@ activate_dnsmasq_config() {
 }
 
 
-WIRELESS_MODE="$(cat /etc/conf.d/wireless 2>/dev/null)"
+WIRELESS_MODE="$(getconf .netConf.mode)"
 
 printf "Activating wireless configuration profile: "
 if [ "$WIRELESS_MODE" = "$STA_MODE" ]; then

@@ -56,13 +56,6 @@ persist_path() {
     mkdir -p "$target_dir" || return 1
     cp -Ra "$path" "$target_path" || return 1
   fi
-  # merge UI2 config
-  rxos_conf="/etc/rxos_config.json"
-  if [ "$path" = "$rxos_conf" ]
-  then
-    jq -s '.[0] * .[1]' "$path" "$target_path" > /tmp/rxos_config.json
-    mv /tmp/rxos_config.json "$target_path"
-  fi
   rm -rf "$path" || return 1
   ln -s "$target_path" "$path" || return 1
 }
