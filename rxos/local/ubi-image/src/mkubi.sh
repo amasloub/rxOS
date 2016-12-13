@@ -344,7 +344,17 @@ tmpdir="$BINARIES_DIR/skylark-flash-package-$timestamp"
 mkdir -p "$tmpdir"
 cp "$LINUX" "$tmpdir/zImage"
 cp "$DTB" "$tmpdir/sun5i-r8-chip.dtb"
-echo "1" > "$BINARIES_DIR/do_rootfs_flash.tag"
+
+if [ "$KEY_RELEASE" = "yes" ]
+then
+    echo "keep" > "$BINARIES_DIR/do_rootfs_flash.tag"
+    echo "Building a Key release: to be stored on receiver."
+else
+    echo "dont_keep" > "$BINARIES_DIR/do_rootfs_flash.tag"
+    echo "Building a point release. It will NOT be stored for later user on the receiver."
+fi
+
+
 cp "$BINARIES_DIR/do_rootfs_flash.tag" "$tmpdir"
 
 cat <<EOF > "$BINARIES_DIR/manifest"
@@ -360,15 +370,8 @@ part_cp zImage /boot no_compress
 mtd_nandwrite uboot.bin uboot
 part_cp sunxi-spl-with-ecc.bin /boot no_compress
 part_cp do_rootfs_flash.tag /boot no_compress
+sop_store
 EOF
-
-if [ "$KEY_RELEASE" = "yes" ]
-then
-    echo "sop_store" >> "$BINARIES_DIR/manifest"
-    echo "Building a Key release: to be stored on receiver"
-else
-    echo "Building a point release. It will NOT be stored"
-fi
 
 tar cf "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.uncompr.sop" --mtime="$KBUILD_BUILD_TIMESTAMP" --owner=0 --group=0 --transform 's?.*/??g' \
     "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS" "$BINARIES_DIR/do_rootfs_flash.tag"

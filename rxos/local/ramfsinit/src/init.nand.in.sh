@@ -253,7 +253,7 @@ if [ -f /linux/do_rootfs_flash.tag ]
 then
     # latest sop file
     echo "new rootfs available. flashing..."
-    sop_file=$(find | grep -e '\.sop$' | sort | tail -n 1)
+    sop_file=$(find /linux | grep -e '\.sop$' | sort | tail -n 1)
     if [ -n "$sop_file" ]
     then
         echo found sop "$sop_file"
@@ -271,6 +271,10 @@ then
         echo "tag exists, but no sop file!"
     fi
     mount -o remount,rw /linux
+    if cat /linux/do_rootfs_flash.tag | grep -q dont_keep
+    then
+        rm -f "$sop_file"
+    fi
     rm -f /linux/do_rootfs_flash.tag
     sync
     sync
