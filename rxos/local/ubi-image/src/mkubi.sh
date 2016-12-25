@@ -41,7 +41,7 @@ UBINIZE_CFG="$BINARIES_DIR/ubinize.cfg"
 # Source files
 LINUX="$BINARIES_DIR/zImage"
 DTB="$BINARIES_DIR/sun5i-r8-chip.dtb"
-ROOTFS="$BINARIES_DIR/rootfs.tar"
+ROOTFS="$BINARIES_DIR/rootfs.isoroot"
 # Create ubifs filesystem image.
 #
 # Arguments:
@@ -347,15 +347,12 @@ cp "$DTB" "$tmpdir/sun5i-r8-chip.dtb"
 
 if [ "$KEY_RELEASE" = "yes" ]
 then
-    echo "keep" > "$BINARIES_DIR/do_rootfs_flash.tag"
+    sop_suffix="ksop"
     echo "Building a Key release: to be stored on receiver."
 else
-    echo "dont_keep" > "$BINARIES_DIR/do_rootfs_flash.tag"
+    sop_suffix="sop"
     echo "Building a point release. It will NOT be stored for later user on the receiver."
 fi
-
-
-cp "$BINARIES_DIR/do_rootfs_flash.tag" "$tmpdir"
 
 cat <<EOF > "$BINARIES_DIR/manifest"
 # (c) 2016 Outernet Inc
@@ -369,17 +366,25 @@ part_cp sun5i-r8-chip.dtb /boot no_compress
 part_cp zImage /boot no_compress
 mtd_nandwrite uboot.bin uboot
 part_cp sunxi-spl-with-ecc.bin /boot no_compress
-part_cp do_rootfs_flash.tag /boot no_compress
 sop_store
 EOF
 
-tar cf "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.uncompr.sop" --mtime="$KBUILD_BUILD_TIMESTAMP" --owner=0 --group=0 --transform 's?.*/??g' \
-    "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS" "$BINARIES_DIR/do_rootfs_flash.tag"
+
+isodir="$BINARIES_DIR/skylark-isoroot-package-$timestamp"
+mkdir -p "$isodir"
+
+cp  "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS"  "$isodir"
+
+genisoimage -r "$isodir" >  "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.uncompr.${sop_suffix}"
 if [ -f "$BR2_EXTERNAL/sop.privkey" ]
 then
-    tweetnacl-sign "$BR2_EXTERNAL/sop.privkey" "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.uncompr.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop"
-    gzip -9 -c "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
-    cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$tmpdir"
+    tweetnacl-sign "$BR2_EXTERNAL/sop.privkey" \
+        "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.uncompr.${sop_suffix}" \
+        "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.${sop_suffix}"
+
+    #create_compressed_fs -b -B 64K "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.${sop_suffix}" "$BINARIES_DIR/skylark-chip-${timestamp}.${sop_suffix}"
+    xz -c "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.${sop_suffix}" > "$BINARIES_DIR/skylark-chip-${timestamp}.${sop_suffix}"
+    cp "$BINARIES_DIR/skylark-chip-${timestamp}.${sop_suffix}" "$tmpdir"
 else
     echo " *** No signing key at $BR2_EXTERNAL/sop.privkey. sop cannot be signed"
     exit 1
