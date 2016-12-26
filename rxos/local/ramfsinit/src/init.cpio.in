@@ -25,6 +25,7 @@ slink /bin/cut /bin/busybox 777 0 0
 slink /bin/find /bin/busybox 777 0 0
 slink /bin/tail /bin/busybox 777 0 0
 slink /bin/head /bin/busybox 777 0 0
+slink /bin/losetup /bin/busybox 777 0 0
 slink /bin/sort /bin/busybox 777 0 0
 slink /bin/chmod /bin/busybox 777 0 0
 slink /bin/chgrp /bin/busybox 777 0 0

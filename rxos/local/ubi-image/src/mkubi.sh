@@ -35,7 +35,7 @@ SUB_SIZE=16384
 PEB_SIZE=0x400000
 LEB_SIZE=0x1F8000
 MAX_LEBS=4000
-UBI_COMPR=lzo
+UBI_COMPR=zlib
 UBINIZE_CFG="$BINARIES_DIR/ubinize.cfg"
 
 # Source files
@@ -345,15 +345,6 @@ mkdir -p "$tmpdir"
 cp "$LINUX" "$tmpdir/zImage"
 cp "$DTB" "$tmpdir/sun5i-r8-chip.dtb"
 
-if [ "$KEY_RELEASE" = "yes" ]
-then
-    sop_suffix="ksop"
-    echo "Building a Key release: to be stored on receiver."
-else
-    sop_suffix="sop"
-    echo "Building a point release. It will NOT be stored for later user on the receiver."
-fi
-
 cat <<EOF > "$BINARIES_DIR/manifest"
 # (c) 2016 Outernet Inc
 # Skylark OTA update package
@@ -362,29 +353,39 @@ cat <<EOF > "$BINARIES_DIR/manifest"
 # install_method filename installparam1 installparam2 ...
 # supported install methods are: part_cp,  mtd_nandwrite
 
-part_cp sun5i-r8-chip.dtb /boot no_compress
-part_cp zImage /boot no_compress
+part_cp sun5i-r8-chip.dtb /boot
+part_cp zImage /boot
 mtd_nandwrite uboot.bin uboot
-part_cp sunxi-spl-with-ecc.bin /boot no_compress
-sop_store
+part_cp sunxi-spl-with-ecc.bin /boot
 EOF
 
+if [ "$KEY_RELEASE" = "yes" ]
+then
+    echo "sop_store_key" >> "$BINARIES_DIR/manifest"
+    echo "Building a Key release: to be stored on receiver."
+else
+    echo "sop_store" >> "$BINARIES_DIR/manifest"
+    echo "Building a point release. It will NOT be stored for later use on the receiver."
+fi
 
 isodir="$BINARIES_DIR/skylark-isoroot-package-$timestamp"
 mkdir -p "$isodir"
 
 cp  "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS"  "$isodir"
 
-genisoimage -r "$isodir" >  "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.uncompr.${sop_suffix}"
+genisoimage -quiet -R -iso-level 4  "$isodir" >  "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop"
 if [ -f "$BR2_EXTERNAL/sop.privkey" ]
 then
     tweetnacl-sign "$BR2_EXTERNAL/sop.privkey" \
-        "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.uncompr.${sop_suffix}" \
-        "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.${sop_suffix}"
+        "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" \
+        "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
 
     #create_compressed_fs -b -B 64K "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.${sop_suffix}" "$BINARIES_DIR/skylark-chip-${timestamp}.${sop_suffix}"
-    xz -c "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.${sop_suffix}" > "$BINARIES_DIR/skylark-chip-${timestamp}.${sop_suffix}"
-    cp "$BINARIES_DIR/skylark-chip-${timestamp}.${sop_suffix}" "$tmpdir"
+    # forcing xz file to "k" sop
+    xz -c "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.ksop.xz"
+    cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop.xz" "$tmpdir"
+    #cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.ksop"
+    #cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop" "$tmpdir"
 else
     echo " *** No signing key at $BR2_EXTERNAL/sop.privkey. sop cannot be signed"
     exit 1
@@ -439,17 +440,13 @@ echo "==> Make filesystems"
 echo
 ubi part UBI
 ubi create "linux" 0x10000000
-ubi create "root" 0x10000000
 ubi create "conf" 0x4000000
-ubi create "cache" 0x10000000
 ubi create "appdata" 0x26000000
 ubi create "data"
 echo
 echo "==> Writing filesystems"
 ubi writevol $LINUX_UBIFS_MEM_ADDR "linux" $LINUX_UBIFS_SIZE
-ubi writevol $EMPTY_UBIFS_MEM_ADDR "root" $EMPTY_UBIFS_SIZE
 ubi writevol $EMPTY_UBIFS_MEM_ADDR "conf" $EMPTY_UBIFS_SIZE
-ubi writevol $EMPTY_UBIFS_MEM_ADDR "cache" $EMPTY_UBIFS_SIZE
 ubi writevol $EMPTY_UBIFS_MEM_ADDR "appdata" $EMPTY_UBIFS_SIZE
 ubi writevol $EMPTY_UBIFS_MEM_ADDR "data" $EMPTY_UBIFS_SIZE
 echo

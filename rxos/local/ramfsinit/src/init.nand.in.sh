@@ -112,9 +112,16 @@ mount_overlay() {
 # the read-only rootfs image using OverlayFS to provide a volatile write
 # layer.
 mount_root() {
-  volname="$1"
-  echo "Attempt to mount ubi0:$volname"
-  mount -t ubifs -o ro "ubi0:$volname" /rootfs || return 1
+  sopfile="$1"
+  echo "Attempt to mount $sopfile"
+  mkdir /sopfs
+  losetup -f -o 64 "$sopfile"
+  loopdev=$(losetup -a | grep "$sopfile" | tail -n 1 | cut -d : -f 1)
+  echo "Setup loop device: $loopdev"
+  mount "$loopdev" /sopfs || return 1
+  echo "Mounted sop fs"
+  mount -o loop  /sopfs/rootfs.isoroot /rootfs || return 1
+  echo "Mounted rootfs"
   test_exe /rootfs/sbin/init || return 1
   lower="/rootfs"
   # Add any overlays
@@ -248,42 +255,44 @@ then
     mount -o remount,ro /linux
 fi
 
-# if booting first time after flashing or after sop update
-if [ -f /linux/do_rootfs_flash.tag ]
+#if first boot after flash, there will be a sop.xz file
+xz_sop=$(find /linux | grep -e '.sop.xz')
+if [ -n "${xz_sop}" -a -f "${xz_sop}" ]
 then
-    # latest sop file
-    echo "new rootfs available. flashing..."
-    sop_file=$(find /linux | grep -e '\.sop$' | sort | tail -n 1)
-    if [ -n "$sop_file" ]
-    then
-        echo found sop "$sop_file"
-        mkdir /f_rootfs
-        mount -t ubifs ubi0:root /f_rootfs
-        rm -rf /f_rootfs/*
-        gunzip -c "$sop_file" | dd bs=64 skip=1 | tar Oxf - rootfs.tar | tar xf - -C /f_rootfs/
-        sync
-        sync
-        sync
-        umount /f_rootfs
-        rmdir /f_rootfs
-        echo "done"
-    else
-        echo "tag exists, but no sop file!"
-    fi
+    unxz_fn="${xz_sop/.xz}"
     mount -o remount,rw /linux
-    if cat /linux/do_rootfs_flash.tag | grep -q dont_keep
-    then
-        rm -f "$sop_file"
-    fi
-    rm -f /linux/do_rootfs_flash.tag
+    echo "extracting ${xz_sop}"
+    unxz -c "${xz_sop}" > "${unxz_fn}"  && rm -rf "${xz_sop}"
     sync
     sync
     sync
     mount -o remount,ro /linux
 fi
 
-# attempt to boot the root partition
-mount_root root && doboot root
+
+# clean up old sop and ksop files
+for s in $(find /linux | grep -e '\.ksop$' | sort | head -n -1) $(find /linux | grep -e '\.sop$' | sort | head -n -1)
+do
+    mount -o remount,rw /linux
+    echo "removing ${s}"
+    rm -f "$s"
+    sync
+    sync
+    sync
+    mount -o remount,ro /linux
+done
+
+# find  [k]sop files
+for sop_file in $(find /linux | grep -e '\.k\?sop$' | sort -r)
+do
+    if [ -n "$sop_file" ]
+    then
+        echo booting $sop_file
+        # attempt to boot the root partition
+        mount_root "$sop_file" && doboot "$sop_file"
+    fi
+done
+
 
 # When no bootable root filesystem images are found, we drop into an emergency
 # shell. We will pause a few seconds before we drop into shell, so that shell
