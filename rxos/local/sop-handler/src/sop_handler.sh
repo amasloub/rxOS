@@ -162,7 +162,7 @@ sop_apply() {
     mount -o loop,offset=64 /dev/cloop1  "$sopmpt"
     source "${sopmpt}/manifest"
     umount "$sopmpt"
-    losetup -d /de/cloop1
+    losetup -d /dev/cloop1
     rm "$SOP_FILE"
 }
 
