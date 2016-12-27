@@ -1,0 +1,5 @@
+config BR2_PACKAGE_CLOOP_ARM_BIN
+	bool "cloop image tools arm binaries for target"
+	help
+	  Install cloop image tools arm binaries to target
+

@@ -73,5 +73,6 @@ done < "$CONFLIST"
 # sometimes happen when power is lost right after setting a password and
 # subsequently disable setting passwords.
 rm "${CONFDIR}/etc/shadow+" 2>/dev/null || true
+sync; sync; sync;
 
 exit $errors

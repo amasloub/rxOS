@@ -99,7 +99,7 @@ mkubiimg() {
 # 1         4         spl-backup    Backup SPL binary
 # 3         4         uboot         U-Boot binary
 # 4         4         env           U-Boot environment
-# 5         400       swap          (reserved)
+# 5         128       swap          (reserved)
 # 6         -         UBI           Partition that stores ubi volumes.
 # ========  ========  ============  ====================================
 
@@ -138,7 +138,7 @@ LINUX_UBIFS_MEM_ADDR=0x4e000000
 #
 #   http://compulab.co.il/utilite-computer/wiki/index.php/U-Boot_Scripts
 #
-MTDPARTS="sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),400m(swap),-(UBI)"
+MTDPARTS="sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),128m(swap),-(UBI)"
 BOOTARGS='
 consoleblank=0
 earlyprintk
@@ -378,14 +378,14 @@ if [ -f "$BR2_EXTERNAL/sop.privkey" ]
 then
     tweetnacl-sign "$BR2_EXTERNAL/sop.privkey" \
         "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" \
-        "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
+        "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop"
 
-    #create_compressed_fs -b -B 64K "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.${sop_suffix}" "$BINARIES_DIR/skylark-chip-${timestamp}.${sop_suffix}"
+    create_compressed_fs -q -B 64K "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
     # forcing xz file to "k" sop
-    xz -c "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.ksop.xz"
-    cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop.xz" "$tmpdir"
-    #cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.ksop"
-    #cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop" "$tmpdir"
+    #xz -c "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.ksop.xz"
+    #cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop.xz" "$tmpdir"
+    cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.ksop"
+    cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop" "$tmpdir"
 else
     echo " *** No signing key at $BR2_EXTERNAL/sop.privkey. sop cannot be signed"
     exit 1

@@ -1,6 +1,7 @@
 menuconfig BR2_PACKAGE_SOP_HANDLER
 	bool "process Skylark OTA packages"
 	depends on BR2_PACKAGE_TWEETNACL_TOOLS
+    select BR2_PACKAGE_CLOOP_ARM_BIN
 	help
 	  watches for sop files and processes them
 

@@ -115,9 +115,11 @@ mount_root() {
   sopfile="$1"
   echo "Attempt to mount $sopfile"
   mkdir /sopfs
-  losetup -f -o 64 "$sopfile"
-  loopdev=$(losetup -a | grep "$sopfile" | tail -n 1 | cut -d : -f 1)
-  echo "Setup loop device: $loopdev"
+  losetup /dev/cloop0 "$sopfile"
+  echo "Attached $sopfile to /dev/cloop0"
+  losetup -f -o 64 /dev/cloop0
+  loopdev=$(losetup -a | grep /dev/cloop0 | tail -n 1 | cut -d : -f 1)
+  echo "Attached loop device: $loopdev"
   mount "$loopdev" /sopfs || return 1
   echo "Mounted sop fs"
   mount -o loop  /sopfs/rootfs.isoroot /rootfs || return 1

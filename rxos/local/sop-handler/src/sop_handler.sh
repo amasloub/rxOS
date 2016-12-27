@@ -10,7 +10,10 @@ SOP_FILE="$1"
 
 sopmpt="/tmp/sopmpt" # sop mount point
 
-tmploc=$(mktemp -d -p /mnt/data/)
+tmploc_parent="/mnt/downloads/.soptmp"
+[ -d "$tmploc_parent" ] || mkdir -p "$tmploc_parent"
+tmploc=$(mktemp -d -p "$tmploc_parent" )
+
 # manifest is formatted like this:
 # install_method filename installparam1 installparam2 ...
 
@@ -23,7 +26,7 @@ tmploc=$(mktemp -d -p /mnt/data/)
 # sop_store_key
 
 clean_exit() {
-    rm -rf $tmploc
+    rm -rf "$tmploc_parent"
     echo "Exit with errors"
     exit $1
 }
@@ -103,23 +106,41 @@ psop_apply() {
     dest_sop_stamp=$(basename "$SOP_FILE" | cut -d . -f 4)
     dest_sop="$prefix$dest_sop_stamp.sop"
 
-    if [ -f "$src_sop" ]
+    if [ -f "$loc/$src_sop" ]
     then
         src_sop="$src_sop"
     fi
 
-    if [ -f "$src_ksop" ]
+    if [ -f "$loc/$src_ksop" ]
     then
         src_sop="$src_ksop"
     fi
-    
+
     if [ -f "$loc/$src_sop" ]
     then
         echo "Applying PSOP to $loc/$src_sop"
-        bspatch "$loc/$src_sop" "$tmploc/$dest_sop" "$SOP_FILE"
-        if [ -f "$tmploc/$dest_sop" ]
+        # extract src sop to temp location
+        extract_compressed_fs "$loc/$src_sop" "$tmploc/$src_sop"
+        if [ ! -f "$tmploc/$src_sop" ]
         then
-            echo "Patched. Activating patched SOP"
+            echo "Extracing of src sop $src_sop failed"
+            clean_exit 1
+        fi
+        bspatch "$tmploc/$src_sop" "$tmploc/$dest_sop.uncmpr" "$SOP_FILE"
+        if [ -f "$tmploc/$dest_sop.uncmpr" ]
+        then
+            rm -f "$tmploc/$src_sop"
+            echo "Patched."
+            create_compressed_fs -q -B 64K  "$tmploc/$dest_sop.uncmpr" "$tmploc/$dest_sop"
+            if [ -f "$tmploc/$dest_sop" ]
+            then
+                echo "Created compressed sop"
+                rm -f "$tmploc/$dest_sop.uncmpr"
+            else
+                echo "failed to create compressed sop"
+                clean_exit 1
+            fi
+            echo "Activating patched SOP"
             mv "$tmploc/$dest_sop" $(dirname "$SOP_FILE")/${dest_sop}
         else
             echo "Patching failed"
@@ -137,9 +158,11 @@ sop_apply() {
     sop_validate
     [ -d "$sopmpt" ] && rm -rf "$sopmpt"
     mkdir "$sopmpt"
-    mount -o loop,offset=64 "$SOP_FILE"  "$sopmpt"
+    losetup /dev/cloop1 "$SOP_FILE"
+    mount -o loop,offset=64 /dev/cloop1  "$sopmpt"
     source "${sopmpt}/manifest"
     umount "$sopmpt"
+    losetup -d /de/cloop1
     rm "$SOP_FILE"
 }
 
@@ -161,5 +184,6 @@ else
     sop_apply
 fi
 
-rm -rf "$tmploc"
+rm -rf "$tmploc_parent"
+
 
