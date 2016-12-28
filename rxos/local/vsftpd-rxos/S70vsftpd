@@ -6,6 +6,13 @@ DESC="vsftpd"
 NAME=vsftpd
 DAEMON=/usr/sbin/$NAME
 
+# enabled anonymous ftp access to downloads
+if [ ! -d /home/demo/downloads ]
+then
+    mkdir /home/demo/downloads
+    mount --bind /mnt/downloads /home/demo/downloads
+fi
+
 case "$1" in
   start)
 	printf "Starting $DESC: "
