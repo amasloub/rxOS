@@ -6,10 +6,10 @@
 
 if [ "$PWD" != "/build/rxos/rxos" ]
 then
-    echo "Releases MUST be built in /build/rxos/rxos!"
-    echo "  otherwise delta updates will be massive.
+    echo 'Releases MUST be built in /build/rxos/rxos!'
+    echo '  otherwise delta updates will be massive.'
     echo
-    echo "Stubbornly refusing to proceed. thbbt!"
+    echo 'Stubbornly refusing to proceed. thbbt!'
 fi
 
 export KEY_RELEASE=no
