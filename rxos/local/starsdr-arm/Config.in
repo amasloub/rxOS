@@ -1,0 +1,4 @@
+config BR2_PACKAGE_STARSDR_ARM
+	bool "Install starsdr and demod binaries for arm"
+	help
+	  starsdr and demod binaries for arm

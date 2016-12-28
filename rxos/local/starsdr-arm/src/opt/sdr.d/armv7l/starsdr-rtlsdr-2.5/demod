@@ -1,0 +1,4 @@
+#!/bin/sh
+/opt/sdr/rtl_biast -b 1
+/opt/sdr/demod_bin "$@"
+

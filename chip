@@ -32,7 +32,6 @@ export MKPASSWD_SALT=mgfYRgrU
 export RXOS_TIMESTAMP="$(date -u --rfc-3339=seconds)"
 
 [ -d rxos/overlays ] || mkdir rxos/overlays/
-cp ../overlay-starsdr/overlay-starsdr-3.0.sqfs rxos/overlays/
 
 if [ $# -gt  0 ]
 then
