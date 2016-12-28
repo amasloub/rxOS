@@ -32,13 +32,16 @@ clean_exit() {
 }
 
 sign_verify() {
-    if tweetnacl-verify %SOPSIGNPUBKEY% $SOP_FILE - > /dev/null
+    src_sop=$(basename "$SOP_FILE")
+    extract_compressed_fs "$SOP_FILE" "$tmploc/$src_sop"
+    if tweetnacl-verify %SOPSIGNPUBKEY% "$tmploc/$src_sop" - > /dev/null
     then
         echo SOP verified
     else
         echo SOP failed verification
         clean_exit 1
     fi
+    rm -f "$tmploc/$src_sop"
 }
 
 sop_validate() {
@@ -77,7 +80,7 @@ sop_store_key() {
     fsize=$(stat -c %s "$fn")
     base_fn="$(basename $fn)"
     stored_fn="${base_fn/.sop/.ksop}"
-    cp "$fn" > "$loc/$stored_fn"
+    cp "$fn" "$loc/$stored_fn"
     sync; sync; sync;
     [ "$partmode" = "ro" ] && mount -o remount,ro "$loc"
     echo
@@ -90,7 +93,7 @@ sop_store() {
     [ "$partmode" = "ro" ] && mount -o remount,rw "$loc"
     fsize=$(stat -c %s "$fn")
     base_fn="$(basename $fn)"
-    cp "$fn" > "$loc/$base_fn"
+    cp "$fn" "$loc/$base_fn"
     sync; sync; sync;
     [ "$partmode" = "ro" ] && mount -o remount,ro "$loc"
     echo
@@ -159,9 +162,13 @@ sop_apply() {
     [ -d "$sopmpt" ] && rm -rf "$sopmpt"
     mkdir "$sopmpt"
     losetup /dev/cloop1 "$SOP_FILE"
-    mount -o loop,offset=64 /dev/cloop1  "$sopmpt"
+    losetup -o 64 -f /dev/cloop1
+    loopdev=$(losetup -a | grep /dev/cloop1 | cut -d : -f 1)
+    mount "$loopdev" "$sopmpt"
     source "${sopmpt}/manifest"
     umount "$sopmpt"
+    #not needed - evidently umount takes care of it
+    #losetup -d "$loopdev"
     losetup -d /dev/cloop1
     rm "$SOP_FILE"
 }
