@@ -237,7 +237,7 @@ mount -t tmpfs tmpfs -o "size=$TMPFS_SIZE" /tmpfs || return 1
 mkdir -p /tmpfs/upper /tmpfs/work
 
 # Mount overlay images if any
-mount -t ubifs -o ro ubi0:linux /linux
+mount -t ubifs -o ro,sync ubi0:linux /linux
 if [ "$SAFE_MODE" != y ]; then
   for overlay in /linux/overlay-*.sqfs; do
     mount_overlay "$overlay"
