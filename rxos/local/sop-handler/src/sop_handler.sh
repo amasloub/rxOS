@@ -193,4 +193,10 @@ fi
 
 rm -rf "$tmploc_parent"
 
+sync; sync; sync
+
+
+sleep 100
+
+reboot
 
