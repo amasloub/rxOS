@@ -6,10 +6,28 @@ GiB=$(( 1024 * MiB ))
 
 DLDIR=/mnt/internal
 AVAIL="$(df -P "$DLDIR" | tail -n1 | awk '{print $4}')"  # KiB
-MINFREE=$(( 200 * MiB ))  # OTA update 100 MiB + data 100 MiB
+MINFREE=$(( 400 * MiB ))  # 2x OTA update 200 MiB
 NEEDS="$(( MINFREE - AVAIL ))"  # KiB
 CALLBACK="/usr/bin/oncontentchange"
 LOG="logger -t cleanup"
+
+
+# first clean up the regularly updated dirs
+
+# Weather jsons
+
+# jsons older than 7 days
+find /mnt/downloads/Weather/data/weather/*/*/* -type d -mtime +7 | xargs -r -I {} rm -rf "{}"
+
+#  gribs older than 7 days
+find "/mnt/downloads/Weather/grib2/" -type d -mtime +7 | xargs -r -I {} rm -rf "{}"
+
+# APRS files older than 2 days
+find "/mnt/downloads/Amateur Radio/APRS/APRSAT/" -type f -mtime +5 | xargs -r -I {} rm -f "{}"
+
+# Wikipedia files older than 60 days
+find "/mnt/downloads/Wikipedia" -type f -mtime +60 | xargs -r -I {} rm -f "{}"
+
 
 if [ "$NEEDS" -le 0 ]; then
   $LOG "Needs $MINFREE KiB, but there is already $AVAIL KiB, nothing to do"
