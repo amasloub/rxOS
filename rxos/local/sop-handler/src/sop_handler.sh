@@ -3,7 +3,7 @@
 # (C) 2016 Outernet Inc
 
 set -euf
-
+renice
 # ORIG_SOP_FILE has a signature block prepended
 # SOP_FILE is post-verification, no signature block
 SOP_FILE="$1"
