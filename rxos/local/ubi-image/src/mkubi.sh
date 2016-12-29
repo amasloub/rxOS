@@ -356,6 +356,8 @@ mkdir -p "$isodir"
 cp  "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS"  "$isodir"
 
 genisoimage -quiet -R -iso-level 4  "$isodir" >  "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop"
+rm -rf "$isodir"
+
 if [ -f "$BR2_EXTERNAL/sop.privkey" ]
 then
     tweetnacl-sign "$BR2_EXTERNAL/sop.privkey" \
@@ -363,9 +365,8 @@ then
         "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop"
 
     create_compressed_fs -q -B 64K "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
-    # forcing xz file to "k" sop
-    #xz -c "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > "$BINARIES_DIR/skylark-chip-${timestamp}.ksop.xz"
-    #cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop.xz" "$tmpdir"
+
+    # sop files stored inside zip is forcibly named ksop
     cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.ksop"
     cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop" "$tmpdir"
 else
