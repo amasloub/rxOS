@@ -439,9 +439,9 @@ echo
 echo "==> Make filesystems"
 echo
 ubi part UBI
-ubi create "linux" 0x10000000
-ubi create "conf" 0x4000000
-ubi create "appdata" 0x26000000
+ubi create "linux" 0xC800000
+ubi create "conf" 0x2000000
+ubi create "appdata" 0x2000000
 ubi create "data"
 echo
 echo "==> Writing filesystems"
