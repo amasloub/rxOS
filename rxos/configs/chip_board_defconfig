@@ -58,7 +58,7 @@ BR2_PACKAGE_JQ=y
 # BR2_PACKAGE_E2FSPROGS_TUNE2FS is not set
 # BR2_PACKAGE_E2FSPROGS_UUIDGEN is not set
 BR2_PACKAGE_NODEJS_NPM=y
-BR2_PACKAGE_NODEJS_MODULES_ADDITIONAL="bcryptjs child_process colors diskspace exif findit formidable fs http http-proxy mysql net network node-fs-extra passwd-linux path querystring request simple-session unix-dgram unzip url userid util ws x2js"
+BR2_PACKAGE_NODEJS_MODULES_ADDITIONAL="bcryptjs child_process colors deepmerge diskspace exif findit formidable fs http http-proxy mysql net network node-fs-extra passwd-linux path querystring request simple-session unix-dgram unzip url userid util ws x2js"
 BR2_PACKAGE_LIBCODEC2=y
 BR2_PACKAGE_OPUS_FIXED_POINT=y
 BR2_PACKAGE_OPUSFILE=y
