@@ -10,6 +10,6 @@ stderr=serial,vga
 stdin=serial,usbkbd
 stdout=serial,vga
 mtdids=nand0=sunxi-nand.0
-mtdparts=mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),128m(swap),-(UBI)
+mtdparts=mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),192m(swap),-(UBI)
 bootargs=consoleblank=0 earlyprintk console=ttyS0,115200 ubi.mtd=5
 bootcmd=source ${scriptaddr}; mtdparts; ubi part UBI; ubifsmount ubi0:linux; ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb || ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb.backup; for krnl in zImage zImage.backup; do ubifsload ${kernel_addr_r} /${krnl} && bootz ${kernel_addr_r} - ${fdt_addr_r}; done;

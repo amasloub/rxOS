@@ -2,24 +2,6 @@
 #
 # Create UBI image containing the board partitions
 #
-
-# ========  ========  ============  ====================================
-# vol_id    size MB   name          description
-# --------  --------  ------------  ------------------------------------
-# 1         8         linux         Linux kernel, DTB, and initramfs
-# 2         128       root          Root filesystem
-# 3         128       root-backup   Backup root filesystem image
-# 4         32        overlays      Customization layer images
-# 4         32        conf          Persistent system configuration
-# 5         600       cache         Download cache
-# 6         2048      appdata       Application state
-# 7         -         data          Downloaded files
-# ========  ========  ============  ====================================
-#
-# This file is part of rxOS.
-# rxOS is free sofware licensed under the
-# GNU GPL version 3 or any later version.
-#
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
@@ -99,7 +81,7 @@ mkubiimg() {
 # 1         4         spl-backup    Backup SPL binary
 # 3         4         uboot         U-Boot binary
 # 4         4         env           U-Boot environment
-# 5         128       swap          (reserved)
+# 5         192       swap          (reserved)
 # 6         -         UBI           Partition that stores ubi volumes.
 # ========  ========  ============  ====================================
 
@@ -138,7 +120,7 @@ LINUX_UBIFS_MEM_ADDR=0x4e000000
 #
 #   http://compulab.co.il/utilite-computer/wiki/index.php/U-Boot_Scripts
 #
-MTDPARTS="sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),128m(swap),-(UBI)"
+MTDPARTS="sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),192m(swap),-(UBI)"
 BOOTARGS='
 consoleblank=0
 earlyprintk
