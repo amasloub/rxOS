@@ -4,12 +4,13 @@
 # key releases are stored on target receivers, so partial sops can be diffed from them
 # point releases are not stored on receivers, so psops _MUST NOT_ be diffed from them
 
-if [ "$PWD" != "/build/rxos/rxos" ]
+if [ "$PWD" != "/builds/rxos/rxos" ]
 then
-    echo 'Releases MUST be built in /build/rxos/rxos!'
+    echo 'Releases MUST be built in /builds/rxos/rxos!'
     echo '  otherwise delta updates will be massive.'
     echo
     echo 'Stubbornly refusing to proceed. thbbt!'
+    exit 1
 fi
 
 export KEY_RELEASE=no
