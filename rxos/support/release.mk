@@ -49,10 +49,6 @@ $(FLASH_ZIPNAME): $(BINARIES_DIR)/linux.ubifs $(BINARIES_DIR)/empty.ubifs $(BINA
 		$(TARGET_DIR)/etc/platform-release \
 		$(BR2_EXTERNAL)/../tools/chip-flash.sh \
 		$(BR2_EXTERNAL)/../COPYING
-
-$(FLASH_MD5NAME): $(FLASH_ZIPNAME)
-	md5sum "$<" > "$@"
-	sed -i 's|$(BINARIES_DIR)/||' "$@"
 	@if [ -d $(SAVE_ARCHIVE_BASE) ] ;\
 	then \
 		cp -a $(BINARIES_DIR) $(SAVE_ARCHIVE_DIR) ;\
@@ -63,4 +59,4 @@ $(FLASH_MD5NAME): $(FLASH_ZIPNAME)
 
 release-sdcard: $(SDCARD_MD5NAME)
 
-release-flash: $(FLASH_MD5NAME)
+release-flash: $(FLASH_ZIPNAME)
