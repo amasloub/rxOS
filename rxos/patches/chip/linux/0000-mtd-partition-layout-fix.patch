@@ -35,12 +35,12 @@ index f894cb50..21fe5a3 100644
 -			reg = /bits/ 64 <0x1000000 0x1ff000000>;
 +		swap@1000000 {
 +			label = "swap";
-+			reg = /bits/ 64 <0x1000000 0xC000000>;
++			reg = /bits/ 64 <0x1000000 0x4000000>;
 +		};
 +
 +		UBI@1a000000 {
 +			label = "UBI";
-+			reg = /bits/ 64 <0xD000000 0x1f3000000>;
++			reg = /bits/ 64 <0x5000000 0x1fB000000>;
  		};
  	};
  };

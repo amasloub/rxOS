@@ -81,7 +81,7 @@ mkubiimg() {
 # 1         4         spl-backup    Backup SPL binary
 # 3         4         uboot         U-Boot binary
 # 4         4         env           U-Boot environment
-# 5         192       swap          (reserved)
+# 5         64        swap          (reserved)
 # 6         -         UBI           Partition that stores ubi volumes.
 # ========  ========  ============  ====================================
 
@@ -120,7 +120,7 @@ LINUX_UBIFS_MEM_ADDR=0x4e000000
 #
 #   http://compulab.co.il/utilite-computer/wiki/index.php/U-Boot_Scripts
 #
-MTDPARTS="sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),192m(swap),-(UBI)"
+MTDPARTS="sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),64m(swap),-(UBI)"
 BOOTARGS='
 consoleblank=0
 earlyprintk
