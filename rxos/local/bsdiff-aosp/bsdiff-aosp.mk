@@ -9,7 +9,7 @@ BSDIFF_AOSP_SITE = $(call github,Outernet-Project,bsdiff-aosp,$(BSDIFF_AOSP_VERS
 BSDIFF_AOSP_DEPENDENCIES = bzip2
 
 define BSDIFF_AOSP_BUILD_CMDS
-    $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) bspatch
+    $(TARGET_MAKE_ENV) $(MAKE) CXX=$(TARGET_CXX) -C $(@D) bspatch
 endef
 
 define BSDIFF_AOSP_INSTALL_TARGET_CMDS
