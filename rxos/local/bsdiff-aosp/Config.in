@@ -1,0 +1,10 @@
+config BR2_PACKAGE_BSDIFF_AOSP
+	bool "bsdiff from aosp"
+	select BR2_PACKAGE_BZIP2
+	help
+	  Binary patch/diff like xdelta but creates smaller diffs.
+	  Needs bzip2 support. Only bspatch is supported on target.
+	  This is the version developed by the AOSP project, it has much 
+	  better performance and less than half the ram requirement
+
+	  https://github.com/Outernet-Project/bsdiff-aosp
