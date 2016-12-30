@@ -239,7 +239,10 @@ mkdir -p /tmpfs/upper /tmpfs/work
 mount -t ubifs -o ro,sync ubi0:linux /linux
 if [ "$SAFE_MODE" != y ]; then
   for overlay in /linux/overlay-*.sqfs; do
-    mount_overlay "$overlay"
+    if [ -f "$overlay" ]
+    then
+        mount_overlay "$overlay"
+    fi
   done
 fi
 
@@ -256,7 +259,7 @@ then
     mount -o remount,ro /linux
 fi
 
-#if first boot after flash, there will be a sop.xz file
+#if there is a sop.xz file, extract it
 xz_sop=$(find /linux | grep -e '.sop.xz')
 if [ -n "${xz_sop}" -a -f "${xz_sop}" ]
 then
