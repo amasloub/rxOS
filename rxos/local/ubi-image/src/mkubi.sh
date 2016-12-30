@@ -360,9 +360,25 @@ rm -rf "$isodir"
 
 if [ -f "$BR2_EXTERNAL/sop.privkey" ]
 then
+    # how signing works:
+    # take the 40 char sha1sum of file (just the sum, not the full output)
+    # sign that - this gives a 104 byte signed file
+    # the first 64 bytes is the sign, the last 40 bytes is your original sha1sum
+    # we discard this sum, just keep the sign
+    # we concat these together , first our sop file, then the sign. this is our signed file
+    # why sign is suffixed not prefixed: it simplifies things at the client end.
+
+    sha1sum "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" | head -c 40 > "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop.sha1"
+
     tweetnacl-sign "$BR2_EXTERNAL/sop.privkey" \
-        "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" \
-        "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop"
+        "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop.sha1" \
+        "$BINARIES_DIR/skylark-chip-${timestamp}.sha1.signed"
+
+    head -c 64 "$BINARIES_DIR/skylark-chip-${timestamp}.sha1.signed"  > "$BINARIES_DIR/skylark-chip-${timestamp}.sig"
+
+    cp "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop"
+
+    cat "$BINARIES_DIR/skylark-chip-${timestamp}.sig" >>  "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop"
 
     create_compressed_fs -q -B 64K "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
 
@@ -370,7 +386,7 @@ then
     cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.ksop"
     cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop" "$tmpdir"
 else
-    echo " *** No signing key at $BR2_EXTERNAL/sop.privkey. sop cannot be signed"
+    echo " *** No signing key at $BR2_EXTERNAL/sop.privkey. sop cannot be signed. signing is not optional. ***"
     exit 1
 fi
 

@@ -35,14 +35,16 @@ clean_exit() {
 sign_verify() {
     src_sop=$(basename "$SOP_FILE")
     extract_compressed_fs "$SOP_FILE" "$tmploc/$src_sop"
-    if tweetnacl-verify %SOPSIGNPUBKEY% "$tmploc/$src_sop" - > /dev/null
+    tail -c 64 "$tmploc/$src_sop" >  "$tmploc/${src_sop}.sig"
+    head -c -64 "$tmploc/$src_sop" | sha1sum | head -c 40 >> "$tmploc/${src_sop}.sig"
+    if tweetnacl-verify %SOPSIGNPUBKEY% "$tmploc/${src_sop}.sig" - > /dev/null
     then
         echo SOP verified
     else
         echo SOP failed verification
         clean_exit 1
     fi
-    rm -f "$tmploc/$src_sop"
+    rm -f "$tmploc/$src_sop" "$tmploc/${src_sop}.sig"
 }
 
 sop_validate() {
@@ -169,13 +171,9 @@ sop_apply() {
     [ -d "$sopmpt" ] && rm -rf "$sopmpt"
     mkdir "$sopmpt"
     losetup /dev/cloop1 "$SOP_FILE"
-    losetup -o 64 -f /dev/cloop1
-    loopdev=$(losetup -a | grep /dev/cloop1 | cut -d : -f 1)
-    mount "$loopdev" "$sopmpt"
+    mount /dev/cloop1 "$sopmpt"
     source "${sopmpt}/manifest"
     umount "$sopmpt"
-    #not needed - evidently umount takes care of it
-    #losetup -d "$loopdev"
     losetup -d /dev/cloop1
     rm "$SOP_FILE"
 }

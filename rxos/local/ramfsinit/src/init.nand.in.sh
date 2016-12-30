@@ -117,10 +117,7 @@ mount_root() {
   mkdir /sopfs
   losetup /dev/cloop0 "$sopfile"
   echo "Attached $sopfile to /dev/cloop0"
-  losetup -f -o 64 /dev/cloop0
-  loopdev=$(losetup -a | grep /dev/cloop0 | tail -n 1 | cut -d : -f 1)
-  echo "Attached loop device: $loopdev"
-  mount "$loopdev" /sopfs || return 1
+  mount /dev/cloop0 /sopfs || return 1
   echo "Mounted sop fs"
   mount -o loop  /sopfs/rootfs.isoroot /rootfs || return 1
   echo "Mounted rootfs"
@@ -156,6 +153,8 @@ undo_root() {
   umount /root/dev 2>/dev/null
   umount /root 2>/dev/null
   umount /rootfs 2>/dev/null
+  umount /sopfs 2>/dev/null
+  losetup -d /dev/cloop0
 }
 
 # Boot into specified rootfs
