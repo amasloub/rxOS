@@ -3,7 +3,8 @@
 # (C) 2016 Outernet Inc
 
 set -euf
-renice
+renice -n 20
+
 # ORIG_SOP_FILE has a signature block prepended
 # SOP_FILE is post-verification, no signature block
 SOP_FILE="$1"
@@ -108,6 +109,12 @@ psop_apply() {
     src_ksop="$prefix$src_sop_stamp.ksop"
     dest_sop_stamp=$(basename "$SOP_FILE" | cut -d . -f 4)
     dest_sop="$prefix$dest_sop_stamp.sop"
+    
+    if [ "$src_sop_stamp" -ge "$dest_sop_stamp" ]
+    then
+        echo "update is same stamp or older than current images. rejecting."
+        clean_exit 1
+    fi
 
     if [ -f "$loc/$src_sop" ]
     then

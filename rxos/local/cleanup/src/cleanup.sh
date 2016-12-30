@@ -17,16 +17,16 @@ LOG="logger -t cleanup"
 # Weather jsons
 
 # jsons older than 7 days
-find /mnt/downloads/Weather/data/weather/*/*/* -type d -mtime +7 | xargs -r -I {} rm -rf "{}"
+[ -d "/mnt/downloads/Weather/data/weather" ] && find /mnt/downloads/Weather/data/weather/*/*/* -type d -mtime +7 | xargs -r -I {} rm -rf "{}"
 
 #  gribs older than 7 days
-find "/mnt/downloads/Weather/grib2/" -type d -mtime +7 | xargs -r -I {} rm -rf "{}"
+[ -d "/mnt/downloads/Weather/grib2/" ] && find "/mnt/downloads/Weather/grib2/" -type d -mtime +7 | xargs -r -I {} rm -rf "{}"
 
 # APRS files older than 2 days
-find "/mnt/downloads/Amateur Radio/APRS/APRSAT/" -type f -mtime +5 | xargs -r -I {} rm -f "{}"
+[ -d "/mnt/downloads/Amateur Radio/APRS/APRSAT/" ] && find "/mnt/downloads/Amateur Radio/APRS/APRSAT/" -type f -mtime +5 | xargs -r -I {} rm -f "{}"
 
 # Wikipedia files older than 60 days
-find "/mnt/downloads/Wikipedia" -type f -mtime +60 | xargs -r -I {} rm -f "{}"
+[ -d "/mnt/downloads/Wikipedia" ] && find "/mnt/downloads/Wikipedia" -type f -mtime +60 | xargs -r -I {} rm -f "{}"
 
 
 if [ "$NEEDS" -le 0 ]; then
