@@ -56,7 +56,7 @@ part_cp() {
     fn="$1"
     partmode=$(mount | grep "$loc" | tr '(' , | cut -d , -f 2)
     [ "$partmode" = "ro" ] && mount -o remount,rw "$loc"
-    cp "$sopmpt/$fn" "$loc"/"$fn"
+    cp "$sopmpt/images/$fn" "$loc"/"$fn"
     sync; sync; sync;
     [ "$partmode" = "ro" ] && mount -o remount,ro "$loc"
     echo
@@ -72,7 +72,7 @@ mtd_nandwrite() {
     fn="$1"
     part_dev="/dev/$(cat /proc/mtd | grep $part_name | cut -d : -f 1 | head -n 1 )"
     flash_erase "$part_dev" 0 0
-    nandwrite -p "$part_dev" "$sopmpt/$fn"
+    nandwrite -p "$part_dev" "$sopmpt/images/$fn"
 }
 
 sop_store_key() {
@@ -172,9 +172,10 @@ sop_apply() {
     mkdir "$sopmpt"
     losetup /dev/cloop1 "$SOP_FILE"
     mount /dev/cloop1 "$sopmpt"
-    source "${sopmpt}/manifest"
+    source "${sopmpt}/images/manifest"
     umount "$sopmpt"
     rm "$SOP_FILE"
+    rmdir "$sopmpt"
 }
 
 xzsop_apply() {

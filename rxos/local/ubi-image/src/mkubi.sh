@@ -5,14 +5,16 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-set -e
+set -eu
 
 . "$BR2_EXTERNAL/scripts/helpers.sh"
 
 export PATH="${HOST_DIR}/usr/bin/:${HOST_DIR}/usr/sbin:${PATH}"
 
 # UBI configuration
-PAGE_SIZE=0x4000
+PAGE_SIZE=16384
+PAGE_SIZE_HEX=0x4000
+OOB_SIZE=1664
 SUB_SIZE=16384
 PEB_SIZE=0x400000
 LEB_SIZE=0x1F8000
@@ -20,10 +22,6 @@ MAX_LEBS=4000
 UBI_COMPR=lzo
 UBINIZE_CFG="$BINARIES_DIR/ubinize.cfg"
 
-# Source files
-LINUX="$BINARIES_DIR/zImage"
-DTB="$BINARIES_DIR/sun5i-r8-chip.dtb"
-ROOTFS="$BINARIES_DIR/rootfs.isoroot"
 # Create ubifs filesystem image.
 #
 # Arguments:
@@ -37,7 +35,7 @@ ROOTFS="$BINARIES_DIR/rootfs.isoroot"
 mkubifs() {
   local rootdir="$1"
   local output="$2"
-  mkfs.ubifs --root="$rootdir" --min-io-size="$PAGE_SIZE" \
+  mkfs.ubifs --root="$rootdir" --min-io-size="$PAGE_SIZE_HEX" \
     --leb-size="$LEB_SIZE" --max-leb-cnt="$MAX_LEBS" --compr="$UBI_COMPR" \
     --squash-uids --output="$output"
 }
@@ -51,46 +49,9 @@ mkubifs() {
 mkubiimg() {
   local ubicfg="$1"
   local output="$2"
-  ubinize --peb-size="$PEB_SIZE" --min-io-size="$PAGE_SIZE" \
+  ubinize --peb-size="$PEB_SIZE" --min-io-size="$PAGE_SIZE_HEX" \
     --sub-page-size="$SUB_SIZE" --output="$output" "$ubicfg"
 }
-
-
-
-
-# This script generates files that will be flashed on CHIP:
-# spl
-# spl with ecc
-# uboot-bin
-# uboot env
-# uboot script
-#
-# all padded, converted as necessary
-
-# the following tools much exist in the host environment
-# - mkimage (u-boot-tools)
-# - img2simg (android-tools, simg2img, or android-tools-fsutils)
-# - spl-image-builder (chip-tools)
-#
-# The end result is the following flash layout:
-#
-# ========  ========  ============  ====================================
-# mtdpart   size MB   name          description
-# --------  --------  ------------  ------------------------------------
-# 0         4         spl           Master SPL binary
-# 1         4         spl-backup    Backup SPL binary
-# 3         4         uboot         U-Boot binary
-# 4         4         env           U-Boot environment
-# 5         64        swap          (reserved)
-# 6         -         UBI           Partition that stores ubi volumes.
-# ========  ========  ============  ====================================
-
-
-# UBI settings
-PAGE_SIZE=16384
-PAGE_SIZE_HEX=0x4000
-OOB_SIZE=1664
-PEB_SIZE=$(( 4 * 1024 * 1024 ))
 
 # Memory locations
 SPL_ADDR=0x43000000
@@ -158,13 +119,6 @@ has_command() {
   which "$command" > /dev/null 2>&1
 }
 
-# Check that the specified path exists and abort if it does not.
-check_file() {
-  local path="$1"
-  [ -f "$path" ] || abort "File not found: '$path'
-Is the build finished?"
-}
-
 # Print a number in hex format
 hex() {
   local num="$1"
@@ -177,86 +131,12 @@ filesize() {
   stat -c%s "$path"
 }
 
-# Return the size of a file in hex
-hexsize() {
-  local path="$1"
-  hex "$(filesize "$path")"
-}
-
-# Return the size of a file in pages
-pagesize() {
-  local path="$1"
-  local fsize
-  fsize="$(filesize "$path")"
-  hex "$((fsize / PAGE_SIZE))"
-}
-
 # Return the size of a padded SPL file with EEC in hex
 splsize() {
   local path="$1"
   local fsize
   fsize="$(filesize "$path")"
   hex "$(( fsize / (PAGE_SIZE + OOB_SIZE) ))"
-}
-
-# Align a file to page boundary
-#
-# Arguments:
-#
-#   in:   input file path
-#   out:  output file path
-page_align() {
-  local in="$1"
-  local out="$2"
-  dd if="$in" of="$out" bs=$PAGE_SIZE conv=sync status=none
-}
-
-# Pad a file to specified size
-#
-# Arguments:
-#
-#   size: target size (in hex notiation)
-#   path: path of the file to pad
-#
-# This function modifies the original file by appending the padding. Padding is
-# a stream of zero bytes sources from /dev/zero.
-#
-# It is the caller's responsibility to ensure that the target size is larger
-# than the current size.
-pad_to() {
-  local padded_size="$1"
-  local path="$2"
-  local source_size_hex
-  local dpages
-  source_size_hex="$(hexsize "$path")"
-  source_pages="$(( source_size_hex / PAGE_SIZE_HEX ))"
-  dpages="$(( (padded_size - source_size_hex) / PAGE_SIZE_HEX ))"
-  dd if=/dev/zero of="$path" seek="$source_pages" bs=16k \
-    count="$dpages" status=none
-}
-
-# Create padded SPL with EEC (error correction code)
-#
-# Arguments:
-#
-#   in:   path to the source SPL binary
-#   out:  output path
-#
-# This is a thin wrapper around `spl-image-builder` too provided by NTC. The
-# arguments are as follows:
-#
-#   -d    disable scrambler
-#   -r    repeat count
-#   -u    usable page size
-#   -o    OOB size
-#   -p    page size
-#   -c    ECC step size
-#   -s    ECC strength
-add_ecc() {
-  local in="$1"
-  local out="$2"
-  ${BINARIES_DIR}/spl-image-builder -d -r 3 -u 4096 -o "$OOB_SIZE" -p "$PAGE_SIZE" -c 1024 \
-    -s 64 "$in" "$out"
 }
 
 # Generate the environment and echo it
@@ -281,9 +161,15 @@ EOF
 }
 
 # Source files
-SPL="$BINARIES_DIR/sunxi-spl.bin"
+# Source files
+LINUX="$BINARIES_DIR/zImage"
+DTB="$BINARIES_DIR/sun5i-r8-chip.dtb"
+ROOTFS="$BINARIES_DIR/rootfs.isoroot"
+
 SPL_ECC="$BINARIES_DIR/sunxi-spl-with-ecc.bin"
+SPL_SIZE=$(splsize "$SPL_ECC")
 UBOOT="$BINARIES_DIR/u-boot-dtb.bin"
+UBOOT_SIZE=0x400000
 UBI_IMAGE="$BINARIES_DIR/board.ubi"
 
 # Check prereqisites
@@ -291,30 +177,7 @@ UBI_IMAGE="$BINARIES_DIR/board.ubi"
 #Please install from https://github.com/NextThingCo/CHIP-tools @210f269"
 has_command mkimage || abort "Missing command 'mkimage'
 Please install u-boot-tools"
-has_command dd || abort "Missing command 'dd'
-Please install coreutils"
-has_command img2simg || abort "Missing 'img2simg'
-Please install android-toos[-fsutils] or simg2img"
-has_command xz || abort "Missing 'xz'
-Please install xz"
 
-# Check that sources exist
-check_file "$SPL"
-
-# create spl-with-ecc reproducibly
-add_ecc "$SPL" "$SPL_ECC"
-
-check_file "$SPL_ECC"
-check_file "$UBOOT"
-#check_file "$UBI_IMAGE"
-
-SPL_SIZE=$(splsize "$SPL_ECC")
-
-page_align "$UBOOT" "$BINARIES_DIR/uboot.bin"
-UBOOT_SIZE=0x400000
-pad_to "$UBOOT_SIZE" "$BINARIES_DIR/uboot.bin"
-
-# create board.ubi
 
 msg "Tools info"
 submsg "Using ubinize: $(which ubinize)"
@@ -327,36 +190,7 @@ mkdir -p "$tmpdir"
 cp "$LINUX" "$tmpdir/zImage"
 cp "$DTB" "$tmpdir/sun5i-r8-chip.dtb"
 
-cat <<EOF > "$BINARIES_DIR/manifest"
-# (c) 2016 Outernet Inc
-# Skylark OTA update package
-# Manifest file
-
-# install_method filename installparam1 installparam2 ...
-# supported install methods are: part_cp,  mtd_nandwrite
-
-part_cp sun5i-r8-chip.dtb /boot
-part_cp zImage /boot
-mtd_nandwrite uboot.bin uboot
-part_cp sunxi-spl-with-ecc.bin /boot
-EOF
-
-if [ "$KEY_RELEASE" = "yes" ]
-then
-    echo "sop_store_key" >> "$BINARIES_DIR/manifest"
-    echo "Building a Key release: to be stored on receiver."
-else
-    echo "sop_store" >> "$BINARIES_DIR/manifest"
-    echo "Building a point release. It will NOT be stored for later use on the receiver."
-fi
-
-isodir="$BINARIES_DIR/skylark-isoroot-package-$timestamp"
-mkdir -p "$isodir"
-
-cp  "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$ROOTFS"  "$isodir"
-
-genisoimage -quiet -R -iso-level 4  "$isodir" >  "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop"
-rm -rf "$isodir"
+cp "$ROOTFS" "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop"
 
 if [ -f "$BR2_EXTERNAL/sop.privkey" ]
 then
@@ -382,7 +216,7 @@ then
 
     create_compressed_fs -q -B 64K "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.sop"
 
-    # sop files stored inside zip is forcibly named ksop
+    # sop file stored inside zip is forcibly named ksop
     cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.ksop"
     cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop" "$tmpdir"
 else
@@ -405,6 +239,7 @@ EMPTY_UBIFS_SIZE=`filesize "$BINARIES_DIR/empty.ubifs" | xargs printf "0x%08x"`
 # Create script
 ###############################################################################
 
+NOBOOT="n"
 
 if [ "$NOBOOT" = y ]; then
   BOOTSCR="while true; do sleep 10; done"
@@ -453,7 +288,6 @@ echo "==> Setting up boot environment"
 echo
 # The kerne image is usually smaller than the kernel partition. We therefore
 # save the kernel image size as kernel_size environment variable.
-setenv kernel_size ${LINUX_SIZE}
 setenv bootargs '$(echo $BOOTARGS)'
 setenv bootcmd '$(echo $BOOTCMDS)'
 saveenv
@@ -471,5 +305,3 @@ mkimage -A arm -T script -C none -n "flash CHIP" -d "$BINARIES_DIR/uboot.cmds" \
   "$BINARIES_DIR/uboot.scr" > /dev/null
 
 rm "$BINARIES_DIR/uboot.cmds"
-
-

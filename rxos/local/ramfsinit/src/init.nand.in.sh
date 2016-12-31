@@ -114,12 +114,9 @@ mount_overlay() {
 mount_root() {
   sopfile="$1"
   echo "Attempt to mount $sopfile"
-  mkdir /sopfs
   losetup /dev/cloop0 "$sopfile"
   echo "Attached $sopfile to /dev/cloop0"
-  mount /dev/cloop0 /sopfs || return 1
-  echo "Mounted sop fs"
-  mount -o loop  /sopfs/rootfs.isoroot /rootfs || return 1
+  mount /dev/cloop0 /rootfs || return 1
   echo "Mounted rootfs"
   test_exe /rootfs/sbin/init || return 1
   lower="/rootfs"
@@ -153,7 +150,6 @@ undo_root() {
   umount /root/dev 2>/dev/null
   umount /root 2>/dev/null
   umount /rootfs 2>/dev/null
-  umount /sopfs 2>/dev/null
 }
 
 # Boot into specified rootfs
