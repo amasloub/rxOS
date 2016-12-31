@@ -22,7 +22,7 @@ BOOTHOOK_SELFPARTITION_FSTABL_SED_CMDS += s|%PRIMARY%|$(call qstrip,$(BR2_STORAG
 
 BOOTHOOK_SELFPARTITION_STORAGE = $(call qstrip,$(BR2_RAMFSINIT_INIT_TYPE))
 
-BOOTHOOK_SELFPARTITION_MPOINTS = conf,data,external,internal,downloads
+BOOTHOOK_SELFPARTITION_MPOINTS = conf,external,internal,downloads
 
 ifeq ($(BOOTHOOK_SELFPARTITION_STORAGE),nand)
 
@@ -37,6 +37,8 @@ define BOOTHOOK_SELFPARTITION_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/etc/setup.d/attachswap.sh
 	$(INSTALL) -Dm755 $(@D)/attachcache.sh \
 		$(TARGET_DIR)/etc/setup.d/attachcache.sh
+	$(INSTALL) -Dm755 $(@D)/attachappdata.sh \
+		$(TARGET_DIR)/etc/setup.d/attachappdata.sh
 endef
 
 else
@@ -64,6 +66,8 @@ define BOOTHOOK_SELFPARTITION_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/etc/setup.d/attachmultifs.sh
 	$(INSTALL) -Dm755 $(@D)/attachcache.sh \
 		$(TARGET_DIR)/etc/setup.d/attachcache.sh
+	$(INSTALL) -Dm755 $(@D)/attachappdata.sh \
+		$(TARGET_DIR)/etc/setup.d/attachappdata.sh
 endef
 
 endif # BOOTHOOK_SELFPARTITION_STORAGE == nand

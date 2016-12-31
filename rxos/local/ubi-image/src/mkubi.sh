@@ -287,13 +287,11 @@ echo
 ubi part UBI
 ubi create "linux" 0xC800000
 ubi create "conf" 0x4000000
-ubi create "appdata" 0x4000000
 ubi create "data"
 echo
 echo "==> Writing filesystems"
 ubi writevol $LINUX_UBIFS_MEM_ADDR "linux" $LINUX_UBIFS_SIZE
 ubi writevol $EMPTY_UBIFS_MEM_ADDR "conf" $EMPTY_UBIFS_SIZE
-ubi writevol $EMPTY_UBIFS_MEM_ADDR "appdata" $EMPTY_UBIFS_SIZE
 ubi writevol $EMPTY_UBIFS_MEM_ADDR "data" $EMPTY_UBIFS_SIZE
 echo
 echo "==> Setting up boot environment"

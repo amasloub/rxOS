@@ -13,5 +13,4 @@ tmpfs           /run            tmpfs       mode=0755,nosuid,nodev      0   0
 sysfs           /sys            sysfs       defaults                    0   0
 
 ubi0:conf       /mnt/conf       ubifs       noatime,sync                0   1
-ubi0:appdata    /mnt/data       ubifs       noatime                     0   1
 ubi0:data       /mnt/internal   ubifs       noatime                     0   1

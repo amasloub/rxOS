@@ -21,7 +21,7 @@ config BR2_RXOS_UTILS_STORAGE
 config BR2_RXOS_UTILS_PARTITIONS
 	string 
 	default "p5 p6 p7 p8" if BR2_RAMFSINIT_SDCARD
-	default ":linux :conf :appdata :data" if BR2_RAMFSINIT_NAND
+	default ":linux :conf :data" if BR2_RAMFSINIT_NAND
 
 config BR2_RXOS_UTILS_BOOTDEV
 	string
