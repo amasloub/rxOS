@@ -116,7 +116,7 @@ mount_root() {
   echo "Attempt to mount $sopfile"
   losetup /dev/cloop0 "$sopfile"
   echo "Attached $sopfile to /dev/cloop0"
-  mount /dev/cloop0 /rootfs || return 1
+  mount -o ro /dev/cloop0 /rootfs || return 1
   echo "Mounted rootfs"
   test_exe /rootfs/sbin/init || return 1
   lower="/rootfs"
