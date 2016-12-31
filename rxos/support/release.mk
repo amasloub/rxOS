@@ -45,7 +45,7 @@ $(SDCARD_MD5NAME): $(SDCARD_ZIPNAME)
 
 $(FLASH_ZIPNAME): $(BINARIES_DIR)/linux.ubifs $(BINARIES_DIR)/empty.ubifs $(BINARIES_DIR)/README.txt $(BINARIES_DIR)/99-chip.rules
 	zip -j "$@" \
-		$(BINARIES_DIR)/{linux.ubifs,empty.ubifs,sunxi-spl.bin,sunxi-spl-with-ecc.bin,uboot.bin,uboot.scr,README.txt,99-chip.rules} \
+		$(BINARIES_DIR)/{linux.ubifs,empty.ubifs,sunxi-spl.bin,sunxi-spl-with-ecc.bin.1664,sunxi-spl-with-ecc.bin.1280,uboot.bin,uboot.scr,README.txt,99-chip.rules} \
 		$(TARGET_DIR)/etc/platform-release \
 		$(BR2_EXTERNAL)/../tools/chip-flash.sh \
 		$(BR2_EXTERNAL)/../COPYING

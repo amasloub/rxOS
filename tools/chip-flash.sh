@@ -223,7 +223,8 @@ Please install https://github.com/NextThingCo/sunxi-tools"
 
 # Check that sources exist
 check_file "$SPL"
-check_file "$SPL_ECC"
+check_file "${SPL_ECC}.1664"
+check_file "${SPL_ECC}.1280"
 check_file "$UBOOT"
 check_file "$UBOOT_SCR"
 check_file "$LINUX_UBIFS"
