@@ -14,7 +14,6 @@ export PATH="${HOST_DIR}/usr/bin/:${HOST_DIR}/usr/sbin:${PATH}"
 # NAND settings for spl ecc
 PAGE_SIZE=16384
 PAGE_SIZE_HEX=0x4000
-OOB_SIZE=1664
 
 abort() {
   local msg="$*"
@@ -60,14 +59,6 @@ pagesize() {
   local fsize
   fsize="$(filesize "$path")"
   hex "$((fsize / PAGE_SIZE))"
-}
-
-# Return the size of a padded SPL file with EEC in hex
-splsize() {
-  local path="$1"
-  local fsize
-  fsize="$(filesize "$path")"
-  hex "$(( fsize / (PAGE_SIZE + OOB_SIZE) ))"
 }
 
 # Align a file to page boundary
@@ -126,8 +117,10 @@ pad_to() {
 add_ecc() {
   local in="$1"
   local out="$2"
-  ${BINARIES_DIR}/spl-image-builder -d -r 3 -u 4096 -o "$OOB_SIZE" -p "$PAGE_SIZE" -c 1024 \
-    -s 64 "$in" "$out"
+  ${BINARIES_DIR}/spl-image-builder -d -r 3 -u 4096 -o 1664 -p "$PAGE_SIZE" -c 1024 \
+    -s 64 "$in" "${out}.1664"
+  ${BINARIES_DIR}/spl-image-builder -d -r 3 -u 4096 -o 1280 -p "$PAGE_SIZE" -c 1024 \
+    -s 64 "$in" "${out}.1280"
 }
 
 # Source files
@@ -153,10 +146,9 @@ check_file "$SPL"
 # create spl-with-ecc reproducibly
 add_ecc "$SPL" "$SPL_ECC"
 
-check_file "$SPL_ECC"
+check_file "${SPL_ECC}.1664"
+check_file "${SPL_ECC}.1280"
 check_file "$UBOOT"
-
-SPL_SIZE=$(splsize "$SPL_ECC")
 
 page_align "$UBOOT" "$BINARIES_DIR/uboot.bin"
 UBOOT_SIZE=0x400000
@@ -173,7 +165,8 @@ cat <<EOF > "$BINARIES_DIR/manifest"
 part_cp sun5i-r8-chip.dtb /boot
 part_cp zImage /boot
 mtd_nandwrite uboot.bin uboot
-part_cp sunxi-spl-with-ecc.bin /boot
+part_cp sunxi-spl-with-ecc.bin.1664 /boot
+part_cp sunxi-spl-with-ecc.bin.1280 /boot
 EOF
 
 if [ "$KEY_RELEASE" = "yes" ]
@@ -189,4 +182,4 @@ imagesdir="$BINARIES_DIR/images/images"
 
 mkdir -p "$imagesdir"
 
-cp  "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "$SPL_ECC" "$LINUX" "$DTB" "$imagesdir"
+cp  "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "${SPL_ECC}.1664" "${SPL_ECC}.1280" "$LINUX" "$DTB" "$imagesdir"

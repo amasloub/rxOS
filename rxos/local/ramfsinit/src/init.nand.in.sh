@@ -243,11 +243,23 @@ fi
 
 
 # remove sunxi-spl-with-ecc.bin if found
-if [ -f /linux/sunxi-spl-with-ecc.bin ]
+if [ -f /linux/sunxi-spl-with-ecc.bin.1664 ]
 then
     mount -o remount,rw /linux
-    echo "removing sunxi-spl-with-ecc.bin"
-    rm -f /linux/sunxi-spl-with-ecc.bin
+    echo "removing sunxi-spl-with-ecc.bin.1664"
+    rm -f /linux/sunxi-spl-with-ecc.bin.1664
+    sync
+    sync
+    sync
+    mount -o remount,ro /linux
+fi
+
+# remove sunxi-spl-with-ecc.bin if found
+if [ -f /linux/sunxi-spl-with-ecc.bin.1280 ]
+then
+    mount -o remount,rw /linux
+    echo "removing sunxi-spl-with-ecc.bin.1280"
+    rm -f /linux/sunxi-spl-with-ecc.bin.1280
     sync
     sync
     sync

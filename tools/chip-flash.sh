@@ -60,7 +60,8 @@ START="$(date '+%s')"
 KEEP_TMPDIR=n
 
 # Memory locations
-SPL_ADDR=0x43000000
+SPL_ADDR1=0x43000000
+SPL_ADDR2=0x43800000
 UBOOT_ADDR=0x4a000000
 #UBOOT_ENV_ADDR=0x4b000000
 UBOOT_SCRIPT_ADDR=0x43100000
@@ -241,8 +242,11 @@ $FEL spl "$SPL" || abort "Failed to execute SPL"
 
 sleep 1
 
-submsg "Uploading SPL"
-$FEL write "$SPL_ADDR" "$SPL_ECC"
+submsg "Uploading SPL 1664"
+$FEL write "$SPL_ADDR1" "${SPL_ECC}.1664"
+
+submsg "Uploading SPL 1280"
+$FEL write "$SPL_ADDR2" "${SPL_ECC}.1280"
 
 submsg "Uploading U-Boot"
 $FEL write "$UBOOT_ADDR" "$UBOOT"

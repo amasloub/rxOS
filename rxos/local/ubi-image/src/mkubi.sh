@@ -54,7 +54,8 @@ mkubiimg() {
 }
 
 # Memory locations
-SPL_ADDR=0x43000000
+SPL_ADDR1=0x43000000
+SPL_ADDR2=0x43800000
 UBOOT_ADDR=0x4a000000
 #UBOOT_ENV_ADDR=0x4b000000
 UBOOT_SCRIPT_ADDR=0x43100000
@@ -90,15 +91,25 @@ ubi.mtd=5'
 BOOTCMDS='
 source ${scriptaddr};
 mtdparts;
+nand info;
 ubi part UBI;
 ubifsmount ubi0:linux;
-ubifsload 0x43000000 sunxi-spl-with-ecc.bin &&
+test $nand_oobsize -eq 680 &&
+    ubifsload 0x43000000 sunxi-spl-with-ecc.bin.1664 &&
     nand erase.part spl &&
     nand write.raw.noverify 0x43000000 spl 0xC4 &&
-    echo "Wrote sunxi-spl-with-ecc.bin to spl" &&
+    echo "Wrote sunxi-spl-with-ecc.bin.1664 to spl" &&
     nand erase.part spl-backup &&
     nand write.raw.noverify 0x43000000 spl-backup 0xC4 &&
-    echo "Wrote sunxi-spl-with-ecc.bin to spl-backup";
+    echo "Wrote sunxi-spl-with-ecc.bin.1664 to spl-backup";
+test $nand_oobsize -eq 500 &&
+    ubifsload 0x43000000 sunxi-spl-with-ecc.bin.1280 &&
+    nand erase.part spl &&
+    nand write.raw.noverify 0x43000000 spl 0xC4 &&
+    echo "Wrote sunxi-spl-with-ecc.bin.1280 to spl" &&
+    nand erase.part spl-backup &&
+    nand write.raw.noverify 0x43000000 spl-backup 0xC4 &&
+    echo "Wrote sunxi-spl-with-ecc.bin.1280 to spl-backup";
 ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb ||
   ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb.backup;
 for krnl in zImage zImage.backup; do
@@ -269,15 +280,18 @@ echo "==> Setting up MTD partitions"
 setenv mtdparts 'mtdparts=$MTDPARTS'
 saveenv
 mtdparts
+nand info
 echo
 echo "==> Erasing NAND"
 nand erase.chip
 echo
 echo "==> Writing SPL"
-nand write.raw.noverify ${SPL_ADDR} spl ${SPL_SIZE}
+test $nand_oobsize -eq 680 && nand write.raw.noverify ${SPL_ADDR1} spl ${SPL_SIZE} && echo "wrote OOB=1664 spl"
+test $nand_oobsize -eq 500 && nand write.raw.noverify ${SPL_ADDR2} spl ${SPL_SIZE} && echo "wrote OOB=1280 spl"
 echo
 echo "==> Writing SPL backup"
-nand write.raw.noverify ${SPL_ADDR} spl-backup ${SPL_SIZE}
+test $nand_oobsize -eq 680 && nand write.raw.noverify ${SPL_ADDR1} spl-backup ${SPL_SIZE} && echo "wrote OOB=1664 spl"
+test $nand_oobsize -eq 500 && nand write.raw.noverify ${SPL_ADDR2} spl-backup ${SPL_SIZE} && echo "wrote OOB=1280 spl"
 echo
 echo "==> Writing U-Boot"
 nand write ${UBOOT_ADDR} uboot ${UBOOT_SIZE}
