@@ -171,7 +171,7 @@ sop_apply() {
     [ -d "$sopmpt" ] && rm -rf "$sopmpt"
     mkdir "$sopmpt"
     losetup /dev/cloop1 "$SOP_FILE"
-    mount /dev/cloop1 "$sopmpt"
+    mount -o ro /dev/cloop1 "$sopmpt"
     source "${sopmpt}/images/manifest"
     umount "$sopmpt"
     rm "$SOP_FILE"
@@ -210,7 +210,7 @@ sync; sync; sync
 
 if [ -n "$reboot" ]
 then
-    rebooting in 100 seconds as update applied
+    echo rebooting in 100 seconds as update applied
     sleep 100
     reboot
 fi
