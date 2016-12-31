@@ -174,7 +174,6 @@ sop_apply() {
     mount /dev/cloop1 "$sopmpt"
     source "${sopmpt}/manifest"
     umount "$sopmpt"
-    losetup -d /dev/cloop1
     rm "$SOP_FILE"
 }
 
@@ -186,7 +185,12 @@ xzsop_apply() {
     mv  "$unxz_sop_fn" "$(dirname $SOP_FILE)"
 }
 
-reboot="no"
+if [ ! -f "$SOP_FILE" ]
+then
+    exit 0
+fi
+
+reboot=""
 
 if [ $(expr "$SOP_FILE" : ".*\.psop$") -gt 0 ]
 then
@@ -203,7 +207,7 @@ rm -rf "$tmploc_parent"
 
 sync; sync; sync
 
-if [ "$reboot" = "yes" ]
+if [ -n "$reboot" ]
 then
     rebooting in 100 seconds as update applied
     sleep 100

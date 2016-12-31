@@ -154,7 +154,6 @@ undo_root() {
   umount /root 2>/dev/null
   umount /rootfs 2>/dev/null
   umount /sopfs 2>/dev/null
-  losetup -d /dev/cloop0
 }
 
 # Boot into specified rootfs
