@@ -186,6 +186,8 @@ xzsop_apply() {
     mv  "$unxz_sop_fn" "$(dirname $SOP_FILE)"
 }
 
+reboot="no"
+
 if [ $(expr "$SOP_FILE" : ".*\.psop$") -gt 0 ]
 then
     psop_apply
@@ -194,14 +196,16 @@ then
     xzsop_apply
 else
     sop_apply
+    reboot="yes"
 fi
 
 rm -rf "$tmploc_parent"
 
 sync; sync; sync
 
-
-sleep 100
-
-reboot
-
+if [ "$reboot" = "yes" ]
+then
+    rebooting in 100 seconds as update applied
+    sleep 100
+    reboot
+fi
