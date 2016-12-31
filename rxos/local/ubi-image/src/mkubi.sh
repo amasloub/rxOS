@@ -286,12 +286,12 @@ echo "==> Erasing NAND"
 nand erase.chip
 echo
 echo "==> Writing SPL"
-test $nand_oobsize -eq 680 && nand write.raw.noverify ${SPL_ADDR1} spl ${SPL_SIZE} && echo "wrote OOB=1664 spl"
-test $nand_oobsize -eq 500 && nand write.raw.noverify ${SPL_ADDR2} spl ${SPL_SIZE} && echo "wrote OOB=1280 spl"
+test \$nand_oobsize -eq 680 && nand write.raw.noverify ${SPL_ADDR1} spl ${SPL_SIZE} && echo "wrote OOB=1664 spl"
+test \$nand_oobsize -eq 500 && nand write.raw.noverify ${SPL_ADDR2} spl ${SPL_SIZE} && echo "wrote OOB=1280 spl"
 echo
 echo "==> Writing SPL backup"
-test $nand_oobsize -eq 680 && nand write.raw.noverify ${SPL_ADDR1} spl-backup ${SPL_SIZE} && echo "wrote OOB=1664 spl"
-test $nand_oobsize -eq 500 && nand write.raw.noverify ${SPL_ADDR2} spl-backup ${SPL_SIZE} && echo "wrote OOB=1280 spl"
+test \$nand_oobsize -eq 680 && nand write.raw.noverify ${SPL_ADDR1} spl-backup ${SPL_SIZE} && echo "wrote OOB=1664 spl"
+test \$nand_oobsize -eq 500 && nand write.raw.noverify ${SPL_ADDR2} spl-backup ${SPL_SIZE} && echo "wrote OOB=1280 spl"
 echo
 echo "==> Writing U-Boot"
 nand write ${UBOOT_ADDR} uboot ${UBOOT_SIZE}
