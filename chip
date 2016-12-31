@@ -17,10 +17,11 @@ export KEY_RELEASE=no
 #export KEY_RELEASE=yes
 
 # for uboot and ramfsinit
-export SOURCE_DATE_EPOCH=1451606400
+# date -u --date="2017-01-01" +%s
+export SOURCE_DATE_EPOCH=1483228800
 
 # for kernel and gen_initramfs
-export KBUILD_BUILD_TIMESTAMP=2016-01-01
+export KBUILD_BUILD_TIMESTAMP=2017-01-01
 export KBUILD_BUILD_VERSION=1
 
 # for busybox config

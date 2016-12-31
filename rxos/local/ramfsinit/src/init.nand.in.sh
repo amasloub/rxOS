@@ -170,7 +170,7 @@ doboot() {
 ###############################################################################
 
 # Set the date to a sane value
-date -u "2016-01-01 0:00:00"
+date -u "2017-01-01 0:00:00"
 
 # Populate the /dev, /proc, and /sys directories
 mkdir -p /sys
