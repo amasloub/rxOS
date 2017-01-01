@@ -54,8 +54,8 @@ mkubiimg() {
 }
 
 # Memory locations
-SPL_ADDR1=0x43000000
-SPL_ADDR2=0x43800000
+SPL_ADDR1=0x43200000
+SPL_ADDR2=0x43a00000
 UBOOT_ADDR=0x4a000000
 #UBOOT_ENV_ADDR=0x4b000000
 UBOOT_SCRIPT_ADDR=0x43100000
@@ -95,20 +95,20 @@ nand info;
 ubi part UBI;
 ubifsmount ubi0:linux;
 test $nand_oobsize -eq 680 &&
-    ubifsload 0x43000000 sunxi-spl-with-ecc.bin.1664 &&
+    ubifsload 0x43200000 sunxi-spl-with-ecc.bin.1664 &&
     nand erase.part spl &&
-    nand write.raw.noverify 0x43000000 spl 0xC4 &&
+    nand write.raw.noverify 0x43200000 spl 0xC4 &&
     echo "Wrote sunxi-spl-with-ecc.bin.1664 to spl" &&
     nand erase.part spl-backup &&
-    nand write.raw.noverify 0x43000000 spl-backup 0xC4 &&
+    nand write.raw.noverify 0x43200000 spl-backup 0xC4 &&
     echo "Wrote sunxi-spl-with-ecc.bin.1664 to spl-backup";
 test $nand_oobsize -eq 500 &&
-    ubifsload 0x43000000 sunxi-spl-with-ecc.bin.1280 &&
+    ubifsload 0x43200000 sunxi-spl-with-ecc.bin.1280 &&
     nand erase.part spl &&
-    nand write.raw.noverify 0x43000000 spl 0xC4 &&
+    nand write.raw.noverify 0x43200000 spl 0xC4 &&
     echo "Wrote sunxi-spl-with-ecc.bin.1280 to spl" &&
     nand erase.part spl-backup &&
-    nand write.raw.noverify 0x43000000 spl-backup 0xC4 &&
+    nand write.raw.noverify 0x43200000 spl-backup 0xC4 &&
     echo "Wrote sunxi-spl-with-ecc.bin.1280 to spl-backup";
 ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb ||
   ubifsload ${fdt_addr_r} /sun5i-r8-chip.dtb.backup;
