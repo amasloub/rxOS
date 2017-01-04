@@ -13,8 +13,12 @@ then
     exit 1
 fi
 
-export KEY_RELEASE=no
-#export KEY_RELEASE=yes
+if [ -z "${KEY_RELEASE}" ]
+then
+    export KEY_RELEASE=no
+else
+    export KEY_RELEASE=yes
+fi
 
 # for uboot and ramfsinit
 # date -u --date="2017-01-01" +%s
