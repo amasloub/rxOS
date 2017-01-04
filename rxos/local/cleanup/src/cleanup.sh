@@ -22,11 +22,18 @@ LOG="logger -t cleanup"
 #  gribs older than 7 days
 [ -d "/mnt/downloads/Weather/grib2/" ] && find "/mnt/downloads/Weather/grib2/" -type d -mtime +7 | xargs -r -I {} rm -rf "{}"
 
-# APRS files older than 2 days
+#  oscar older than latest
+[ -d "/mnt/downloads/Weather/data/oscar" ] && find "/mnt/downloads/Weather/data/oscar" -type f |\
+     grep "surface-currents-oscar-0.33.json" | sort | head -n -1 | xargs -r -I {} rm -f "{}"
+
+# APRS files older than 3 days
 [ -d "/mnt/downloads/Amateur Radio/APRS/APRSAT/" ] && find "/mnt/downloads/Amateur Radio/APRS/APRSAT/" -type f -mtime +5 | xargs -r -I {} rm -f "{}"
 
 # Wikipedia files older than 60 days
 [ -d "/mnt/downloads/Wikipedia" ] && find "/mnt/downloads/Wikipedia" -type f -mtime +60 | xargs -r -I {} rm -f "{}"
+
+# Cache files not changed in 3 days
+[ -d "/mnt/downloads/.cache" ] && find "/mnt/downloads/.cache" -type f -mtime +7 | grep -v index | xargs -r -I {} rm -f "{}"
 
 
 if [ "$NEEDS" -le 0 ]; then
