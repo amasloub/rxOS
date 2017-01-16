@@ -44,7 +44,7 @@ define VSFTPD_RXOS_BUILD_CMDS
 endef
 
 define VSFTPD_RXOS_USERS
-	demo -1 demo -1 !demo /home/demo - - Readonly User
+    demo        1003    demo        1003    =demo       /home/demo          /bin/sh     -
 endef
 
 define VSFTPD_RXOS_INSTALL_INIT_SYSV
