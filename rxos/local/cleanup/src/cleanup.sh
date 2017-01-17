@@ -29,6 +29,9 @@ LOG="logger -t cleanup"
 # APRS files older than 3 days
 [ -d "/mnt/downloads/Amateur Radio/APRS/APRSAT/" ] && find "/mnt/downloads/Amateur Radio/APRS/APRSAT/" -type f -mtime +5 | xargs -r -I {} rm -f "{}"
 
+# News older than 7 days
+[ -d "/mnt/downloads/News" ] && find "/mnt/downloads/News" -type f -mtime +7 | xargs -r -I {} rm -f "{}"
+
 # Wikipedia files older than 60 days
 [ -d "/mnt/downloads/Wikipedia" ] && find "/mnt/downloads/Wikipedia" -type f -mtime +60 | xargs -r -I {} rm -f "{}"
 
