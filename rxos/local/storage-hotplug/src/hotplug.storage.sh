@@ -2,7 +2,7 @@
 #
 # Hot-plug external storage device, redirect ONDD downloads, and trigger FSAL
 # reindex.
-# 
+#
 # This script is intended to run by an udev rule, and as such relies on the
 # udev environment variables. In particular, the following environment
 # variables are expected to be defined:
@@ -14,7 +14,7 @@
 #
 # Only devices with $ID_BUS value of 'usb' will be considered to avoid
 # confusion with built-in storage devices like the SD card, loop devices, etc.
-# 
+#
 # When manually invoking the script, the environment values can be passed on
 # the command line with valid expected values.
 #
@@ -29,28 +29,21 @@
 
 # Set PATH
 PATH="/bin:/usr/bin:/sbin:/usr/sbin"
-REFRESH_CMD="/usr/bin/oncontentchange"
 
 EXTERNAL_MPOINT="/mnt/external"
 NODENAME="${DEVNAME##/dev/}"
 TMPMOUNT="/mnt/$NODENAME"
-SUPPORTED="vfat ntfs ext2 ext3 ext4"
+SUPPORTED="vfat ext2 ext3 ext4"
 MOUNT_OPTS="
-ntfs:windows_names,fmask=133,dmask=022,recover
 vfat:utf8
 "
 CHECK_PKG="%CHECK_PKG%"
 PLATFORM="$(cat /etc/platform)"
 
 case "$ID_FS_TYPE" in
-  ntfs)
-    MOUNT_CMD="ntfs-3g"
-    ;;
   *)
     MOUNT_CMD="mount -t $ID_FS_TYPE"
 esac
-
-ONDD_SOCKET="/var/run/ondd.ctrl"
 
 # Log debug messages
 log() {
@@ -94,7 +87,7 @@ mount_at() {
   path="$1"
   opts="$2"
   mkdir -p "$path"
-  $MOUNT_CMD -o "$opts" "$DEVNAME" "$path"
+  $MOUNT_CMD -o "sync,$opts" "$DEVNAME" "$path"
 }
 
 # Force-unmount specified device or mount point
@@ -111,11 +104,11 @@ umount_ext() {
 # Run firmware update
 run_pkg() {
   log "Checking for firmware updates"
-  pkg="$(find "$TMPMOUNT" -name "$PLATFORM*.pkg" -maxdepth 1 | sort | tail -n1)"
+  pkg="$(find "$TMPMOUNT" -regex "skylark-.*\.p?sop" -maxdepth 1 | sort | tail -n1)"
   [ -z "$pkg" ] && return 0
   [ -x "$pkg" ] || return 0
   log "Executing firmware update in $pkg"
-  if "$pkg"; then
+  if sop_handler "$pkg" ; then
     log "Finished executing firmware update"
     exit 0
   else
@@ -142,16 +135,12 @@ reset_led() {
   led_on
 }
 
-revert_internal() {
-  mount -o bind /mnt/internal /mnt/external
-}
-
 # Handle the 'add' event
 add() {
   log "Attempting to use $ID_FS_TYPE disk $DEVNAME"
 
   # Sanity checks
-  is_usb || fail "Not an USB device, ignoring"
+  is_usb || fail "Not a USB device, ignoring"
   is_supported || fail "$ID_FS_TYPE is not a supported filesystem."
 
   log "Checking disk integrity"
@@ -181,15 +170,19 @@ add() {
 
   log "Final mount to $EXTERNAL_MPOINT"
   if ! mount_at "$EXTERNAL_MPOINT" "$opts"; then
-    revert_internal
     fail "Unable to mount"
   fi
 
-  log "Redirecting ONDD to external storage"
-  log "Refreshing file index"
-  $REFRESH_CMD
+  log "Syncing to external storage"
+  rsync -a --inplace  /mnt/downloads "$EXTERNAL_MPOINT"
+  sync
+  log "Done Syncing to external storage"
+
+  led_fast_blink
 
   reset_led
+
+  remove
 }
 
 # Handle the 'remove' event
@@ -200,16 +193,12 @@ remove() {
     exit 0
   fi
 
-  led_slow_blink
+  led_fast_blink
 
   log "Attempting to unmount from '$mpoint'"
   # We cannot umount $DEVNAME here because the device node is already gone, so
   # we must unmount the mount point instead.
   umountf "$mpoint" || fail "Could not unmount the device"
-  revert_internal
-
-  log "Refreshing file index"
-  $REFRESH_CMD
 
   reset_led
 }
