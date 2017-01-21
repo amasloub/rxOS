@@ -182,7 +182,14 @@ add() {
 
   reset_led
 
-  remove
+  mount -o remount,ro "$EXTERNAL_MPOINT"
+
+  [ -d /home/outernet/external ] || mkdir -p /home/outernet/external
+  mount -o bind "$EXTERNAL_MPOINT" /home/outernet/external
+
+  [ -d /home/guest/external ] || mkdir -p /home/guest/external
+  mount -o bind "$EXTERNAL_MPOINT" /home/guest/external
+
 }
 
 # Handle the 'remove' event
