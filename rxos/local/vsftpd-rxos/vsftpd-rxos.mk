@@ -44,7 +44,7 @@ define VSFTPD_RXOS_BUILD_CMDS
 endef
 
 define VSFTPD_RXOS_USERS
-    demo        1003    demo        1003    =demo       /home/demo          /bin/sh     -
+    guest        1003    guest        1003    =guest       /home/guest          /bin/sh     -
 endef
 
 define VSFTPD_RXOS_INSTALL_INIT_SYSV
@@ -61,7 +61,7 @@ define VSFTPD_RXOS_INSTALL_TARGET_CMDS
 		$(INSTALL) -D -m 644 $(call lpkgdir,vsftpd-rxos)/vsftpd.conf \
 			$(TARGET_DIR)/etc/vsftpd.conf
 	$(INSTALL) -d -m 700 $(TARGET_DIR)/usr/share/empty
-	$(INSTALL) -d -m 555 $(TARGET_DIR)/home/demo
+	$(INSTALL) -d -m 555 $(TARGET_DIR)/home/guest
 endef
 
 $(eval $(generic-package))

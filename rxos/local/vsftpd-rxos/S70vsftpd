@@ -7,10 +7,10 @@ NAME=vsftpd
 DAEMON=/usr/sbin/$NAME
 
 # enabled anonymous ftp access to downloads
-if [ ! -d /home/demo/downloads ]
+if [ ! -d /home/guest/downloads ]
 then
-    mkdir /home/demo/downloads
-    mount --bind /mnt/downloads /home/demo/downloads
+    mkdir /home/guest/downloads
+    mount --bind /mnt/downloads /home/guest/downloads
 fi
 
 case "$1" in
