@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# start a user script at boot end
+#
+# This file is part of rxOS.
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+#
+# (c) 2016 Outernet Inc
+# Some rights reserved.
+
+
+case $1 in
+  start)
+    /mnt/downloads/bin/user.sh > /tmp/user.log 2>>&1 &
+    ;;
+  stop)
+    ;;
+  restart)
+    $0 start
+    ;;
+  *)
+    echo "Usage: $* {start|stop|restart}"
+    ;;
+esac
