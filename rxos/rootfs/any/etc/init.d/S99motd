@@ -17,13 +17,10 @@ MOTD_FILE=/etc/motd
 case $1 in
   start)
     echo "============================================" > $MOTD_FILE
-    echo "rxOS v$RXOS_VERSION / $RXOS_SUBPLATFORM ($RXOS_BUILD)" >> $MOTD_FILE
+    echo "Skylark v$RXOS_VERSION / $RXOS_SUBPLATFORM ($RXOS_BUILD)" >> $MOTD_FILE
     echo "built at $RXOS_TIMESTAMP" >> $MOTD_FILE
     echo >> $MOTD_FILE
-    echo "rxOS is free software released under the" >> $MOTD_FILE
-    echo "GNU GPL version 3 or any later version." >> $MOTD_FILE
-    echo >> $MOTD_FILE
-    echo "Copyright 2016 Outernet Inc" >> $MOTD_FILE
+    echo "Copyright 2017 Outernet Inc" >> $MOTD_FILE
     echo "Some rights reserved." >> $MOTD_FILE
     echo "============================================" >> $MOTD_FILE
     ;;
