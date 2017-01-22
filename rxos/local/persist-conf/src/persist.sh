@@ -60,6 +60,19 @@ persist_path() {
   ln -s "$target_path" "$path" || return 1
 }
 
+# OTA can setup these tags to request cleanup at next boot
+if [ -f "${CONFDIR}/.full-clean" ]
+then
+    find "${CONFDIR}" -type f | xargs -r -I {} rm -rf "{}"
+else
+    if [ -f "${CONFDIR}/.lite-clean" ]
+    then
+        find "${CONFDIR}" -type f | grep -v rxos_config | xargs -r -I {} rm -rf "{}"
+    fi
+fi
+
+
+
 # This flag will be turned non-zero for any paths that fail to persist, and
 # then used as a return code for the entire script.
 errors=0
