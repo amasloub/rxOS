@@ -4,7 +4,8 @@
 #
 ################################################################################
 
-UI2_VERSION = skylark-alpha-026
+UI2_VERSION = skylark-alpha-027
+
 UI2_SITE = https://github.com/Outernet-Project/RxOS-UI2
 UI2_SITE_METHOD = git
 
