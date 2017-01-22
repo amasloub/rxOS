@@ -25,7 +25,8 @@ SOURCEDIR="$3"
 if [ -f "$SOURCEFILE" ]
 then
     echo Discovered "$SOURCEFILE", extracting...
-    $TAR xf "$SOURCEFILE" --directory "$DESTINATION" && rm "$SOURCEFILE"
+    $TAR xf "$SOURCEFILE" --directory "$DESTINATION"
+    rm "$SOURCEFILE"
 fi
 
 # handle older remnant files as well, just in case
@@ -34,6 +35,10 @@ do
     if [ -f "$fname" ]
     then
         echo Discovered "$fname", extracting...
-        $TAR xf "$fname" --directory "$DESTINATION" && rm "fname"
+        $TAR xf "$fname" --directory "$DESTINATION"
+        rm "fname"
     fi
 done
+
+# fixup permissions
+chown -R outernet:outernet "$DESTINATION"
