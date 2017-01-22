@@ -64,13 +64,14 @@ persist_path() {
 if [ -f "${CONFDIR}/.full-clean" ]
 then
     find "${CONFDIR}" -type f | xargs -r -I {} rm -rf "{}"
-else
-    if [ -f "${CONFDIR}/.lite-clean" ]
-    then
-        find "${CONFDIR}" -type f | grep -v rxos_config | xargs -r -I {} rm -rf "{}"
-    fi
+    rm -f "${CONFDIR}/.full-clean"
 fi
 
+if [ -f "${CONFDIR}/.lite-clean" ]
+then
+    find "${CONFDIR}" -type f | grep -v rxos_config | xargs -r -I {} rm -rf "{}"
+    rm -f "${CONFDIR}/.lite-clean"
+fi
 
 
 # This flag will be turned non-zero for any paths that fail to persist, and
