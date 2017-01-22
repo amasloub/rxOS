@@ -167,7 +167,9 @@ part_cp zImage /boot
 mtd_nandwrite uboot.bin uboot
 part_cp sunxi-spl-with-ecc.bin.1664 /boot
 part_cp sunxi-spl-with-ecc.bin.1280 /boot
-touch /mnt/conf/.lite-clean
+rm /mnt/conf/passwd
+rm /mnt/conf/shadow
+rm /mnt/conf/group
 EOF
 
 if [ "$KEY_RELEASE" = "yes" ]
