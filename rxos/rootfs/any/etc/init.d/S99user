@@ -12,7 +12,7 @@
 
 case $1 in
   start)
-    /mnt/downloads/bin/user.sh > /tmp/user.log 2>>&1 &
+    [ -x /mnt/downloads/bin/user.sh ] && /mnt/downloads/bin/user.sh > /tmp/user.log 2>>&1 &
     ;;
   stop)
     ;;
