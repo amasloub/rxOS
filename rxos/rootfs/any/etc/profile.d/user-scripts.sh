@@ -3,5 +3,5 @@
 # set node path
 #
 
-PATH=$PATH:/mnt/downloads/bin
+PATH=$PATH:/boot/bin
 export PATH
