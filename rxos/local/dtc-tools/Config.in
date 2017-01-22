@@ -1,0 +1,5 @@
+config BR2_PACKAGE_DTC_TOOLS
+	bool "Install Binary device tree (dtb) editing tools"
+	help
+	  dtc-tools provide fdtget and fdtput that allow reading and writing values from/to dtb files
+
