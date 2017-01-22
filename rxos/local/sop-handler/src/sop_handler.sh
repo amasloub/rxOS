@@ -102,6 +102,14 @@ sop_store() {
     echo
 }
 
+conf_clean() {
+    find /mnt/conf -type f | grep -v rxos_config | xargs -r -I {} rm -rf "{}"
+}
+
+factory_reset() {
+    rm -rf /mnt/conf
+}
+
 psop_apply() {
     loc="/boot"
     #psops are named: prefix.stamp.to.stamp.psop
@@ -111,7 +119,7 @@ psop_apply() {
     src_ksop="$prefix$src_sop_stamp.ksop"
     dest_sop_stamp=$(basename "$SOP_FILE" | cut -d . -f 4)
     dest_sop="$prefix$dest_sop_stamp.sop"
-    
+
     if [ "$src_sop_stamp" -ge "$dest_sop_stamp" ]
     then
         echo "update is same stamp or older than current images. rejecting."
@@ -210,7 +218,7 @@ sync; sync; sync
 
 if [ -n "$reboot" ]
 then
-    echo rebooting in 100 seconds as update applied
-    sleep 100
+    echo rebooting in 60 seconds as update applied
+    sleep 60
     reboot
 fi
