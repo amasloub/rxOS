@@ -12,7 +12,9 @@
 
 case $1 in
   start)
-    [ -x /mnt/downloads/bin/user.sh ] && /mnt/downloads/bin/user.sh > /tmp/user.log 2>>&1 &
+    [ -x /mnt/downloads/bin/user.sh ] && \
+    [ $(stat -c "%u" /mnt/downloads/bin/user.sh) -eq 0 ] && \
+    /mnt/downloads/bin/user.sh > /tmp/user.log 2>>&1 &
     ;;
   stop)
     ;;
