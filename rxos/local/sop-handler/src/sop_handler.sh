@@ -126,6 +126,12 @@ psop_apply() {
         clean_exit 1
     fi
 
+    if [ -f "/boot/$dest_sop" ]
+    then
+        echo "update is same stamp or older than current images. rejecting."
+        clean_exit 1
+    fi
+
     if [ -f "$loc/$src_sop" ]
     then
         src_sop="$src_sop"
@@ -175,6 +181,13 @@ psop_apply() {
 }
 
 sop_apply() {
+    base_sop=$(basename  "$SOP_FILE")
+    if [ -f "/boot/$base_sop" ]
+    then
+        echo "update is same stamp or older than current images. rejecting."
+        clean_exit 1
+    fi
+
     sop_validate
     [ -d "$sopmpt" ] && rm -rf "$sopmpt"
     mkdir "$sopmpt"
