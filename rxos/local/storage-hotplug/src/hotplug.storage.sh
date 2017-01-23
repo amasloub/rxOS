@@ -173,22 +173,15 @@ add() {
     fail "Unable to mount"
   fi
 
-  log "Syncing to external storage"
-  rsync -a --inplace  /mnt/downloads "$EXTERNAL_MPOINT"
-  sync
-  log "Done Syncing to external storage"
-
-  led_fast_blink
-
-  reset_led
-
-  mount -o remount,ro "$EXTERNAL_MPOINT"
-
   [ -d /home/outernet/external ] || mkdir -p /home/outernet/external
   mount -o bind "$EXTERNAL_MPOINT" /home/outernet/external
 
   [ -d /home/guest/external ] || mkdir -p /home/guest/external
   mount -o bind "$EXTERNAL_MPOINT" /home/guest/external
+
+  led_fast_blink
+
+  reset_led
 
 }
 
@@ -203,6 +196,8 @@ remove() {
   led_fast_blink
 
   log "Attempting to unmount from '$mpoint'"
+  umount -o bind /home/outernet/external && rmdir /home/outernet/external
+  umount -o bind /home/guest/external && rmdir /home/guest/external
   # We cannot umount $DEVNAME here because the device node is already gone, so
   # we must unmount the mount point instead.
   umountf "$mpoint" || fail "Could not unmount the device"

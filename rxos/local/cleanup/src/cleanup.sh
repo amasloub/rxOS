@@ -10,8 +10,17 @@ MINFREE=$(( 400 * MiB ))  # 2x OTA update 200 MiB
 NEEDS="$(( MINFREE - AVAIL ))"  # KiB
 LOG="logger -t cleanup"
 
+# before deleting anything, sync to external drive
+if mountpoint /mnt/external | grep -q -v not
+then
+    $LOG "Syncing to external storage"
+    rsync -a --inplace  /mnt/downloads /mnt/external
+    sync
+    $LOG "Done Syncing to external storage"
+fi
 
 # first clean up the regularly updated dirs
+$LOG "Starting cleanup"
 
 # Weather jsons
 
