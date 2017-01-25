@@ -228,18 +228,18 @@ then
     cat "$BINARIES_DIR/skylark-chip-${timestamp}.sig" >>  "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop"
 
     echo "done."
-
-    echo -n "Creating cloop image..."
-    create_compressed_fs -q -B 64K "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > /dev/null 2>&1
-    echo "done."
-
-    # sop file stored inside zip is forcibly named ksop
-    cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.ksop"
-    cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop" "$tmpdir"
 else
-    echo " *** No signing key at $BR2_EXTERNAL/sop.privkey. sop cannot be signed. signing is not optional. ***"
-    exit 1
+    echo "*** No signing key at $BR2_EXTERNAL/sop.privkey. sop will not be signed. ***"
+    cp "$BINARIES_DIR/skylark-chip-${timestamp}.unsigned.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop"
 fi
+
+echo -n "Creating cloop image..."
+create_compressed_fs -q -B 64K "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > /dev/null 2>&1
+echo "done."
+
+# sop file stored inside zip is forcibly named ksop
+cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.ksop"
+cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop" "$tmpdir"
 
 echo -n "Creating ubifs images..."
 cp -v "$BR2_EXTERNAL/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
