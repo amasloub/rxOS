@@ -10,6 +10,8 @@ then
     echo '  otherwise delta updates will be massive.'
     echo
     echo 'Stubbornly refusing to proceed. thbbt!'
+    echo '(feel free to comment out the exit line here '
+    echo 'in this script to proceed, if you insist. boo!)'
     exit 1
 fi
 
