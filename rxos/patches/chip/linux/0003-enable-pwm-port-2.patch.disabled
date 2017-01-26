@@ -1,0 +1,16 @@
+this patch enables the PWM pin support in the kernel. PWM pin is PB2 on CHIP
+
+diff --git a/arch/arm/boot/dts/sun5i-r8-chip.dts b/arch/arm/boot/dts/sun5i-r8-chip.dts
+index e223d0f..bfa3b20 100644
+--- a/arch/arm/boot/dts/sun5i-r8-chip.dts
++++ b/arch/arm/boot/dts/sun5i-r8-chip.dts
+@@ -356,3 +356,9 @@
+ 	usb0_vbus-supply = <&reg_usb0_vbus>;
+ 	usb1_vbus-supply = <&reg_vcc5v0>;
+ };
++
++&pwm {
++    status = "okay";
++};
++
++
