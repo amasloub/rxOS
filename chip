@@ -39,6 +39,9 @@ export MKPASSWD_SALT=mgfYRgrU
 # for build timestamps
 export RXOS_TIMESTAMP="$(date -u --rfc-3339=seconds)"
 
+# to reduce OTA size
+export NASTY_OTA_HACK='skylark-chip-build-v4.2-1701041326+f85f1c1'
+
 [ -d rxos/overlays ] || mkdir rxos/overlays/
 
 if [ $# -gt  0 ]

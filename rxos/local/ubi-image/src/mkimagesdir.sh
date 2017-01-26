@@ -185,4 +185,11 @@ imagesdir="$BINARIES_DIR/images/images"
 
 mkdir -p "$imagesdir"
 
+if [ -n "${NASTY_OTA_HACK}" -a -d "${BINARIES_DIR}/../../../../rxos_builds/${NASTY_OTA_HACK}" ]
+then
+    echo "Running NASTY_OTA_HACK"
+    cp "${BINARIES_DIR}/../../../../rxos_builds/${NASTY_OTA_HACK}/zImage" "$LINUX"
+    tar xf "${BINARIES_DIR}/../../../../rxos_builds/${NASTY_OTA_HACK}/lib.modules.4.4.13.tgz" -C "${BINARIES_DIR}/../target"
+fi
+
 cp  "$BINARIES_DIR/manifest" "$BINARIES_DIR/uboot.bin" "${SPL_ECC}.1664" "${SPL_ECC}.1280" "$LINUX" "$DTB" "$imagesdir"
