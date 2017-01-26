@@ -241,9 +241,10 @@ echo "done."
 cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.ksop"
 cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop" "$tmpdir"
 
-echo -n "Creating ubifs images..."
 cp -v "$BR2_EXTERNAL/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
   || echo "WARN: Overlays not copied"  # but it's ok
+
+echo -n "Creating ubifs images..."
 mkubifs "$tmpdir" "$BINARIES_DIR/linux.ubifs"
 rm -rf "$tmpdir"
 mkdir "$tmpdir"
