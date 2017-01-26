@@ -44,7 +44,7 @@ define VSFTPD_RXOS_BUILD_CMDS
 endef
 
 define VSFTPD_RXOS_USERS
-    guest        1003    guest        1003    =guest       /home/guest          /bin/sh     -
+    guest        1003    guest        1003    =guest       /home/guest          /bin/false     -
 endef
 
 define VSFTPD_RXOS_INSTALL_INIT_SYSV
