@@ -9,7 +9,7 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-USER_SCRIPT="/boot/bin/user.sh"
+USER_SCRIPT="/mnt/conf/bin/user.sh"
 
 case $1 in
   start)
