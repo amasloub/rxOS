@@ -15,7 +15,7 @@ case $1 in
   start)
     [ -x "${USER_SCRIPT}" ] && \
     [ $(stat -c "%u" "${USER_SCRIPT}") -eq 0 ] && \
-    ${USER_SCRIPT} > /tmp/user.log 2>&1 &
+    ${USER_SCRIPT} > /var/log/user.log 2>&1 &
     ;;
   stop)
     ;;
