@@ -48,6 +48,9 @@ $LOG "Starting cleanup"
 # Cache files not changed in 3 days
 [ -d "$DLDIR/.cache" ] && find "$DLDIR/.cache" -type f -mtime +7 | grep -v index | xargs -r -I {} rm -f "{}"
 
+# Log files older than 60 days
+[ -d "$DLDIR/.log" ] && find "$DLDIR/.log" -type f -mtime +60 | xargs -r -I {} rm -f "{}"
+
 
 if [ "$NEEDS" -le 0 ]; then
   $LOG "Needs $MINFREE KiB, but there is already $AVAIL KiB, nothing to do"
