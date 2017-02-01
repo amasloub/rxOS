@@ -14,8 +14,10 @@ LOG="logger -t cleanup"
 if mountpoint /mnt/external | grep -q -v not
 then
     $LOG "Syncing to external storage"
+    mount -o remount,rw /mnt/external
     rsync -a --inplace  /mnt/downloads /mnt/external
     sync
+    mount -o remount,ro /mnt/external
     $LOG "Done Syncing to external storage"
 fi
 
