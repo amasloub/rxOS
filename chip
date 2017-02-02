@@ -18,6 +18,7 @@ fi
 
 # Set KEY_RELEASE to the last key release path under ../rxos_builds/RELEASES
 # if unset, _this_ build will build a key release
+KEY_RELEASE="skylark-chip-build-v4.2-1701041326+f85f1c1"
 
 if [ -n "${KEY_RELEASE}" ]
 then
