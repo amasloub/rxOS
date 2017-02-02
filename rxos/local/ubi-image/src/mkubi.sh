@@ -246,14 +246,15 @@ then
 else
     # for delta releases, the key release ksop is also stored inside the
     # linux ubifs image so that delta updates can be made against it
-    if [ ! -f "${BINARIES_DIR}/../../../../rxos_builds/RELEASES/${KEY_RELEASE}/*.ksop" ]
+    KEY_SOP=$(find ${BINARIES_DIR}/../../../../rxos_builds/RELEASES/${KEY_RELEASE}/*.ksop)
+    if [ ! -f "${KEY_SOP}" ]
     then
-        echo $(realpath "${BINARIES_DIR}/../../../../rxos_builds/RELEASES/${KEY_RELEASE}/*.ksop") does not exist.
+        echo $(realpath "${KEY_SOP}" ) does not exist.
         echo cannot store ksop from key release ${KEY_RELEASE} in the boot fs. bailing.
         exit 1
     fi
     cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$tmpdir"
-    cp "${BINARIES_DIR}/../../../../rxos_builds/RELEASES/${KEY_RELEASE}/*.ksop" "$tmpdir"
+    cp "${KEY_SOP}" "$tmpdir"
 fi
 
 cp -v "$BR2_EXTERNAL/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
