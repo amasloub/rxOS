@@ -237,9 +237,24 @@ echo -n "Creating cloop image..."
 create_compressed_fs -q -B 64K "$BINARIES_DIR/skylark-chip-${timestamp}.uncompr.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.sop" > /dev/null 2>&1
 echo "done."
 
-# sop file stored inside zip is forcibly named ksop
-cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.ksop"
-cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop" "$tmpdir"
+# sop file stored inside zip is forcibly named ksop for key releases
+if [ -z ${KEY_RELEASE} ]
+then
+    # sop file stored inside zip is forcibly named ksop for key releases
+    cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$BINARIES_DIR/skylark-chip-${timestamp}.ksop"
+    cp "$BINARIES_DIR/skylark-chip-${timestamp}.ksop" "$tmpdir"
+else
+    # for delta releases, the key release ksop is also stored inside the
+    # linux ubifs image so that delta updates can be made against it
+    if [ ! -f "${BINARIES_DIR}/../../../../rxos_builds/RELEASES/${KEY_RELEASE}/*.ksop" ]
+    then
+        echo $(realpath "${BINARIES_DIR}/../../../../rxos_builds/RELEASES/${KEY_RELEASE}/*.ksop") does not exist.
+        echo cannot store ksop from key release ${KEY_RELEASE} in the boot fs. bailing.
+        exit 1
+    fi
+    cp "$BINARIES_DIR/skylark-chip-${timestamp}.sop" "$tmpdir"
+    cp "${BINARIES_DIR}/../../../../rxos_builds/RELEASES/${KEY_RELEASE}/*.ksop" "$tmpdir"
+fi
 
 cp -v "$BR2_EXTERNAL/overlays/"*.sqfs "$tmpdir" 2>/dev/null \
   || echo "WARN: Overlays not copied"  # but it's ok
