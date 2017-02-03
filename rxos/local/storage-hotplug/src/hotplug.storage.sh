@@ -173,6 +173,8 @@ add() {
     fail "Unable to mount"
   fi
 
+  mount -o remount,ro "$EXTERNAL_MPOINT"
+
   [ -d /home/outernet/external ] || mkdir -p /home/outernet/external
   mount -o bind "$EXTERNAL_MPOINT" /home/outernet/external
 

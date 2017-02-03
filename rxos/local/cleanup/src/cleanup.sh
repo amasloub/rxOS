@@ -14,8 +14,10 @@ LOG="logger -t cleanup"
 if mountpoint /mnt/external | grep -q -v not
 then
     $LOG "Syncing to external storage"
+    mount -o remount,rw /mnt/external
     rsync -a --inplace  /mnt/downloads /mnt/external
     sync
+    mount -o remount,ro /mnt/external
     $LOG "Done Syncing to external storage"
 fi
 
@@ -45,6 +47,9 @@ $LOG "Starting cleanup"
 
 # Cache files not changed in 3 days
 [ -d "$DLDIR/.cache" ] && find "$DLDIR/.cache" -type f -mtime +7 | grep -v index | xargs -r -I {} rm -f "{}"
+
+# Log files older than 60 days
+[ -d "$DLDIR/.log" ] && find "$DLDIR/.log" -type f -mtime +60 | xargs -r -I {} rm -f "{}"
 
 
 if [ "$NEEDS" -le 0 ]; then

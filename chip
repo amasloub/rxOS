@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# uncomment one and exactly one of these  to make a key release or point release
-# key releases are stored on target receivers, so partial sops can be diffed from them
-# point releases are not stored on receivers, so psops _MUST NOT_ be diffed from them
+
+# this prevents building at the wrong path
+# if you are not building for release feel free to remove the exit line
 
 if [ "$PWD" != "/builds/rxos/rxos" ]
 then
@@ -15,12 +15,25 @@ then
     exit 1
 fi
 
-if [ -z "${KEY_RELEASE}" ]
+
+# Set KEY_RELEASE to the last key release path under ../rxos_builds/RELEASES
+# if unset, _this_ build will build a key release
+KEY_RELEASE="skylark-chip-build-v4.2-1701041326+f85f1c1"
+
+if [ -n "${KEY_RELEASE}" ]
 then
-    export KEY_RELEASE=no
+    echo "Building Delta release"
+    if [ ! -d "../rxos_builds/RELEASES/${KEY_RELEASE}" ]
+    then
+        echo "KEY_RELEASE is set to ${KEY_RELEASE} but the release does not exist in ../rxos_builds/RELEASES"
+        echo "cannot continue. bailing."
+        exit 1
+    fi
 else
-    export KEY_RELEASE=yes
+    echo "Building KEY release"
 fi
+
+export KEY_RELEASE
 
 # for uboot and ramfsinit
 # date -u --date="2017-01-01" +%s
@@ -38,10 +51,6 @@ export MKPASSWD_SALT=mgfYRgrU
 
 # for build timestamps
 export RXOS_TIMESTAMP="$(date -u --rfc-3339=seconds)"
-
-# to reduce OTA size
-export NASTY_OTA_HACK='skylark-chip-build-v4.2-1701041326+f85f1c1'
-#export NASTY_OTA_HACK=''
 
 [ -d rxos/overlays ] || mkdir rxos/overlays/
 
