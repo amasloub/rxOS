@@ -292,31 +292,6 @@ echo "==> Resetting environment"
 env default mtdparts
 env default bootargs
 env default bootcmd
-
-setenv baudrate 115200
-setenv bootdelay 2
-setenv bootm_size 0xa000000
-setenv console ttyS0,115200
-setenv dfu_alt_info_ram "kernel ram 0x42000000 0x1000000;fdt ram 0x43000000 0x100000;ramdisk ram 0x43300000 0x4000000"
-setenv ethact usb_ether
-setenv ethaddr 02:c4:03:c2:d2:a3
-setenv fdt_addr_r 0x43000000
-setenv fdtcontroladdr 5ab25520
-setenv fdtfile sun5i-r8-chip.dtb
-setenv kernel_addr_r 0x42000000
-setenv mtddevname spl
-setenv mtddevnum 0
-setenv mtdids nand0=sunxi-nand.0
-setenv partition nand0,0
-setenv preboot "usb start"
-setenv pxefile_addr_r 0x43200000
-setenv ramdisk_addr_r 0x43300000
-setenv scriptaddr 0x43100000
-setenv stderr serial,vga
-setenv stdin serial,usbkbd
-setenv stdout serial,vga
-setenv usbnet_devaddr de:ad:be:af:00:01
-
 saveenv
 echo "==> Setting up MTD partitions"
 setenv mtdparts 'mtdparts=$MTDPARTS'
