@@ -1,6 +1,7 @@
 config BR2_PACKAGE_SD_IMAGE
 	bool "Create SD image"
     select BR2_TARGET_ROOTFS_ISOROOT
+    select BR2_PACKAGE_HOST_DIR2FAT32
 	help
 	  Create SD image containing all relevant
 	  board partitions.
