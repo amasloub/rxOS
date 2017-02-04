@@ -29,6 +29,7 @@ menu "Firmware configuration"
 		  applications.
 
 	source "$BR2_EXTERNAL/local/sdimage/Config.in"
+	source "$BR2_EXTERNAL/local/sd-image/Config.in"
 	source "$BR2_EXTERNAL/local/ubi-image/Config.in"
 	source "$BR2_EXTERNAL/local/ota-pkg/Config.in"
 	source "$BR2_EXTERNAL/local/sop-handler/Config.in"
