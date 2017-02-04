@@ -1,0 +1,17 @@
+# This file is part of rxOS.
+# rxOS is free software licensed under the
+# GNU GPL version 3 or any later version.
+# 
+# (c) 2016 Outernet Inc
+# Some rights reserved
+
+# <device>      <mount dir>     <type>      <options>                   <dump/pass>
+proc            /proc           proc        defaults                    0   0
+devpts          /dev/pts        devpts      defaults,gid=5,mode=620     0   0
+tmpfs           /dev/shm        tmpfs       mode=0777                   0   0
+tmpfs           /run            tmpfs       mode=0755,nosuid,nodev      0   0
+sysfs           /sys            sysfs       defaults                    0   0
+
+/dev/mmcblk0p3 /mnt/conf        ext4        noatime,sync                0   1
+/dev/mmcblk0p4 /mnt/downloads   ext4        noatime                     0   1
+
