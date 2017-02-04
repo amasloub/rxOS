@@ -20,8 +20,9 @@ FLASH_ZIPNAME = $(FLASH_BASENAME).zip
 FLASH_MD5NAME = $(FLASH_BASENAME).md5
 SAVE_ARCHIVE_BASE = $(BINARIES_DIR)/../../../../rxos_builds
 SAVE_ARCHIVE_DIR = $(SAVE_ARCHIVE_BASE)/$(PLATFORM)-$(SUBPLATFORM)-build-$(FULL_VERSION)
+SD_IMAGE = $(BINARIES_DIR)/$(PRODUCT)-$(BOARD)-$(DATE).img
 
-.PHONY: release-sdcard release-flash
+.PHONY: release-sdcard release-flash release-sd-image
 
 
 $(BINARIES_DIR)/INSTALL.txt: $(BR2_EXTERNAL)/misc/INSTALL.txt
@@ -60,3 +61,6 @@ $(FLASH_ZIPNAME): $(BINARIES_DIR)/linux.ubifs $(BINARIES_DIR)/empty.ubifs $(BINA
 release-sdcard: $(SDCARD_MD5NAME)
 
 release-flash: $(FLASH_ZIPNAME)
+
+release-sd-image: $(SD_IMAGE)
+	gzip  $(SD_IMAGE)
