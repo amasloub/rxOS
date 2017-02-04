@@ -16,10 +16,18 @@ export PATH=/bin
 # Script parameters
 TMPFS_SIZE="%TMPFS_SIZE%m"
 VERSION="%VERSION%"
-CMDLINE="$@"
+CMDLINE="$*"
 OVERLAYS=
 CONSOLE=/dev/console
-ROOT_IMAGES="root.sqfs backup.sqfs factory.sqfs"
+ROOT_PARTS="root root-backup"
+
+if [ -f /sys/class/gpio/gpiochip408/base ]
+then
+    SAFE_MODE_PIN=408
+elif [ -f /sys/class/gpio/gpiochip1016/base ]
+then
+    SAFE_MODE_PIN=1016
+fi
 
 # Check whether command line has some argument
 hasarg() {
@@ -40,11 +48,12 @@ bail() {
   exec sh
 }
 
+
 # Wait for /dev/mmcblk0p1 to appear
 #
 # Since we need the SD card to be present, we must wait for it to appear in the
-# /dev directory. It is usually not necessary to wait too long, but it can 
-# still happen that the device node is not present at this point (perhaps due 
+# /dev directory. It is usually not necessary to wait too long, but it can
+# still happen that the device node is not present at this point (perhaps due
 # to some external device being plugged in).
 wait_for_sd() {
   echo "Waiting for SD card to become available"
@@ -52,6 +61,8 @@ wait_for_sd() {
     sleep 1
   done
 }
+
+
 
 # Check that specified path is an executable file or a link that points to one
 test_exe() {
@@ -82,7 +93,7 @@ loop_mount() {
 # Find a backup version of an overlay SquashFS image
 find_backup() {
   name="$1"
-  find /sdcard -name "overlay-${name}-*.sqfs.backup" | tail -n1
+  find /linux -name "overlay-${name}-*.sqfs.backup" | tail -n1
 }
 
 # Mount the root filesystem overlay
@@ -114,12 +125,15 @@ mount_overlay() {
 # Mount the root filesystem
 #
 # The tmpfs is mounted with size specified by $TMPFS_SIZE, and overlaid over 
-# the read-only rootfs image using OverlayFS to provide a volatile write 
+# the read-only rootfs image using OverlayFS to provide a volatile write
 # layer.
 mount_root() {
-  image_path="/sdcard/$1"
-  echo "Attempt to mount $image_path"
-  loop_mount "$image_path" "/rootfs" || return 1
+  sopfile="$1"
+  echo "Attempt to mount $sopfile"
+  losetup /dev/cloop0 "$sopfile"
+  echo "Attached $sopfile to /dev/cloop0"
+  mount -o ro /dev/cloop0 /rootfs || return 1
+  echo "Mounted rootfs"
   test_exe /rootfs/sbin/init || return 1
   lower="/rootfs"
   # Add any overlays
@@ -138,7 +152,7 @@ mount_root() {
 # Also move the devtmpfs mount point into the root mount point.
 set_up_boot() {
   mkdir -p /root/boot /root/dev
-  mount --move /sdcard /root/boot
+  mount --move /linux /root/boot
   mount --move /dev /root/dev
   mount --move /proc /root/proc
   mount --move /sys /root/sys
@@ -160,7 +174,7 @@ doboot() {
   if hasarg noroot; then
     sleep 10
     echo "Do not boot into rootfs"
-    exec $SH
+    exec sh
   fi
   echo "Attempt boot $rootfs_image"
   set_up_boot
@@ -172,7 +186,7 @@ doboot() {
 ###############################################################################
 
 # Set the date to a sane value
-date "2015-01-01 0:00:00"
+date -u "2017-01-01 0:00:00"
 
 # Populate the /dev, /proc, and /sys directories
 mkdir -p /sys
@@ -185,13 +199,13 @@ exec 0<$CONSOLE
 exec 1>$CONSOLE
 exec 2>$CONSOLE
 
-echo "++++ Starting rxOS v$VERSION ++++"
+echo "++++ Starting $PRODUCT v$VERSION ++++"
 
-# Before the script can do its job, it needs to set up the mount points and 
-# mount the root partition on the SD card. These mount points exist strictly 
-# within the initial RAM filesystem and will be preserved after switch_root is 
+# Before the script can do its job, it needs to set up the mount points and
+# mount the root partition on the SD card. These mount points exist strictly
+# within the initial RAM filesystem and will be preserved after switch_root is
 # performed.
-mkdir -p /sdcard /rootfs /tmpfs /root /omnt
+mkdir -p /rootfs /tmpfs /root /linux /omnt
 
 # If 'shell' has been passed as a kernel command line argument, drop into
 # emergency shell right away.
@@ -200,10 +214,16 @@ if hasarg "shell"; then
   exec sh
 fi
 
-# If 'safemode' has been passed as a kernel command line argument, enable safe
-# mode.
-if hasarg "safemode"; then
-  SAFE_MODE=y
+# Determine whether we are using safe mode or not by checking the SAFE_MODE_PIN
+# value and presence of safemode command line argument
+if [ -n "$SAFE_MODE_PIN" ]
+then
+    echo "$SAFE_MODE_PIN" > /sys/class/gpio/export
+    is_safe_mode=$(cat "/sys/class/gpio/gpio$SAFE_MODE_PIN/value")
+    echo "$SAFE_MODE_PIN" > /sys/class/gpio/unexport
+    if hasarg "safemode" || [ "$is_safe_mode" = 0 ]; then
+        SAFE_MODE=y
+    fi
 fi
 
 # Run setup hooks. The hooks are shell scripts that named like hook-*.sh. They
@@ -211,68 +231,106 @@ fi
 # themselves whether they need to run more than once. Because the hooks need to
 # run as soon as possible (e.g., before any mounting has been performed), they
 # are bundled in the initramfs and therefore cannot be removed or modified.
-for hook in /hook-*.sh; do
-  echo "Executing '$hook' hook"
-  sh "$hook"
-done
+if [ -f /hook-*.sh ]
+then
+  for hook in /hook-*.sh; do
+    echo "Executing '$hook' hook"
+    sh "$hook"
+  done
+else
+    echo "No hooks"
+fi
 
 # Mount the tmpfs (RAM disk) to be used as a writable overlay, and set up
 # directories that will be used for the overlays.
 mount -t tmpfs tmpfs -o "size=$TMPFS_SIZE" /tmpfs || return 1
-mkdir -p /tmpfs/upper /tmpfs/work 
-
-# Wait for SD card if needed
-[ -e "/dev/mmcblk0p1" ] || wait_for_sd
-
-# Perform disk check on the SD card
-fsck.vfat -yp /dev/mmcblk0p1
-
-# We are ready to mount the boot partition. Since this partition is on a 
-# removable medium, we use `-o errors=continue` to try and mount it at all 
-# costs. Ideally we would have access to fsck.vfat here, but that (1) makes the 
-# initial RAM filesystem image larger, and (2) it generally doen't help a whole
-# lot in real life.
-mount -t vfat -o errors=continue "/dev/mmcblk0p1" /sdcard \
-  || bail "Failed to mount the SD card."
-
-# Remove any .REC files created by fsck as those are usually completely useless
-rm -f /sdcard/FSCK*.REC
-
-# Remount SD card as read-only to prevent unnecessary writes (we allow this to 
-# fail because we already have it mounted read-write which is good enough to 
-# continue booting)
-mount -o remount,ro,errors=continue "/dev/mmcblk0p1" /sdcard
+mkdir -p /tmpfs/upper /tmpfs/work
 
 # Mount overlay images if any
+wait_for_sd
+mount -t vfat -o ro,sync /dev/mmcblk0p1 /linux
+
+# make the swap, conf and downloads partitions and filesystems if they don't exist
+if [ -f /linux/freshburn ]
+then
+# swap = 256M
+echo 'n
+p
+2
+333
++256M
+t
+82
+w
+' | fdisk /dev/mmcblk0
+
+# conf = 64M
+echo 'n
+p
+3
+597
++64M
+w
+' | fdisk /dev/mmcblk0
+mkfs.ext4 -F -F /dev/mmcblk0p3
+
+# downloads = rest
+echo 'n
+p
+4
+664
+
+w
+' | fdisk /dev/mmcblk0
+mkfs.ext4 -F -F /dev/mmcblk0p4
+
+# remove the marker
+mount -o remount,rw /linux
+rm -f /linux/freshburn
+mount -o remount,ro /linux
+
+# reboot or it won't work
+sync;sync;sync
+# for some unknown reason, "reboot" doesn't work
+# this below is equal to ctrl-alt-del
+echo b >/proc/sysrq-trigger
+fi
+
+
 if [ "$SAFE_MODE" != y ]; then
-  for overlay in /sdcard/overlay-*.sqfs; do
-    mount_overlay "$overlay"
+  for overlay in /linux/overlay-*.sqfs; do
+    if [ -f "$overlay" ]
+    then
+        mount_overlay "$overlay"
+    fi
   done
 fi
 
-# The userspace is contained in SquashFS images. There are three such images on 
-# the boot partition:
-#
-# - root.sqfs
-# - backup.sqfs
-# - factory.sqfs
-#
-# Initially, they are all identical. During the lifecycle of the receiver, OTA u
-# updates will overwrite the first two leaving the last one intact. 
-#
-# The following block of code will attempt to boot each of the images in turn,
-# and fall back on the factory.sqfs as last resort.
-for rootfs_image in $ROOT_IMAGES; do
-  if mount_root "$rootfs_image"; then
-    doboot "$rootfs_image"
-  fi
-  # If we git this far, it means switch_root failed. We undo the set-up
-  # performed in the preceeding code in order to allow for the next attempt (if
-  # any).
-  undo_root
+# clean up old sop and ksop files
+for s in $(find /linux | grep -e '\.ksop$' | sort | head -n -1) $(find /linux | grep -e '\.sop$' | sort | head -n -1)
+do
+    mount -o remount,rw /linux
+    echo "removing ${s}"
+    rm -f "$s"
+    sync
+    sync
+    sync
+    mount -o remount,ro /linux
 done
+
+# find  [k]sop files
+for sop_file in $(find /linux | grep -e '\.k\?sop$' | sort -r)
+do
+    if [ -n "$sop_file" ]
+    then
+        echo booting $sop_file
+        # attempt to boot the root partition
+        mount_root "$sop_file" && doboot "$sop_file"
+    fi
+done
+
 
 # When no bootable root filesystem images are found, we drop into an emergency
 # shell. We will pause a few seconds before we drop into shell, so that shell
 # promp isn't interpolated into kernel messages.
-bail "Could not find working boot image. SD card may be damaged."
+bail "Could not find working boot image. Storage device may be damaged."
