@@ -64,3 +64,12 @@ slink /bin/gunzip /bin/busybox 777 0 0
 slink /bin/switch_root /bin/busybox 777 0 0
 file /init %BINDIR%/initramfs/init 755 0 0
 file /bin/tar %PREFIX%/bin/tar 777 0 0
+
+file /bin/mke2fs %PREFIX%/usr/sbin/mke2fs 777 0 0
+file /lib/libext2fs.so.2 %PREFIX%/usr/lib/libext2fs.so.2.4 777 0 0
+file /lib/libcom_err.so.2 %PREFIX%/usr/lib/libcom_err.so.2.1 777 0 0
+file /lib/libpthread.so.0 %PREFIX%/lib/libpthread-2.21.so 777 0 0
+file /lib/libblkid.so.1  %PREFIX%/lib/libblkid.so.1.1.0 777 0 0
+file /lib/libuuid.so.1 %PREFIX%/lib/libuuid.so.1.3.0 777 0 0
+file /lib/libe2p.so.2 %PREFIX%/usr/lib/libe2p.so.2.3 777 0 0
+slink /bin/mkfs.ext4 /bin/mke2fs 777 0 0
