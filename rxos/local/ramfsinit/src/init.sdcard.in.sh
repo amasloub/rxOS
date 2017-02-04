@@ -253,6 +253,9 @@ mount -t vfat -o ro,sync /dev/mmcblk0p1 /linux
 # make the swap, conf and downloads partitions and filesystems if they don't exist
 if [ -f /linux/freshburn ]
 then
+
+umount /linux
+
 # swap = 256M
 echo 'n
 p
@@ -278,7 +281,6 @@ mkfs.ext4 -F -F /dev/mmcblk0p3
 # downloads = rest
 echo 'n
 p
-4
 664
 
 w
@@ -286,9 +288,9 @@ w
 mkfs.ext4 -F -F /dev/mmcblk0p4
 
 # remove the marker
-mount -o remount,rw /linux
+mount -t vfat -o sync /dev/mmcblk0p1 /linux
 rm -f /linux/freshburn
-mount -o remount,ro /linux
+umount /linux
 
 # reboot or it won't work
 sync;sync;sync
