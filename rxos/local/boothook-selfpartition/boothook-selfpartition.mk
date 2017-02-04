@@ -33,8 +33,6 @@ define BOOTHOOK_SELFPARTITION_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/etc/setup.d/attachcache.sh
 	$(INSTALL) -Dm755 $(@D)/attachappdata.sh \
 		$(TARGET_DIR)/etc/setup.d/attachappdata.sh
-	$(INSTALL) -Dm755 $(@D)/attachvarlog.sh \
-		$(TARGET_DIR)/etc/setup.d/attachvarlog.sh
 	$(INSTALL) -Dm755 $(@D)/chown_downloads.sh \
 		$(TARGET_DIR)/etc/setup.d/chown_downloads.sh
 endef
