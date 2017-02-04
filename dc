@@ -52,11 +52,15 @@ export MKPASSWD_SALT=mgfYRgrU
 # for build timestamps
 export RXOS_TIMESTAMP="$(date -u --rfc-3339=seconds)"
 
+export BOARD=dc
+export PRODUCT=skylark
+
 [ -d rxos/overlays ] || mkdir rxos/overlays/
 
 if [ $# -gt  0 ]
 then
-time make BOARD=dc \
+time make BOARD=$BOARD \
+    PRODUCT=$PRODUCT \
     RXOS_TIMESTAMP="\"$RXOS_TIMESTAMP\"" \
     KEY_RELEASE=$KEY_RELEASE \
     MKPASSWD_SALT=$MKPASSWD_SALT \
@@ -67,7 +71,8 @@ time make BOARD=dc \
     "$@"
 echo "$@" done
 else
-time make BOARD=dc \
+time make BOARD=$BOARD \
+    PRODUCT=$PRODUCT \
     RXOS_TIMESTAMP="\"$RXOS_TIMESTAMP\"" \
     KEY_RELEASE=$KEY_RELEASE \
     MKPASSWD_SALT=$MKPASSWD_SALT \
@@ -75,5 +80,5 @@ time make BOARD=dc \
     KBUILD_BUILD_VERSION=$KBUILD_BUILD_VERSION \
     KBUILD_BUILD_TIMESTAMP=$KBUILD_BUILD_TIMESTAMP \
     SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH \
-    build release-sdimage
+    build release-sd-image
 fi
