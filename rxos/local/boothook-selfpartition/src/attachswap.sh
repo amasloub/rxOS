@@ -1,4 +1,4 @@
 #!/bin/sh
 
-mkswap /dev/mtdblock4
-swapon /dev/mtdblock4
+mkswap /dev/mmcblk0p2
+swapon /dev/mmcblk0p2
