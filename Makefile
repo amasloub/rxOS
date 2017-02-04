@@ -1,8 +1,10 @@
 # This variable defines which of the supported boards are built. Supported 
 # boards can be listed with `make -s boards`.
-BOARD ?= chip
+BOARD ?= dc
 export BOARD
 
+PRODUCT ?= skylark
+export PRODUCT
 
 KEY_RELEASE ?= no
 export KEY_RELEASE
@@ -127,8 +129,11 @@ light-clean:
 	@-rm -rf $(OUTPUT)/build/*/.stamp_target_installed  $(OUTPUT)/build/*/.stamp_images_installed  $(OUTPUT)/build/*/.stamp_initramfs_rebuilt \
 		 $(OUTPUT)/build/host-gcc-final-*/.stamp_host_installed
 
-
+ifeq ($(BOARD),chip)
 light-rebuild: light-clean build release-flash
+else
+light-rebuild: light-clean build release-sd-image
+endif
 
 config:
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) $(DEFCONFIG)
