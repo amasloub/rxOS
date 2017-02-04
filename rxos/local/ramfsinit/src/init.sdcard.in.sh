@@ -260,6 +260,7 @@ p
 333
 +256M
 t
+2
 82
 w
 ' | fdisk /dev/mmcblk0
