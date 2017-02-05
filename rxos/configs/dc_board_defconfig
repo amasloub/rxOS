@@ -131,3 +131,4 @@ BR2_RXOS_UTILS_INSTALL_CHIPGPIO=y
 BR2_RXOS_UTILS_PROCS="hostapd dnsmasq dropbear ondd demod vsftpd inotifywait node"
 BR2_RXOS_UTILS_HOSTS="HTTP:http:80"
 BR2_RXOS_UTILS_EXTRA_PATH="/mnt/conf"
+BR2_PACKAGE_MT7601APSTA=y
