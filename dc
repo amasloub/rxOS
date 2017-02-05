@@ -1,6 +1,11 @@
 #!/bin/bash
 
 
+base=$(basename $0)
+
+export BOARD=$(echo $base | cut -d - -f 2)
+export PRODUCT=$(echo $base | cut -d - -f 1)
+
 # this prevents building at the wrong path
 # if you are not building for release feel free to remove the exit line
 
@@ -18,7 +23,7 @@ fi
 
 # Set KEY_RELEASE to the last key release path under ../rxos_builds/RELEASES
 # if unset, _this_ build will build a key release
-#KEY_RELEASE="skylark-dc-build-v4.2-1701041326+f85f1c1"
+#KEY_RELEASE="$PRODUCT-$BOARD-build-v4.2-1701041326+f85f1c1"
 
 if [ -n "${KEY_RELEASE}" ]
 then
@@ -51,9 +56,6 @@ export MKPASSWD_SALT=mgfYRgrU
 
 # for build timestamps
 export RXOS_TIMESTAMP="$(date -u --rfc-3339=seconds)"
-
-export BOARD=dc
-export PRODUCT=skylark
 
 [ -d rxos/overlays ] || mkdir rxos/overlays/
 
