@@ -12,6 +12,6 @@ tmpfs           /dev/shm        tmpfs       mode=0777                   0   0
 tmpfs           /run            tmpfs       mode=0755,nosuid,nodev      0   0
 sysfs           /sys            sysfs       defaults                    0   0
 
-/dev/mmcblk0p3 /mnt/conf        ext4        noatime,sync                0   1
-/dev/mmcblk0p4 /mnt/downloads   ext4        noatime                     0   1
+/dev/mmcblk0p3 /mnt/conf        f2fs        noatime,sync                0   1
+/dev/mmcblk0p4 /mnt/downloads   f2fs        noatime                     0   1
 

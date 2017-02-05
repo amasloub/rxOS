@@ -273,19 +273,19 @@ echo 'n
 p
 3
 597
-+64M
++256M
 w
 ' | fdisk /dev/mmcblk0
-mkfs.ext4 -F -F /dev/mmcblk0p3
+mkfs.f2fs  /dev/mmcblk0p3
 
 # downloads = rest
 echo 'n
 p
-664
+861
 
 w
 ' | fdisk /dev/mmcblk0
-mkfs.ext4 -F -F /dev/mmcblk0p4
+mkfs.f2fs /dev/mmcblk0p4
 
 # remove the marker
 mount -t vfat -o sync /dev/mmcblk0p1 /linux
