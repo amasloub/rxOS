@@ -74,6 +74,12 @@ default: build
 
 build: $(BUILD_STAMP)
 
+ifeq ($(BOARD),chip)
+release: release-flash
+else
+release: release-sd-image
+endif
+
 manual:
 	@make -C docs/ clean html
 
@@ -153,3 +159,4 @@ $(CONFIG):
 
 .DEFAULT:
 	@make -C $(BUILDROOT) O=$(OUTPUT_DIR) $@
+
