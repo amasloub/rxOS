@@ -20,7 +20,7 @@ config BR2_RXOS_UTILS_STORAGE
 
 config BR2_RXOS_UTILS_PARTITIONS
 	string 
-	default "p5 p6 p7 p8" if BR2_RAMFSINIT_SDCARD
+	default "p3 p4" if BR2_RAMFSINIT_SDCARD
 	default ":linux :conf :data" if BR2_RAMFSINIT_NAND
 
 config BR2_RXOS_UTILS_BOOTDEV
@@ -30,7 +30,7 @@ config BR2_RXOS_UTILS_BOOTDEV
 
 config BR2_RXOS_UTILS_PROCS
 	string "Processes"
-	default "hostapd dnsmasq dropbear ondd sdr100 node multifs"
+	default "hostapd dnsmasq dropbear ondd sdr100 node"
 	help
 	  The processes whose status is checked.
 
