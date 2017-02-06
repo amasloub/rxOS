@@ -1,5 +1,6 @@
 config BR2_PACKAGE_UBI_IMAGE
 	bool "Create UBI image"
+	select BR2_TARGET_ROOTFS_ISOROOT
 	help
 	  Create UBI image containing all relevant
 	  board partitions in the forum of UBI
