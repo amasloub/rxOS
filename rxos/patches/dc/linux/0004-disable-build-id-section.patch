@@ -1,0 +1,16 @@
+This patch disables use of build-id when generating the kernel and modules
+this may help
+
+diff --git a/Makefile b/Makefile
+index f4b33cd..ebb8612 100644
+--- a/Makefile
++++ b/Makefile
+@@ -788,7 +788,7 @@ KBUILD_CFLAGS   += $(ARCH_CFLAGS)   $(KCFLAGS)
+ 
+ # Use --build-id when available.
+ LDFLAGS_BUILD_ID = $(patsubst -Wl$(comma)%,%,\
+-			      $(call cc-ldoption, -Wl$(comma)--build-id,))
++			      $(call cc-ldoption, -Wl$(comma)--build-id=none,))
+ KBUILD_LDFLAGS_MODULE += $(LDFLAGS_BUILD_ID)
+ LDFLAGS_vmlinux += $(LDFLAGS_BUILD_ID)
+
