@@ -64,6 +64,8 @@ slink /bin/mknod /bin/busybox 777 0 0
 slink /bin/gunzip /bin/busybox 777 0 0
 slink /bin/switch_root /bin/busybox 777 0 0
 file /init %BINDIR%/initramfs/init 755 0 0
+file /init.chip %BINDIR%/initramfs/init.chip 755 0 0
+file /init.dc %BINDIR%/initramfs/init.dc 755 0 0
 file /bin/tar %PREFIX%/bin/tar 777 0 0
 
 file /bin/mke2fs %PREFIX%/usr/sbin/mke2fs 777 0 0

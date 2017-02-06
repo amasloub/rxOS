@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if grep -q BOARD=dc /proc/cmdline
+if [ -e /dev/mmcblk0p1 ]
 then
     exec /init.dc
 else
