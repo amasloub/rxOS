@@ -268,7 +268,9 @@ t
 w
 ' | fdisk /dev/mmcblk0
 
-# conf = 64M
+# conf = 256M
+# f2fs requires a minimum 100MB partition
+# but we need larger as it uses up over 100MB in overheads
 echo 'n
 p
 3
@@ -276,7 +278,24 @@ p
 +256M
 w
 ' | fdisk /dev/mmcblk0
-mkfs.f2fs  /dev/mmcblk0p3
+
+# reformat if reformat tag exists
+# else try mounting, and if it fails, reformat
+if [ -f /linux/reformat_conf ]
+then
+    mkfs.f2fs /dev/mmcblk0p3
+else
+    mkdir /tmp/testmount3
+    mount -t f2fs -o ro /dev/mmcblk0p3 /tmp/testmount3
+    if mountpoint -q /tmp/testmount3
+    then
+        umount /tmp/testmount3
+    else
+        echo "/dev/mmcblk0p3 is not f2fs-mountable. Formating."
+        mkfs.f2fs  /dev/mmcblk0p3
+    fi
+    rmdir /tmp/testmount3
+fi
 
 # downloads = rest
 echo 'n
@@ -285,11 +304,31 @@ p
 
 w
 ' | fdisk /dev/mmcblk0
-mkfs.f2fs /dev/mmcblk0p4
+
+# reformat if reformat tag exists
+# else try mounting, and if it fails, reformat
+if [ -f /linux/reformat_storage ]
+then
+    mkfs.f2fs /dev/mmcblk0p4
+else
+    mkdir /tmp/testmount4
+    mount -t f2fs -o ro /dev/mmcblk0p4 /tmp/testmount4
+    if mountpoint -q /tmp/testmount4
+    then
+        umount /tmp/testmount4
+    else
+        echo "/dev/mmcblk0p4 is not f2fs-mountable. Formating."
+        mkfs.f2fs  /dev/mmcblk0p4
+    fi
+    rmdir /tmp/testmount4
+fi
+
 
 # remove the marker
 mount -t vfat -o sync /dev/mmcblk0p1 /linux
 rm -f /linux/freshburn
+rm -f /linux/reformat_conf
+rm -f /linux/reformat_storage
 umount /linux
 
 # reboot or it won't work

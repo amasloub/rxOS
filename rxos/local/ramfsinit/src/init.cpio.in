@@ -40,6 +40,7 @@ slink /bin/dd /bin/busybox 777 0 0
 slink /bin/touch /bin/busybox 777 0 0
 slink /bin/mount /bin/busybox 777 0 0
 slink /bin/umount /bin/busybox 777 0 0
+slink /bin/mountpoint /bin/busybox 777 0 0
 slink /bin/fdisk /bin/busybox 777 0 0
 slink /bin/fsck /bin/busybox 777 0 0
 slink /bin/sleep /bin/busybox 777 0 0
