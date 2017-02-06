@@ -169,21 +169,7 @@ doboot() {
 # SHOW STARTS HERE
 ###############################################################################
 
-# Set the date to a sane value
-date -u "2017-01-01 0:00:00"
-
-# Populate the /dev, /proc, and /sys directories
-mkdir -p /sys
-mount -t devtmpfs devtmpfs /dev
-mount -t proc proc /proc
-mount -t sysfs sysfs /sys
-
-# Setup console
-exec 0<$CONSOLE
-exec 1>$CONSOLE
-exec 2>$CONSOLE
-
-echo "++++ Starting rxOS v$VERSION ++++"
+echo "++++ Starting $PRODUCT v$VERSION for $BOARD ++++"
 
 # Before the script can do its job, it needs to set up the mount points and
 # mount the root partition on the SD card. These mount points exist strictly
