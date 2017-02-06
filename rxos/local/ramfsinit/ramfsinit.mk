@@ -8,7 +8,7 @@ RAMFSINIT_VERSION = 1.0
 RAMFSINIT_LICENSE = GPLv3+
 RAMFSINIT_SITE = $(BR2_EXTERNAL)/local/ramfsinit/src
 RAMFSINIT_SITE_METHOD = local
-
+RAMFSINIT_DEPENDENCIES = busybox e2fsprogs f2fs-tools
 INIT_CPIO_LISTS += default.cpio.in
 
 # Define the package
@@ -33,9 +33,15 @@ define RAMFSINIT_INSTALL_TARGET_CMDS
 		$(BINARIES_DIR)/initramfs/default.cpio.in
 	sed -i '$(RAMFSINIT_CPIO_SED_CMDS)' \
 		$(BINARIES_DIR)/initramfs/default.cpio.in
-	$(INSTALL) -Dm644 $(@D)/init.$(call qstrip,$(BR2_RAMFSINIT_INIT_TYPE)).in.sh \
+	$(INSTALL) -Dm644 $(@D)/init.in.sh \
 		$(BINARIES_DIR)/initramfs/init
 	sed -i '$(RAMFSINIT_INIT_SED_CMDS)' $(BINARIES_DIR)/initramfs/init
+	$(INSTALL) -Dm644 $(@D)/init.in.sh.dc \
+		$(BINARIES_DIR)/initramfs/init.dc
+	sed -i '$(RAMFSINIT_INIT_SED_CMDS)' $(BINARIES_DIR)/initramfs/init.dc
+	$(INSTALL) -Dm644 $(@D)/init.in.sh.chip \
+		$(BINARIES_DIR)/initramfs/init.chip
+	sed -i '$(RAMFSINIT_INIT_SED_CMDS)' $(BINARIES_DIR)/initramfs/init.chip
 endef
 
 $(eval $(generic-package))
