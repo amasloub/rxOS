@@ -1,5 +1,6 @@
 menuconfig BR2_PACKAGE_RAMFSINIT
 	bool "Create early userspace cpio archive"
+	depends on BR2_PACKAGE_F2FS_TOOLS
 	help
 	  Creates the initial RAM filesystem image that can be
 	  linked into the kernel. The compression option for the 
