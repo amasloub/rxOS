@@ -285,16 +285,16 @@ if [ -f /linux/reformat_conf ]
 then
     mkfs.f2fs /dev/mmcblk0p3
 else
-    mkdir /tmp/testmount3
-    mount -t f2fs -o ro /dev/mmcblk0p3 /tmp/testmount3
-    if mountpoint -q /tmp/testmount3
+    mkdir /testmount3
+    mount -t f2fs -o ro /dev/mmcblk0p3 /testmount3
+    if mountpoint -q /testmount3
     then
-        umount /tmp/testmount3
+        umount /testmount3
     else
         echo "/dev/mmcblk0p3 is not f2fs-mountable. Formating."
         mkfs.f2fs  /dev/mmcblk0p3
     fi
-    rmdir /tmp/testmount3
+    rmdir /testmount3
 fi
 
 # downloads = rest
@@ -311,16 +311,16 @@ if [ -f /linux/reformat_storage ]
 then
     mkfs.f2fs /dev/mmcblk0p4
 else
-    mkdir /tmp/testmount4
-    mount -t f2fs -o ro /dev/mmcblk0p4 /tmp/testmount4
-    if mountpoint -q /tmp/testmount4
+    mkdir /testmount4
+    mount -t f2fs -o ro /dev/mmcblk0p4 /testmount4
+    if mountpoint -q /testmount4
     then
-        umount /tmp/testmount4
+        umount /testmount4
     else
         echo "/dev/mmcblk0p4 is not f2fs-mountable. Formating."
         mkfs.f2fs  /dev/mmcblk0p4
     fi
-    rmdir /tmp/testmount4
+    rmdir /testmount4
 fi
 
 
