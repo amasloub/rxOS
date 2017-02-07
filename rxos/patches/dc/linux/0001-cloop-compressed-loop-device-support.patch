@@ -2,7 +2,7 @@ This patch adds support for compressed loop devices (cloop)
 like loop device, but block-wise compressed
 
 diff --git a/drivers/block/Makefile b/drivers/block/Makefile
-index 6713290..21f4b3c 100644
+index 1e9661e..fdaf284 100644
 --- a/drivers/block/Makefile
 +++ b/drivers/block/Makefile
 @@ -14,7 +14,7 @@ obj-$(CONFIG_PS3_VRAM)		+= ps3vram.o
@@ -11,12 +11,12 @@ index 6713290..21f4b3c 100644
  obj-$(CONFIG_BLK_DEV_RAM)	+= brd.o
 -obj-$(CONFIG_BLK_DEV_LOOP)	+= loop.o
 +obj-$(CONFIG_BLK_DEV_LOOP)	+= loop.o cloop.o
- obj-$(CONFIG_BLK_CPQ_DA)	+= cpqarray.o
  obj-$(CONFIG_BLK_CPQ_CISS_DA)  += cciss.o
  obj-$(CONFIG_BLK_DEV_DAC960)	+= DAC960.o
+ obj-$(CONFIG_XILINX_SYSACE)	+= xsysace.o
 diff --git a/drivers/block/cloop.c b/drivers/block/cloop.c
 new file mode 100644
-index 0000000..cab3fec
+index 0000000..91abdd1
 --- /dev/null
 +++ b/drivers/block/cloop.c
 @@ -0,0 +1,1276 @@
@@ -515,7 +515,7 @@ index 0000000..cab3fec
 +   if (unlikely(req == NULL || (req->cmd_type != REQ_TYPE_FS)))
 +    goto error_continue;
 +   rw = rq_data_dir(req);
-+   if (unlikely(rw != READ && rw != READA))
++   if (unlikely(rw != READ && rw != REQ_RAHEAD))
 +    {
 +     DEBUGP("cloop_do_request: bad command\n");
 +     goto error_continue;
