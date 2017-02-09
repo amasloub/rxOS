@@ -1,0 +1,18 @@
+this patch attached the at24 atmel eeprom driver to the ataes chip
+
+diff --git a/arch/arm/boot/dts/sun5i-a13-olinuxino.dts b/arch/arm/boot/dts/sun5i-a13-olinuxino.dts
+index b3c234c..dd3ebbe 100644
+--- a/arch/arm/boot/dts/sun5i-a13-olinuxino.dts
++++ b/arch/arm/boot/dts/sun5i-a13-olinuxino.dts
+@@ -97,6 +97,11 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&i2c1_pins_a>;
+ 	status = "okay";
++	eeprom_ataes: eeprom@50  {
++		compatible = "at24,24c512";
++		pagesize = <32>;
++		reg = <0x50>;
++	};
+ };
+ 
+ &i2c2 {
