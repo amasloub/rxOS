@@ -1,0 +1,16 @@
+This patch enables the internal pullups in A13 for i2c1 pins (PB15,PB16)
+This is needed as the board is missing these pullups
+
+diff --git a/arch/arm/boot/dts/sun5i.dtsi b/arch/arm/boot/dts/sun5i.dtsi
+index e374f4f..b0e6f9e 100644
+--- a/arch/arm/boot/dts/sun5i.dtsi
++++ b/arch/arm/boot/dts/sun5i.dtsi
+@@ -564,7 +564,7 @@
+ 				allwinner,pins = "PB15", "PB16";
+ 				allwinner,function = "i2c1";
+ 				allwinner,drive = <SUN4I_PINCTRL_10_MA>;
+-				allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
++				allwinner,pull = <SUN4I_PINCTRL_PULL_UP>;
+ 			};
+ 
+ 			i2c2_pins_a: i2c2@0 {
