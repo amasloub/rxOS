@@ -1,0 +1,18 @@
+diff --git a/Makefile b/Makefile
+index 32dcfcf..4b96153 100644
+--- a/Makefile
++++ b/Makefile
+@@ -79,10 +79,10 @@ localver_config = $(subst $(space),, $(string) \
+ localver_cmd = $(subst $(space),, $(string) \
+ 			      $(patsubst "%",%,$(LOCALVERSION)))
+ 
+-localver_scm = $(shell $(CONFIG_SHELL) ./scripts/setlocalversion)
+-localver_full  = $(localver_config)$(localver_cmd)$(localver_scm)
++#localver_scm = $(shell $(CONFIG_SHELL) ./scripts/setlocalversion)
++#localver_full  = $(localver_config)$(localver_cmd)$(localver_scm)
+ 
+-dtc_version = $(DTC_VERSION)$(localver_full)
++dtc_version = $(DTC_VERSION)
+ 
+ # Contents of the generated version file.
+ define filechk_version
