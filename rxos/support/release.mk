@@ -64,3 +64,10 @@ release-flash: $(FLASH_ZIPNAME)
 
 release-sd-image: $(SD_IMAGE)
 	gzip  $(SD_IMAGE)
+	@if [ -d $(SAVE_ARCHIVE_BASE) ] ;\
+	then \
+		cp -a $(BINARIES_DIR) $(SAVE_ARCHIVE_DIR) ;\
+		echo saved to $(SAVE_ARCHIVE_DIR) ;\
+	else \
+		echo archive base $(SAVE_ARCHIVE_BASE) - does not exist. mkdir it to start saving builds. ;\
+	fi
