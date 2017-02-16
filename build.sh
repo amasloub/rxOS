@@ -23,8 +23,8 @@ fi
 
 # Set KEY_RELEASE to the last key release path under ../rxos_builds/RELEASES
 # if unset, _this_ build will build a key release
-KEY_RELEASE_chip="skylark-chip-build-v4.4-1702161550+7ca161f"
-KEY_RELEASE_dc="skylark-dc-build-v4.4-1702161551+7ca161f"
+KEY_RELEASE_chip=""
+KEY_RELEASE_dc=""
 KEY_RELEASE=KEY_RELEASE_${BOARD}
 KEY_RELEASE=${!KEY_RELEASE}
 
