@@ -13,10 +13,12 @@ if [ -z "$KEY_RELEASE" ]
 then
     echo "Key release: OTA hack"
     # build the modules package for later use with nasty ota hack when building deltas
-    tar zcf "$BINARIES_DIR/kept_files.tgz" -C "${BINARIES_DIR}/../target/" $kept_files
+    tar zcf "$BINARIES_DIR/kept_files.tgz" --hard-dereference -C "${BINARIES_DIR}/../target/" $kept_files
+    (cd "${BINARIES_DIR}/../target" && rm -rf $kept_files)
+    tar xf "${BINARIES_DIR}/kept_files.tgz" -C "${BINARIES_DIR}/../target"
 else
     echo "Delta release: OTA hack"
     cp "${BINARIES_DIR}/../../../../rxos_builds/RELEASES/${KEY_RELEASE}/zImage" "$LINUX"
-    rm -rf $kept_files
+    (cd "${BINARIES_DIR}/../target" && rm -rf $kept_files)
     tar xf "${BINARIES_DIR}/../../../../rxos_builds/RELEASES/${KEY_RELEASE}/kept_files.tgz" -C "${BINARIES_DIR}/../target"
 fi
