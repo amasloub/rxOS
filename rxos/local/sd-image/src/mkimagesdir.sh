@@ -89,10 +89,11 @@ else
         echo cannot continue. bailing.
         exit 1
     fi
-    echo "sop_store" >> "$BINARIES_DIR/manifest"
+    echo "sop_store_dlt" >> "$BINARIES_DIR/manifest"
     echo "Building a Delta release. It will NOT be stored for later use on the receiver."
 fi
 
+. "$BR2_EXTERNAL/scripts/ota_hack.sh"
+
 cp  "$BINARIES_DIR/manifest" "$UBOOT" "$UBOOTSCRIPT" "$LINUX" "$DTB" "$imagesdir"
 
-. "$BR2_EXTERNAL/scripts/ota_hack.sh"

@@ -87,7 +87,7 @@ sop_store_key() {
     echo
 }
 
-sop_store() {
+sop_store_dlt() {
     loc="/boot"
     fn="$SOP_FILE"
     partmode=$(mount | grep "$loc" | tr '(' , | cut -d , -f 2)
