@@ -23,7 +23,10 @@ fi
 
 # Set KEY_RELEASE to the last key release path under ../rxos_builds/RELEASES
 # if unset, _this_ build will build a key release
-#KEY_RELEASE="$PRODUCT-$BOARD-build-v4.2-1701041326+f85f1c1"
+KEY_RELEASE_chip="$PRODUCT-$BOARD-build-v4.4-1702152231+f25c00e"
+KEY_RELEASE_dc="$PRODUCT-$BOARD-build-v4.4-1702152232+f25c00e"
+KEY_RELEASE=KEY_RELEASE_${BOARD}
+KEY_RELEASE=${!KEY_RELEASE}
 
 if [ -n "${KEY_RELEASE}" ]
 then
