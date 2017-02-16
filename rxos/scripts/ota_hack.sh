@@ -9,6 +9,9 @@ set -eu
 
 kept_files="usr/lib/libgcrypt.so.20.0.4 usr/lib/libgpg-error.so.0.10.0 lib/modules usr/share/zoneinfo"
 
+# this directory shows up in some builds for no reason, and doesn't in others
+rmdir -f "${BINARIES_DIR}/../target/usr/etc"
+
 if [ -z "$KEY_RELEASE" ]
 then
     echo "Key release: OTA hack"
