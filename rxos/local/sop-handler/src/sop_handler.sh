@@ -5,8 +5,6 @@
 set -euf
 renice -n 20
 
-# ORIG_SOP_FILE has a signature block prepended
-# SOP_FILE is post-verification, no signature block
 SOP_FILE="$1"
 
 sopmpt="/tmp/sopmpt" # sop mount point
@@ -213,6 +211,13 @@ then
 fi
 
 reboot=""
+
+if echo "$SOP_FILE" | grep -q -v "skylark-${RXOS_SUBPLATFORM}"
+then
+    echo "ignoring update as subplatform doesnt match"
+    rm "$SOP_FILE"
+    exit 0
+fi
 
 if [ $(expr "$SOP_FILE" : ".*\.psop$") -gt 0 ]
 then
