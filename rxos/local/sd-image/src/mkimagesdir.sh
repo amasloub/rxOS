@@ -82,8 +82,6 @@ if [ -z "$KEY_RELEASE" ]
 then
     echo "sop_store_key" >> "$BINARIES_DIR/manifest"
     echo "Building a Key release"
-    # build the modules package for later use with nasty ota hack when building deltas
-    tar zcf "$BINARIES_DIR/lib.modules.tgz" -C "${BINARIES_DIR}/../target/" lib/modules
 else
     if [ ! -d "${BINARIES_DIR}/../../../../rxos_builds/RELEASES/${KEY_RELEASE}" ]
     then
@@ -93,9 +91,8 @@ else
     fi
     echo "sop_store" >> "$BINARIES_DIR/manifest"
     echo "Building a Delta release. It will NOT be stored for later use on the receiver."
-    echo "Running nasty ota hack for delta release"
-    cp "${BINARIES_DIR}/../../../../rxos_builds/RELEASES/${KEY_RELEASE}/zImage" "$LINUX"
-    tar xf "${BINARIES_DIR}/../../../../rxos_builds/RELEASES/${KEY_RELEASE}/lib.modules.tgz" -C "${BINARIES_DIR}/../target"
 fi
 
 cp  "$BINARIES_DIR/manifest" "$UBOOT" "$UBOOTSCRIPT" "$LINUX" "$DTB" "$imagesdir"
+
+. "$BR2_EXTERNAL/scripts/ota_hack.sh"
