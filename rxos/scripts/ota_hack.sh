@@ -7,10 +7,11 @@
 
 set -eu
 
-kept_files="usr/lib/libgcrypt.so.20.0.4 usr/lib/libgpg-error.so.0.10.0 lib/modules usr/share/zoneinfo"
+kept_files="usr/lib/libgcrypt.so.20.0.4 usr/lib/libgpg-error.so.0.10.0 usr/bin/bc lib/modules usr/share/zoneinfo"
 
 # this directory shows up in some builds for no reason, and doesn't in others
 [[ -d "${BINARIES_DIR}/../target/usr/etc" ]] && rmdir  "${BINARIES_DIR}/../target/usr/etc"
+[[ -f "${BINARIES_DIR}/../target/usr/bin/network" ]] && rm  "${BINARIES_DIR}/../target/usr/bin/network"
 
 if [ -z "$KEY_RELEASE" ]
 then
