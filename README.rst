@@ -39,7 +39,7 @@ Quick start
 
 Before you start, you need to clone the rxOS git repository::
 
-    $ git clone --recursive https://github.com/Outernet-Project/rxOS.git
+    $ git clone --recursive https://github.com/Outernet-Project/rxOS.git -b develop
 
 The ``--recursive`` flag causes git to init and update any submodules. If you
 forgot it, you need two additional steps::
@@ -51,7 +51,12 @@ Now you can ``cd`` into the repository and start building::
 
     $ cd rxOS
     $ make menuconfig  # only if you want to customize something
-    $ make
+    $ ./skylark-chip
+
+If the build stops with a "thbbt!", comment out the "exit 1" line
+near the top of the script in build.sh, unless you are building for 
+release, in which case take the error message seriously and fix the 
+problem.
 
 Updating the existing build
 ---------------------------
@@ -68,7 +73,7 @@ Apply possibly updated build configuration::
 
 Rebuild starting from the linux kernel::
 
-    $ make rebuild-with-linux
+    $ ./skylark-chip clean && ./skylark-chip
 
 User makefiles
 --------------
