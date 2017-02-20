@@ -41,7 +41,7 @@ activate_dnsmasq_config() {
 }
 
 
-WIRELESS_MODE="$(getconf .netConf.mode)"
+WIRELESS_MODE="$(getconf netConf.mode)"
 
 printf "Activating wireless configuration profile: "
 if [ "$WIRELESS_MODE" = "$STA_MODE" ]; then
