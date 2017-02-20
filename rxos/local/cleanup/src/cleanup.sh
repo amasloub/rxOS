@@ -36,8 +36,11 @@ $LOG "Starting cleanup"
 [ -d "$DLDIR/Weather/data/oscar" ] && find "$DLDIR/Weather/data/oscar" -type f |\
      grep "surface-currents-oscar-0.33.json" | sort | head -n -1 | xargs -r -I {} rm -f "{}"
 
-# APRS files older than 3 days
+# APRS files older than 5 days
 [ -d "$DLDIR/Amateur Radio/APRS/APRSAT/" ] && find "$DLDIR/Amateur Radio/APRS/APRSAT/" -type f -mtime +5 | xargs -r -I {} rm -f "{}"
+
+# Messages files older than 5 days
+[ -d "$DLDIR/Messages" ] && find "$DLDIR/Messages" -type f -mtime +5 | xargs -r -I {} rm -f "{}"
 
 # News older than 7 days
 [ -d "$DLDIR/News" ] && find "$DLDIR/News" -type f -mtime +7 | xargs -r -I {} rm -f "{}"
