@@ -318,7 +318,8 @@ echo
 ubi part UBI
 ubi create "linux" 0x10000000
 ubi create "conf" 0x4000000
-ubi create "data"
+test \$nand_oobsize -eq 680 && ubi create "data" 0x190000000
+test \$nand_oobsize -eq 500 && ubi create "data" 0xc0000000
 echo
 echo "==> Writing filesystems"
 ubi writevol $LINUX_UBIFS_MEM_ADDR "linux" $LINUX_UBIFS_SIZE
