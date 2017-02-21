@@ -8,7 +8,7 @@ RESTART_DELAY="2"
 
 start() {
   printf "Starting ubihealthd: "
-  $DAEMON >>/var/log/messages 2>&1 &
+  $DAEMON -v 3 | logger 2>&1 &
   echo "OK"
 }
 

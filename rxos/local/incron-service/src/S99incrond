@@ -29,7 +29,7 @@ do
               #echo $filename $ev $watch_dir $watch_events $cmd >> /tmp/incrond.log
               eval $cmd
             done
-          ) &
+          ) | logger 2>&1 &
         done < "$cfile"
     fi
 done
