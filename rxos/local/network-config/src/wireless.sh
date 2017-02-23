@@ -46,10 +46,12 @@ WIRELESS_MODE="$(getconf netConf.mode)"
 printf "Activating wireless configuration profile: "
 if [ "$WIRELESS_MODE" = "$STA_MODE" ]; then
   echo "$STA_MODE"
+  sta_config.sh
   activate_network_profile "$STA_PROFILE"
   activate_dnsmasq_config "$DNSMASQ_STA"
 else
   echo "$AP_MODE"
+  ap_config.sh
   activate_network_profile "$AP_PROFILE"
   activate_dnsmasq_config "$DNSMASQ_AP"
 fi
