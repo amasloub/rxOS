@@ -35,8 +35,6 @@ ifeq ($(BR2_PACKAGE_NETWORK_CONFIG),y)
 PERSISTENT_CONF_LIST += /etc/hostname
 PERSISTENT_CONF_LIST += /etc/dropbear
 PERSISTENT_CONF_LIST += /etc/network/interfaces.d
-PERSISTENT_CONF_LIST += /etc/hostapd.conf
-PERSISTENT_CONF_LIST += /etc/wpa_supplicant.conf
 PERSISTENT_CONF_LIST += /etc/conf.d/wireless
 PERSISTENT_CONF_LIST += /run/dnsmasq.leases
 endif
