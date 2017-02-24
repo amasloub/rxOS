@@ -128,8 +128,6 @@ define NETWORK_CONFIG_INSTALL_TARGET_CMDS
 	$(INSTALL) -Dm644 $(@D)/dnsmasq.conf $(NETWORK_CONFIG_DNSMASQ_PROFILES)/ap.conf
 	$(INSTALL) -Dm644 $(@D)/dnsmasq_sta.conf $(NETWORK_CONFIG_DNSMASQ_PROFILES)/sta.conf
 	$(INSTALL) -Dm644 $(@D)/hostapd.conf $(TARGET_DIR)/etc/hostapd.conf
-	$(INSTALL) -Dm755 $(@D)/check_ip_assigned \
-		$(TARGET_DIR)/etc/network/if-up.d/check_ip_assigned
 	$(foreach ifacecmds,$(NETWORK_CONFIG_INSTALL_IFACES),$(call $(ifacecmds)))
 	$(INSTALL) -Dm755 $(@D)/wireless.sh $(TARGET_DIR)/etc/setup.d/wireless.sh
 	$(INSTALL) -Dm755 $(@D)/netrestart.sh $(TARGET_DIR)/usr/sbin/netrestart
