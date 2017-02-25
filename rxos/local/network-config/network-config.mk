@@ -133,6 +133,9 @@ define NETWORK_CONFIG_INSTALL_TARGET_CMDS
 	$(INSTALL) -Dm755 $(@D)/netrestart.sh $(TARGET_DIR)/usr/sbin/netrestart
 	$(INSTALL) -Dm755 $(@D)/wep_passphrase.sh $(TARGET_DIR)/usr/sbin/wep_passphrase
 	$(INSTALL) -Dm755 $(@D)/S99netguard $(TARGET_DIR)/etc/init.d/S99netguard
+	$(INSTALL) -Dm755 $(@D)/ap_config.sh $(TARGET_DIR)/usr/bin/ap_config.sh
+	$(INSTALL) -Dm755 $(@D)/sta_config.sh $(TARGET_DIR)/usr/bin/sta_config.sh
+	$(INSTALL) -Dm755 $(@D)/wifi_config.sh $(TARGET_DIR)/usr/bin/wifi_config.sh
 endef
 
 $(eval $(generic-package))
