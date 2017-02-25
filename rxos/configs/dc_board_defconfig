@@ -62,7 +62,8 @@ BR2_PACKAGE_JQ=y
 # BR2_PACKAGE_E2FSPROGS_UUIDGEN is not set
 BR2_PACKAGE_F2FS_TOOLS=y
 BR2_PACKAGE_LINUX_FIRMWARE=y
-BR2_PACKAGE_LINUX_FIRMWARE_MEDIATEK_MT7601U=y
+BR2_PACKAGE_LINUX_FIRMWARE_RTL_81XX=y
+BR2_PACKAGE_LINUX_FIRMWARE_RTL_87XX=y
 BR2_PACKAGE_NODEJS_MODULES_ADDITIONAL="bcryptjs child_process colors deepmerge diskspace exif findit formidable fs http http-proxy mysql net network node-fs-extra passwd-linux path querystring request simple-session unix-dgram unzip url userid util ws x2js"
 BR2_PACKAGE_LIBCODEC2=y
 BR2_PACKAGE_OPUS_FIXED_POINT=y
@@ -150,3 +151,4 @@ BR2_RXOS_UTILS_INSTALL_CHIPGPIO=y
 BR2_RXOS_UTILS_PROCS="hostapd dnsmasq dropbear ondd demod vsftpd inotifywait node"
 BR2_RXOS_UTILS_HOSTS="HTTP:http:80"
 BR2_RXOS_UTILS_EXTRA_PATH="/mnt/conf"
+BR2_PACKAGE_RTL8192CU_APSTA=y
