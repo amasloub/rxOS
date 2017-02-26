@@ -69,7 +69,7 @@ fi
 
 if [ -f "${CONFDIR}/.lite-clean" ]
 then
-    find "${CONFDIR}" -type f | grep -v rxos_config | xargs -r -I {} rm -rf "{}"
+    find "${CONFDIR}" -type f | grep -v skylark_config | xargs -r -I {} rm -rf "{}"
     rm -f "${CONFDIR}/.lite-clean"
 fi
 

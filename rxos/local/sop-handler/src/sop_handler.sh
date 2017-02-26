@@ -101,7 +101,7 @@ sop_store_dlt() {
 }
 
 conf_clean() {
-    find /mnt/conf -type f | grep -v rxos_config | xargs -r -I {} rm -rf "{}"
+    find /mnt/conf -type f | grep -v skylark_config | xargs -r -I {} rm -rf "{}"
 }
 
 factory_reset() {
