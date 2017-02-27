@@ -8,7 +8,7 @@
 # Some rights reserved.
 
 CHECK_DELAY=5
-FAIL_DELAY=120
+FAIL_DELAY=200
 
 if_ip() {
     ip addr show dev "$1" | grep "inet " | grep "global" | sed 's/.*inet \([0-9.]*\).*/\1/'
@@ -27,7 +27,7 @@ guard() {
         then
             # if still no ip, switch back to ap mode
             setconf netConf.mode ap
-            /etc/setup.d/wireless.sh
+            /usr/bin/wifi_config.sh
         fi
     fi
   sleep $CHECK_DELAY
