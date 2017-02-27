@@ -1,3 +1,7 @@
 #! /bin/sh
 
-[ -f /mnt/conf/etc/hostname ] && hostname $(cat /mnt/conf/etc/hostname)
+hostname=$(getconf netConf.hostname )
+
+echo "$hostname" > /etc/hostname
+
+hostname "$hostname"
