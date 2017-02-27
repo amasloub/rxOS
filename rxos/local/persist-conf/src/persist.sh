@@ -15,7 +15,12 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
-[ -f /SAFEMODE ] && exit 0
+# clean out user config
+if [ -f /SAFEMODE ]
+then
+    rm -rf /mnt/conf/etc
+    poweroff
+fi
 
 CONFDIR="%CONFDIR%"
 CONFLIST="/etc/persist.conf"
