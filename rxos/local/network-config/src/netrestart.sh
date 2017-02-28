@@ -9,4 +9,5 @@
 # (c) 2016 Outernet Inc
 # Some rights reserved.
 
+sync;sync;sync
 reboot

@@ -27,7 +27,7 @@ guard() {
         then
             # if still no ip, switch back to ap mode
             setconf netConf.mode ap
-            /usr/bin/wifi_config.sh
+            /usr/sbin/netrestart
         fi
     fi
   sleep $CHECK_DELAY
