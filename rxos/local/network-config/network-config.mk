@@ -87,7 +87,7 @@ define NETWORK_CONFIG_INSTALL_WLAN
 	$(NETWORK_CONFIG_INSTALL_NOPOWERSAVE)
 	$(call NETWORK_CONFIG_INSTALL_IFACE,wlan,$(NETWORK_CONFIG_AP_IF))
 	$(SED) '$(NETWORK_CONFIG_SUBS)' $(@D)/wlan-client.conf
-	$(INSTALL) -Dm755 $(@D)/wpa.sh $(TARGET_DIR)/usr/sbin/wpa
+	$(INSTALL) -Dm755 $(@D)/wpa.sh.$(BOARD) $(TARGET_DIR)/usr/sbin/wpa
 	$(INSTALL) -Dm755 $(@D)/ap.sh $(TARGET_DIR)/usr/sbin/ap
 	$(INSTALL) -Dm644 $(@D)/wlan-client.conf \
 		$(NETWORK_CONFIG_PROFILES)/$(NETWORK_CONFIG_AP_IF)-client
@@ -132,9 +132,9 @@ define NETWORK_CONFIG_INSTALL_TARGET_CMDS
 	$(INSTALL) -Dm755 $(@D)/netrestart.sh $(TARGET_DIR)/usr/sbin/netrestart
 	$(INSTALL) -Dm755 $(@D)/wep_passphrase.sh $(TARGET_DIR)/usr/sbin/wep_passphrase
 	$(INSTALL) -Dm755 $(@D)/S99netguard $(TARGET_DIR)/etc/init.d/S99netguard
-	$(INSTALL) -Dm755 $(@D)/ap_config.sh $(TARGET_DIR)/usr/bin/ap_config.sh
-	$(INSTALL) -Dm755 $(@D)/sta_config.sh $(TARGET_DIR)/usr/bin/sta_config.sh
-	$(INSTALL) -Dm755 $(@D)/wifi_config.sh $(TARGET_DIR)/usr/bin/wifi_config.sh
+	$(INSTALL) -Dm755 $(@D)/ap_config.sh.$(BOARD) $(TARGET_DIR)/usr/bin/ap_config.sh
+	$(INSTALL) -Dm755 $(@D)/sta_config.sh.$(BOARD) $(TARGET_DIR)/usr/bin/sta_config.sh
+	$(INSTALL) -Dm755 $(@D)/wifi_config.sh.$(BOARD) $(TARGET_DIR)/usr/bin/wifi_config.sh
 endef
 
 $(eval $(generic-package))
