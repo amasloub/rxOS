@@ -1,6 +1,9 @@
 #!/bin/sh
 # (C) 2016 Outernet Inc
 
+
+source /etc/profile.d/node_path.sh
+
 selectedBeam=$(getconf tunerConf.selectedBeam)
 
 freq=$(getconf tunerConf.beams.${selectedBeam}.freq)
