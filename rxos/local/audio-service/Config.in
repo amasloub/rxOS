@@ -1,0 +1,6 @@
+config BR2_PACKAGE_AUDIO_SERVICE
+	bool "Audio service"
+	help
+	  Audio service plays audio files over the local audio-out port
+
+

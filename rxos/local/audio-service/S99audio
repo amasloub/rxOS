@@ -1,0 +1,43 @@
+#! /bin/sh
+
+set -e
+
+DESC="audio service"
+NAME=audioloop
+DAEMON=/usr/bin/$NAME
+
+case "$1" in
+  start)
+	printf "Starting $DESC: "
+	start-stop-daemon -S -b -x $NAME
+	echo "OK"
+	;;
+  pause)
+	printf "Pausing $DESC: "
+	start-stop-daemon -K --signal TSTP -x $NAME
+	echo "OK"
+	;;
+  resume)
+	printf "Resuming $DESC: "
+	start-stop-daemon -K --signal CONT -x $NAME
+	echo "OK"
+	;;
+  stop)
+	printf "Stopping $DESC: "
+	start-stop-daemon -K -x $NAME
+	echo "OK"
+	;;
+  restart|force-reload)
+	echo "Restarting $DESC: "
+	$0 stop
+	sleep 1
+	$0 start
+	echo ""
+	;;
+  *)
+	echo "Usage: $0 {start|pause|resume|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
