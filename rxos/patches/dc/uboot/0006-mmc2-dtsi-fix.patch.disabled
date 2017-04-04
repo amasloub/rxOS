@@ -1,0 +1,21 @@
+This patch fixes the pins for mmc2 in sun5i.dtsi and disables the auto pullup,
+making it similar to the mmc0 config. This was probably a bug.
+
+diff --git a/arch/arm/dts/sun5i.dtsi b/arch/arm/dts/sun5i.dtsi
+index e374f4f..85241c9 100644
+--- a/arch/arm/dts/sun5i.dtsi
++++ b/arch/arm/dts/sun5i.dtsi
+@@ -584,11 +584,10 @@
+ 
+ 			mmc2_pins_a: mmc2@0 {
+ 				allwinner,pins = "PC6", "PC7", "PC8", "PC9",
+-					"PC10", "PC11", "PC12", "PC13",
+-					"PC14", "PC15";
++					"PC10", "PC11";
+ 				allwinner,function = "mmc2";
+ 				allwinner,drive = <SUN4I_PINCTRL_30_MA>;
+-				allwinner,pull = <SUN4I_PINCTRL_PULL_UP>;
++				allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
+ 			};
+ 
+ 			uart3_pins_a: uart3@0 {

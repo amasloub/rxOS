@@ -35,6 +35,7 @@ guard() {
 }
 
 start() {
+  [ "$RXOS_SUBPLATFORM" == "dc" ] && exit 0  # netguard disabled for DC
   printf "Starting network guard: "
   guard &
   echo "OK"

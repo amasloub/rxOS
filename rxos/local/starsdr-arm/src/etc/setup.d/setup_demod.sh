@@ -21,13 +21,18 @@ radio_devices() {
 detect_radio() {
     RADIOS="$(radio_devices)"
     NUM_RADIOS=$(echo "$RADIOS" | wc -c)
-    if [ "$NUM_RADIOS" != 15 ]
-    then
-        log "Less than 1 or more than 1 supported radios. Bailing."
-        exit 1
-    else
-        log "Found $RADIOS"
-    fi
+    for i in 1 2 3 4 5 6 7 8 9
+    do
+        if [ "$NUM_RADIOS" != 15 ]
+        then
+            log "Less than 1 or more than 1 supported radios."
+            [[ "$i" -eq 9 ]] && ( echo "Done trying. Bailing"; exit 1 )
+        else
+            log "Found $RADIOS"
+            break
+        fi
+        sleep 2
+    done
     RADIO="$RADIOS"
 }
 

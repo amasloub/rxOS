@@ -26,7 +26,7 @@ has_command() {
 
 # Source files
 LINUX="$BINARIES_DIR/zImage"
-DTB="$BINARIES_DIR/sun5i-a13-olinuxino.dtb"
+DTB="$BINARIES_DIR/sun5i-a13-dreamcatcher.dtb"
 ROOTFS="$BINARIES_DIR/rootfs.isoroot"
 UBOOT="$BINARIES_DIR/u-boot-sunxi-with-spl.bin"
 UBOOT_SCRIPT="$BINARIES_DIR/boot.scr"

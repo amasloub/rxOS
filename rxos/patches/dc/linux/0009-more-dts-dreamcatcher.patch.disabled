@@ -1,0 +1,62 @@
+this patch correct the pin configs in 
+
+diff --git a/arch/arm/boot/dts/sun5i-a13.dtsi b/arch/arm/boot/dts/sun5i-a13.dtsi
+index a17ba02..d03331b 100644
+--- a/arch/arm/boot/dts/sun5i-a13.dtsi
++++ b/arch/arm/boot/dts/sun5i-a13.dtsi
+@@ -348,7 +348,7 @@
+ 
+ &pio {
+ 	compatible = "allwinner,sun5i-a13-pinctrl";
+-
++/* abhishek: disabled
+ 	lcd_rgb666_pins: lcd_rgb666@0 {
+ 		allwinner,pins = "PD2", "PD3", "PD4", "PD5", "PD6", "PD7",
+ 				 "PD10", "PD11", "PD12", "PD13", "PD14", "PD15",
+@@ -358,6 +358,7 @@
+ 		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
+ 		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
+ 	};
++*/
+ 
+ 	uart1_pins_a: uart1@0 {
+ 		allwinner,pins = "PE10", "PE11";
+@@ -373,3 +374,4 @@
+ 		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
+ 	};
+ };
++
+diff --git a/arch/arm/boot/dts/sun5i.dtsi b/arch/arm/boot/dts/sun5i.dtsi
+index b0fca4e..394e3be 100644
+--- a/arch/arm/boot/dts/sun5i.dtsi
++++ b/arch/arm/boot/dts/sun5i.dtsi
+@@ -575,6 +575,7 @@
+ 				allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
+ 			};
+ 
++/* abhishek: disable
+ 			lcd_rgb565_pins: lcd_rgb565@0 {
+ 				allwinner,pins = "PD3", "PD4", "PD5", "PD6", "PD7",
+ 						 "PD10", "PD11", "PD12", "PD13", "PD14", "PD15",
+@@ -584,6 +585,7 @@
+ 				allwinner,drive = <SUN4I_PINCTRL_10_MA>;
+ 				allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
+ 			};
++*/
+ 
+ 			mmc0_pins_a: mmc0@0 {
+ 				allwinner,pins = "PF0", "PF1", "PF2", "PF3",
+@@ -595,11 +597,10 @@
+ 
+ 			mmc2_pins_a: mmc2@0 {
+ 				allwinner,pins = "PC6", "PC7", "PC8", "PC9",
+-					"PC10", "PC11", "PC12", "PC13",
+-					"PC14", "PC15";
++					"PC10", "PC11";
+ 				allwinner,function = "mmc2";
+ 				allwinner,drive = <SUN4I_PINCTRL_30_MA>;
+-				allwinner,pull = <SUN4I_PINCTRL_PULL_UP>;
++				allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
+ 			};
+ 
+ 			spi2_pins_a: spi2@0 {

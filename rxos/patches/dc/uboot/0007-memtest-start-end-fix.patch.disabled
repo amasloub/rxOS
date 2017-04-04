@@ -1,0 +1,15 @@
+add start and end addresses for memtest
+
+diff --git a/include/configs/sunxi-common.h b/include/configs/sunxi-common.h
+index 2464882..f777d64 100644
+--- a/include/configs/sunxi-common.h
++++ b/include/configs/sunxi-common.h
+@@ -75,6 +75,8 @@
+ #else
+ #define SDRAM_OFFSET(x) 0x4##x
+ #define CONFIG_SYS_SDRAM_BASE		0x40000000
++#define CONFIG_SYS_MEMTEST_START   CONFIG_SYS_SDRAM_BASE
++#define CONFIG_SYS_MEMTEST_END     (CONFIG_SYS_SDRAM_BASE + (256 << 20))
+ #define CONFIG_SYS_LOAD_ADDR		0x42000000 /* default load address */
+ #define CONFIG_SYS_TEXT_BASE		0x4a000000
+ /* Note SPL_STACK_R_ADDR is set through Kconfig, we include it here 

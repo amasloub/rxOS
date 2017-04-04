@@ -1,0 +1,27 @@
+#!/bin/sh
+
+
+export_gpio() {
+    echo $1 > /sys/class/gpio/export
+}
+
+gpio_out() {
+    echo out > /sys/class/gpio/gpio$1/direction
+    echo $2 > /sys/class/gpio/gpio$1/value
+}
+
+
+# enabled usb hub, pin PD14 = 110
+usbhub_en_gpio=110
+
+#export_gpio $usbhub_en_gpio
+#gpio_out $usbhub_en_gpio 1
+
+# switch rf switch to LNA, pins PD21, PD22 = 117,118
+rf_switch_v1_gpio=117
+rf_switch_v2_gpio=118
+
+#export_gpio $rf_switch_v1_gpio
+#gpio_out $rf_switch_v1_gpio 0
+#export_gpio $rf_switch_v2_gpio
+#gpio_out $rf_switch_v2_gpio 1

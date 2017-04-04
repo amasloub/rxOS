@@ -1,0 +1,14 @@
+This patch adds the dreamcatcher dts to the makefile to it is built at compile time
+
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index 3ee608b..a3cf2b0 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -205,6 +205,7 @@ dtb-$(CONFIG_MACH_SUN5I) += \
+ 	sun5i-a13-inet-98v-rev2.dtb \
+ 	sun5i-a13-olinuxino.dtb \
+ 	sun5i-a13-olinuxino-micro.dtb \
++	sun5i-a13-dreamcatcher.dtb \
+ 	sun5i-a13-q8-tablet.dtb \
+ 	sun5i-a13-utoo-p66.dtb \
+ 	sun5i-r8-chip.dtb

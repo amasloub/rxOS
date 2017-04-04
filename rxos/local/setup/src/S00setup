@@ -12,14 +12,17 @@
 SETUP_D=/etc/setup.d
 SETUP_LOGS=/var/log/setup
 
-
 [ -d /mnt/downloads/.log ] || mkdir /mnt/downloads/.log
 [ -L /var/log ] && unlink /var/log
 ln -s /mnt/downloads/.log /var/log
 
 [ -d "$SETUP_LOGS" ] || mkdir -p "$SETUP_LOGS"
 
+
 start() {
+
+  [ -f /usr/sbin/early-setup.sh ] && /usr/sbin/early-setup.sh
+
   printf "Starting setup: "
   for s in "${SETUP_D}/"*.sh; do
     [ ! -x "$s" ] && continue
