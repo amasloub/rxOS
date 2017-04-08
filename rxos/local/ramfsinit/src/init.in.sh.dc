@@ -56,10 +56,12 @@ bail() {
 # still happen that the device node is not present at this point (perhaps due
 # to some external device being plugged in).
 wait_for_sd() {
-  echo "Waiting for SD card to become available"
-  while ! [ -e "/dev/mmcblk0p1" ]; do
+  echo -n "Waiting for SD card to become available "
+  while ! [ -e "/dev/mmcblk0p1" -o -e "/dev/mmcblk1p1" ]; do
     sleep 1
+    echo -n "."
   done
+  echo " - found"
 }
 
 
@@ -234,7 +236,19 @@ mkdir -p /tmpfs/upper /tmpfs/work
 
 # Mount overlay images if any
 wait_for_sd
-mount -t vfat -o ro,sync /dev/mmcblk0p1 /linux
+
+bootsd="/dev/mmcblk0"
+if [ -e "/dev/mmcblk0p1" ]
+ then
+   bootsd="/dev/mmcblk0"
+ elif [ -e "/dev/mmcblk1p1" ]
+ then
+   bootsd="/dev/mmcblk1"
+fi
+
+echo "booting from ${bootsd}"
+
+mount -t vfat -o ro,sync ${bootsd}p1 /linux
 
 # make the swap, conf and downloads partitions and filesystems if they don't exist
 if [ -f /linux/freshburn ]
@@ -252,7 +266,7 @@ t
 2
 82
 w
-' | fdisk /dev/mmcblk0
+' | fdisk ${bootsd}
 
 # conf = 256M
 # f2fs requires a minimum 100MB partition
@@ -263,22 +277,22 @@ p
 597
 +256M
 w
-' | fdisk /dev/mmcblk0
+' | fdisk  ${bootsd}
 
 # reformat if reformat tag exists
 # else try mounting, and if it fails, reformat
 if [ -f /linux/reformat_conf ]
 then
-    mkfs.f2fs /dev/mmcblk0p3
+    mkfs.f2fs ${bootsd}p3
 else
     mkdir /testmount3
-    mount -t f2fs -o ro /dev/mmcblk0p3 /testmount3
+    mount -t f2fs -o ro ${bootsd}p3 /testmount3
     if mountpoint -q /testmount3
     then
         umount /testmount3
     else
-        echo "/dev/mmcblk0p3 is not f2fs-mountable. Formating."
-        mkfs.f2fs  /dev/mmcblk0p3
+        echo "${bootsd}p3 is not f2fs-mountable. Formating."
+        mkfs.f2fs  ${bootsd}p3
     fi
     rmdir /testmount3
 fi
@@ -289,29 +303,29 @@ p
 861
 
 w
-' | fdisk /dev/mmcblk0
+' | fdisk ${bootsd}
 
 # reformat if reformat tag exists
 # else try mounting, and if it fails, reformat
 if [ -f /linux/reformat_storage ]
 then
-    mkfs.f2fs /dev/mmcblk0p4
+    mkfs.f2fs ${bootsd}p4
 else
     mkdir /testmount4
-    mount -t f2fs -o ro /dev/mmcblk0p4 /testmount4
+    mount -t f2fs -o ro ${bootsd}p4 /testmount4
     if mountpoint -q /testmount4
     then
         umount /testmount4
     else
-        echo "/dev/mmcblk0p4 is not f2fs-mountable. Formating."
-        mkfs.f2fs  /dev/mmcblk0p4
+        echo "${bootsd}p4 is not f2fs-mountable. Formating."
+        mkfs.f2fs  ${bootsd}p4
     fi
     rmdir /testmount4
 fi
 
 
 # remove the marker
-mount -t vfat -o sync /dev/mmcblk0p1 /linux
+mount -t vfat -o sync ${bootsd}p1 /linux
 rm -f /linux/freshburn
 rm -f /linux/reformat_conf
 rm -f /linux/reformat_storage
