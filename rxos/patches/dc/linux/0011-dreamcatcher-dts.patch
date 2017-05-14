@@ -73,34 +73,34 @@ index 0000000..01fd573
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&led_pins_dreamcatcher>;
 +
-+		wifi {
++		packet {
 +			gpios = <&pio 3 5 GPIO_ACTIVE_HIGH>;
-+			linux,default-trigger = "cpu0";
-+		};
-+
-+		error {
-+			gpios = <&pio 3 10 GPIO_ACTIVE_HIGH>;
-+           panic-indicator;
-+		};
-+
-+		snr1 {
-+			gpios = <&pio 3 4 GPIO_ACTIVE_HIGH>;
 +			default-state = "off";
 +		};
 +
-+		snr2 {
++		lock {
++			gpios = <&pio 3 4 GPIO_ACTIVE_HIGH>;
++			linux,default-trigger = "cpu0";
++		};
++
++		snr1 {
 +			gpios = <&pio 3 7 GPIO_ACTIVE_HIGH>;
 +			default-state = "off";
 +		};
 +
-+		snr3 {
++		snr2 {
 +			gpios = <&pio 3 6 GPIO_ACTIVE_HIGH>;
 +			default-state = "off";
 +		};
 +
-+		snr4 {
++		snr3 {
 +			gpios = <&pio 3 11 GPIO_ACTIVE_HIGH>;
 +			default-state = "off";
++		};
++
++		snr4 {
++			gpios = <&pio 3 10 GPIO_ACTIVE_HIGH>;
++           panic-indicator;
 +		};
 +
 +		heartbeat {
